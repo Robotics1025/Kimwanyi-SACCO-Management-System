@@ -6,6 +6,7 @@ public class WithdrawalForm {
 
     private Long savingsAccountId;
     private BigDecimal amount;
+    private String description;
 
     public Long getSavingsAccountId() {
         return savingsAccountId;
@@ -22,4 +23,7 @@ public class WithdrawalForm {
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
+
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 }
