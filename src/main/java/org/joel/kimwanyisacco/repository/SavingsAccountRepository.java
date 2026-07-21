@@ -16,6 +16,9 @@ public interface SavingsAccountRepository extends JpaRepository<SavingsAccount, 
  
     long countByAccountNumberStartingWith(String prefix);
 
+    @Query("select s from SavingsAccount s join fetch s.member m join fetch m.userAccount")
+    java.util.List<SavingsAccount> findAllWithMember();
+
     @Query("select coalesce(sum(s.balance), 0) from SavingsAccount s")
     BigDecimal sumAllBalances();
 }

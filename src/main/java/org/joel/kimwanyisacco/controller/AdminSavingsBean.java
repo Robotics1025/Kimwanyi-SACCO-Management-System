@@ -38,7 +38,7 @@ public class AdminSavingsBean implements Serializable {
     }
 
     public void refreshAccounts() {
-        this.accounts = savingsAccountRepository.findAll();
+        this.accounts = savingsAccountRepository.findAllWithMember();
     }
 
     public void prepareTransaction(SavingsAccount account, String type) {
