@@ -9,6 +9,8 @@
     <ui:define name="pageTitle">My Dashboard</ui:define>
 
     <ui:define name="content">
+        <!-- System Growl Notifications -->
+        <p:growl id="growl" showDetail="true" showSummary="true" life="5000" sticky="false"/>
 
         <!-- ═══════════════════════════════════════════════════
              WELCOME BANNER
@@ -44,8 +46,12 @@
             <div class="mem-kpi-card loan">
                 <i class="fa-solid fa-hand-holding-dollar mem-kpi-icon"></i>
                 <div class="mem-kpi-label">Outstanding Loan</div>
-                <div class="mem-kpi-value">UGX 0</div>
-                <div class="mem-kpi-sub">Balance remaining to repay</div>
+                <div class="mem-kpi-value">
+                    <h:outputText value="#{dashboardBean.outstandingLoanBalance}">
+                        <f:convertNumber type="currency" currencySymbol="UGX " maxFractionDigits="0"/>
+                    </h:outputText>
+                </div>
+                <div class="mem-kpi-sub">#{dashboardBean.hasActiveLoan ? dashboardBean.activeLoan.status : 'No active loan'}</div>
             </div>
 
             <div class="mem-kpi-card status">
@@ -90,9 +96,7 @@
             <div class="mem-card" style="margin-bottom:0;">
                 <div class="mem-card-header">
                     <span class="mem-card-title"><i class="fa-solid fa-route" style="color:#f97316; margin-right:6px;"></i> Loan Journey Tracker</span>
-                    <!-- Determine current step -->
-                    <ui:param name="loanStep" value="#{loanApplicationBean.hasActiveLoan ? (loanApplicationBean.latestLoanStatus == 'PENDING' ? 4 : 5) : 3}" />
-                    <span style="font-size:0.75rem; background:#fff7ed; color:#f97316; font-weight:700; padding:2px 8px; border-radius:4px;">Step #{loanStep} of 5</span>
+                    <span style="font-size:0.75rem; background:#fff7ed; color:#f97316; font-weight:700; padding:2px 8px; border-radius:4px;">Step #{dashboardBean.loanJourneyStep} of 5</span>
                 </div>
                 <div class="mem-card-body">
                     <div class="mem-tracker">
@@ -113,29 +117,29 @@
                             </div>
                         </div>
                         <div class="mem-tracker-step">
-                            <div class="mem-tracker-circle #{loanStep == 3 ? 'current' : (loanStep > 3 ? 'done' : '')}">
-                                <h:outputText value="3" rendered="#{loanStep &lt;= 3}"/>
-                                <i class="fa-solid fa-check" style="font-size:0.65rem; display:#{loanStep > 3 ? 'block' : 'none'};"></i>
+                            <div class="mem-tracker-circle #{dashboardBean.loanJourneyStep == '3' ? 'current' : 'done'}">
+                                <h:outputText value="3" rendered="#{dashboardBean.loanJourneyStep == '3'}"/>
+                                <i class="fa-solid fa-check" style="font-size:0.65rem;" rendered="#{dashboardBean.loanJourneyStep != '3'}"></i>
                             </div>
-                            <div class="mem-tracker-line #{loanStep > 3 ? 'done' : ''}"></div>
+                            <div class="mem-tracker-line #{dashboardBean.loanJourneyStep != '3' ? 'done' : ''}"></div>
                             <div class="mem-tracker-text">
                                 <div class="mem-tracker-title">Apply for Loan</div>
                                 <div class="mem-tracker-desc">Max 3x your savings balance</div>
                             </div>
                         </div>
                         <div class="mem-tracker-step">
-                            <div class="mem-tracker-circle #{loanStep == 4 ? 'current' : (loanStep > 4 ? 'done' : '')}">
-                                <h:outputText value="4" rendered="#{loanStep &lt;= 4}"/>
-                                <i class="fa-solid fa-check" style="font-size:0.65rem; display:#{loanStep > 4 ? 'block' : 'none'};"></i>
+                            <div class="mem-tracker-circle #{dashboardBean.loanJourneyStep == '4' ? 'current' : (dashboardBean.loanJourneyStep == '5' ? 'done' : '')}">
+                                <h:outputText value="4" rendered="#{dashboardBean.loanJourneyStep != '5'}"/>
+                                <i class="fa-solid fa-check" style="font-size:0.65rem;" rendered="#{dashboardBean.loanJourneyStep == '5'}"></i>
                             </div>
-                            <div class="mem-tracker-line #{loanStep > 4 ? 'done' : ''}"></div>
+                            <div class="mem-tracker-line #{dashboardBean.loanJourneyStep == '5' ? 'done' : ''}"></div>
                             <div class="mem-tracker-text">
                                 <div class="mem-tracker-title">Approval Decision</div>
                                 <div class="mem-tracker-desc">Admin reviews your application</div>
                             </div>
                         </div>
                         <div class="mem-tracker-step">
-                            <div class="mem-tracker-circle #{loanStep == 5 ? 'current' : ''}">5</div>
+                            <div class="mem-tracker-circle #{dashboardBean.loanJourneyStep == '5' ? 'current' : ''}">5</div>
                             <div class="mem-tracker-text">
                                 <div class="mem-tracker-title">Repay Loan</div>
                                 <div class="mem-tracker-desc">10% flat rate on principal</div>
@@ -151,50 +155,46 @@
         ═══════════════════════════════════════════════════ -->
         <div style="display:grid; grid-template-columns:1.4fr 1fr; gap:1.5rem;">
 
-            <!-- Recent Savings Activity -->
+            <!-- Recent Activity (Savings + Loans) -->
             <div class="mem-card" style="margin-bottom:0;">
                 <div class="mem-card-header">
-                    <span class="mem-card-title"><i class="fa-solid fa-clock-rotate-left" style="color:#7c3aed; margin-right:6px;"></i> Recent Transactions</span>
-                    <h:form style="margin:0;">
-                        <p:commandButton value="View All" styleClass="" style="font-size:0.8rem; color:#dc2626; background:none; border:none; cursor:pointer; font-weight:600; padding:0;"
-                                         oncomplete="PF('dlgSavings').show()"
-                                         update="savingsDialogContent"/>
-                    </h:form>
+                    <span class="mem-card-title"><i class="fa-solid fa-clock-rotate-left" style="color:#7c3aed; margin-right:6px;"></i> Recent Activity</span>
+                    <h:link outcome="/savings/account" style="font-size:0.8rem; color:#dc2626; text-decoration:none; font-weight:600;">View All</h:link>
                 </div>
                 <div class="mem-card-body" style="padding:0 1.5rem 1rem;">
-                    <h:panelGroup rendered="#{empty savingsHistoryBean.transactions}">
+                    <h:panelGroup rendered="#{empty dashboardBean.recentActivity}">
                         <div class="mem-empty">
                             <i class="fa-solid fa-receipt"></i>
-                            <strong style="color:#374151;">No Transactions Yet</strong>
-                            <p>Your savings transactions will appear here.</p>
+                            <strong style="color:#374151;">No Activity Yet</strong>
+                            <p>Your savings deposits, transfers, and loan events will appear here.</p>
                         </div>
                     </h:panelGroup>
-                    
-                    <h:panelGroup rendered="#{not empty savingsHistoryBean.transactions}">
-                        <table class="mem-table" style="margin-top:0.5rem; font-size:0.85rem;">
-                            <tbody>
-                                <ui:repeat value="#{savingsHistoryBean.recentTransactions}" var="tx">
-                                    <tr>
-                                        <td style="padding:0.75rem 0;">
-                                            <div style="font-weight:600; color:#111827;">#{tx.transactionType}</div>
-                                            <div style="font-size:0.75rem; color:#6b7280;">
-                                                <h:outputText value="#{tx.createdAt}">
-                                                    <f:convertDateTime type="localDateTime" pattern="dd MMM yy"/>
-                                                </h:outputText>
-                                            </div>
-                                        </td>
-                                        <td style="text-align:right; font-weight:700; color:#111827; padding:0.75rem 0;">
-                                            <span style="#{tx.transactionType == 'WITHDRAW' or tx.transactionType == 'TRANSFER_OUT' ? 'color:#dc2626;' : 'color:#16a34a;'}">
-                                                #{tx.transactionType == 'WITHDRAW' or tx.transactionType == 'TRANSFER_OUT' ? '-' : '+'}
-                                                <h:outputText value="#{tx.amount}">
-                                                    <f:convertNumber type="currency" currencySymbol="UGX " maxFractionDigits="0"/>
-                                                </h:outputText>
-                                            </span>
-                                        </td>
-                                    </tr>
-                                </ui:repeat>
-                            </tbody>
-                        </table>
+
+                    <h:panelGroup rendered="#{not empty dashboardBean.recentActivity}">
+                        <div class="activity-feed">
+                            <ui:repeat value="#{dashboardBean.recentActivity}" var="item">
+                                <div class="activity-item">
+                                    <div class="activity-icon" style="background:#{item.categoryColor}22; color:#{item.categoryColor};">
+                                        <i class="#{item.categoryIcon}"></i>
+                                    </div>
+                                    <div class="activity-detail">
+                                        <div class="activity-title">#{item.title}</div>
+                                        <div class="activity-sub">
+                                            #{item.subtitle} ·
+                                            <h:outputText value="#{item.timestamp}">
+                                                <f:convertDateTime type="localDateTime" pattern="dd MMM yy, HH:mm"/>
+                                            </h:outputText>
+                                        </div>
+                                    </div>
+                                    <div class="activity-amount" style="color:#{item.amountColor};">
+                                        #{item.amountSign}
+                                        <h:outputText value="#{item.amount}">
+                                            <f:convertNumber type="currency" currencySymbol="UGX " maxFractionDigits="0"/>
+                                        </h:outputText>
+                                    </div>
+                                </div>
+                            </ui:repeat>
+                        </div>
                     </h:panelGroup>
                 </div>
             </div>
