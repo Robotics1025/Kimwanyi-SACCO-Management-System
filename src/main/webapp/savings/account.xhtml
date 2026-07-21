@@ -1,0 +1,96 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/member-template.xhtml">
+
+    <ui:define name="title">Savings Account | Kimwanyi SACCO</ui:define>
+    <ui:define name="pageTitle">Savings Account</ui:define>
+
+    <ui:define name="content">
+        <!-- Account Overview Header -->
+        <div class="mem-card" style="background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 100%); color: #fff; margin-bottom: 2rem;">
+            <div class="mem-card-body" style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <div style="font-size: 0.85rem; color: #c4b5fd; text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
+                        Account Number
+                    </div>
+                    <div style="font-size: 1.25rem; font-weight: 700; font-family: monospace;">
+                        #{savingsHistoryBean.account.accountNumber}
+                    </div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-size: 0.85rem; color: #c4b5fd; text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
+                        Available Balance
+                    </div>
+                    <div style="font-size: 2rem; font-weight: 800;">
+                        <h:outputText value="#{savingsHistoryBean.account.balance}">
+                            <f:convertNumber type="currency" currencySymbol="UGX " maxFractionDigits="0"/>
+                        </h:outputText>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Transaction History -->
+        <div class="mem-card">
+            <div class="mem-card-header">
+                <span class="mem-card-title"><i class="fa-solid fa-list-ul" style="margin-right:8px; color:#6366f1;"></i> Transaction History</span>
+            </div>
+            
+            <h:panelGroup rendered="#{empty savingsHistoryBean.transactions}">
+                <div class="mem-empty" style="padding: 4rem 1rem;">
+                    <i class="fa-solid fa-receipt"></i>
+                    <strong style="color:#374151;">No Transactions Found</strong>
+                    <p>You have not made any deposits, withdrawals, or transfers yet.</p>
+                </div>
+            </h:panelGroup>
+
+            <h:panelGroup rendered="#{not empty savingsHistoryBean.transactions}">
+                <table class="mem-table">
+                    <thead>
+                        <tr>
+                            <th>Date &amp; Time</th>
+                            <th>Reference</th>
+                            <th>Transaction Type</th>
+                            <th>Description</th>
+                            <th style="text-align:right;">Amount</th>
+                            <th style="text-align:right;">Balance After</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <ui:repeat value="#{savingsHistoryBean.transactions}" var="tx">
+                            <tr>
+                                <td>
+                                    <h:outputText value="#{tx.createdAt}">
+                                        <f:convertDateTime type="localDateTime" pattern="dd MMM yyyy, HH:mm"/>
+                                    </h:outputText>
+                                </td>
+                                <td>
+                                    <span style="font-family:monospace; color:#6b7280; font-size:0.85rem;">#{tx.reference}</span>
+                                </td>
+                                <td>
+                                    <span class="badge #{tx.transactionType == 'DEPOSIT' or tx.transactionType == 'TRANSFER_IN' or tx.transactionType == 'INTEREST' ? 'badge-green' : 'badge-red'}">
+                                        #{tx.transactionType}
+                                    </span>
+                                </td>
+                                <td style="color:#4b5563;">#{tx.description}</td>
+                                <td style="text-align:right; font-weight:600; color:#111827;">
+                                    <h:outputText value="#{tx.amount}">
+                                        <f:convertNumber type="currency" currencySymbol="UGX " maxFractionDigits="0"/>
+                                    </h:outputText>
+                                </td>
+                                <td style="text-align:right; font-weight:700; color:#7c3aed;">
+                                    <h:outputText value="#{tx.balanceAfter}">
+                                        <f:convertNumber type="currency" currencySymbol="UGX " maxFractionDigits="0"/>
+                                    </h:outputText>
+                                </td>
+                            </tr>
+                        </ui:repeat>
+                    </tbody>
+                </table>
+            </h:panelGroup>
+        </div>
+    </ui:define>
+</ui:composition>

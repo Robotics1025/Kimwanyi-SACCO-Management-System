@@ -14,6 +14,8 @@ public class SavingsTransactionConverter {
         dto.setAmount(transaction.getAmount());
         dto.setBalanceAfter(transaction.getBalanceAfter());
         dto.setCreatedAt(transaction.getCreatedAt());
+        dto.setReference(transaction.getReference());
+        dto.setDescription(transaction.getDescription());
         return dto;
     }
 }

@@ -55,6 +55,11 @@
                 <span>My Dashboard</span>
             </h:link>
 
+            <h:link outcome="/savings/account" styleClass="mem-nav-item #{view.viewId == '/savings/account.xhtml' ? 'active' : ''}">
+                <i class="fa-solid fa-piggy-bank"></i>
+                <span>Savings Account</span>
+            </h:link>
+
             <div class="mem-nav-label" style="margin-top:0.75rem;">LOANS</div>
 
             <h:link outcome="/loans/applications" styleClass="mem-nav-item #{view.viewId == '/loans/applications.xhtml' ? 'active' : ''}">

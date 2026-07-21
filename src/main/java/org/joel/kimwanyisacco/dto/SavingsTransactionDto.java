@@ -10,6 +10,8 @@ public class SavingsTransactionDto {
     private BigDecimal amount;
     private BigDecimal balanceAfter;
     private LocalDateTime createdAt;
+    private String reference;
+    private String description;
 
     public Long getId() {
         return id;
@@ -49,5 +51,21 @@ public class SavingsTransactionDto {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getReference() {
+        return reference;
+    }
+
+    public void setReference(String reference) {
+        this.reference = reference;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
