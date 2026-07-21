@@ -9,8 +9,6 @@
     <ui:define name="pageTitle">My Dashboard</ui:define>
 
     <ui:define name="content">
-        <!-- System Growl Notifications -->
-        <p:growl id="growl" showDetail="true" showSummary="true" life="5000" sticky="false"/>
 
         <!-- ═══════════════════════════════════════════════════
              WELCOME BANNER
@@ -51,7 +49,7 @@
                         <f:convertNumber type="currency" currencySymbol="UGX " maxFractionDigits="0"/>
                     </h:outputText>
                 </div>
-                <div class="mem-kpi-sub">#{dashboardBean.hasActiveLoan ? dashboardBean.activeLoan.status : 'No active loan'}</div>
+                <div class="mem-kpi-sub">#{dashboardBean.hasActiveLoan ? dashboardBean.activeLoanStatus : 'No active loan'}</div>
             </div>
 
             <div class="mem-kpi-card status">
@@ -174,7 +172,7 @@
                         <div class="activity-feed">
                             <ui:repeat value="#{dashboardBean.recentActivity}" var="item">
                                 <div class="activity-item">
-                                    <div class="activity-icon" style="background:#{item.categoryColor}22; color:#{item.categoryColor};">
+                                    <div class="activity-icon" style="background:#{item.categoryBg}; color:#{item.categoryColor};">
                                         <i class="#{item.categoryIcon}"></i>
                                     </div>
                                     <div class="activity-detail">

@@ -153,6 +153,9 @@ public class DashboardBean {
     public List<ActivityItem> getRecentActivity() { return recentActivity; }
     public BigDecimal getOutstandingLoanBalance() { return outstandingLoanBalance; }
     public Loan getActiveLoan() { return activeLoan; }
+    public String getActiveLoanStatus() {
+        return activeLoan != null ? activeLoan.getStatus().name() : "";
+    }
     public String getLoanJourneyStep() { return loanJourneyStep; }
     public boolean isHasActiveLoan() { return activeLoan != null; }
 }

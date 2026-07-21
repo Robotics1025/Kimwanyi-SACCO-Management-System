@@ -43,4 +43,8 @@ public class ActivityItem {
     public String getCategoryColor() {
         return category == Category.LOAN ? "#f97316" : "#7c3aed";
     }
+    /** Pre-computed background for the icon circle — avoids EL hex-concat issues */
+    public String getCategoryBg() {
+        return category == Category.LOAN ? "rgba(249,115,22,0.10)" : "rgba(124,58,237,0.10)";
+    }
 }
