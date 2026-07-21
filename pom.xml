@@ -19,27 +19,49 @@
     </properties>
 
     <dependencies>
-        <!-- Jakarta EE API (Faces, Servlet, Persistence annotations) - provided by WildFly -->
+        <!-- Servlet API - implementation provided by Tomcat itself, matches Servlet 6.0 (Jakarta EE 10) -->
         <dependency>
-            <groupId>jakarta.platform</groupId>
-            <artifactId>jakarta.jakartaee-api</artifactId>
-            <version>11.0.0</version>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>6.0.0</version>
             <scope>provided</scope>
         </dependency>
 
-        <!-- Hibernate - provided by WildFly as its native JPA implementation -->
+        <!-- Hibernate - Tomcat is a bare servlet container, it has no JPA provider, so this must be bundled -->
         <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-core</artifactId>
             <version>6.6.2.Final</version>
-            <scope>provided</scope>
         </dependency>
 
+        <!-- JSF implementation (MyFaces) - Tomcat has no Faces implementation, so it must be bundled.
+             MyFaces (unlike Mojarra) doesn't hard-require a CDI container to start on plain Tomcat. -->
+        <dependency>
+            <groupId>org.apache.myfaces.core</groupId>
+            <artifactId>myfaces-impl</artifactId>
+            <version>4.0.3</version>
+        </dependency>
+
+        <!-- CDI API - MyFaces references these interfaces internally even though this app has no
+             CDI container running; only the API classes are needed on the classpath, not an implementation -->
+        <dependency>
+            <groupId>jakarta.enterprise</groupId>
+            <artifactId>jakarta.enterprise.cdi-api</artifactId>
+            <version>4.0.1</version>
+        </dependency>
+        <!-- Source: https://mvnrepository.com/artifact/org.springframework.security/spring-security-crypto -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-crypto</artifactId>
+            <version>7.1.0</version>
+            <scope>compile</scope>
+        </dependency>
         <!-- PrimeFaces component library - bundled with the WAR -->
         <dependency>
             <groupId>org.primefaces</groupId>
             <artifactId>primefaces</artifactId>
             <version>13.0.9</version>
+            <classifier>jakarta</classifier>
         </dependency>
 
         <!-- Spring Framework - bundled with the WAR (not provided by WildFly) -->
@@ -110,6 +132,30 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.4.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.5.0</version>
+                <executions>
+                    <execution>
+                        <id>tailwind-build</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>${project.basedir}/bin/tailwindcss</executable>
+                            <arguments>
+                                <argument>-i</argument>
+                                <argument>${project.basedir}/src/main/webapp/resources/css/app.css</argument>
+                                <argument>-o</argument>
+                                <argument>${project.basedir}/src/main/webapp/resources/css/app.generated.css</argument>
+                                <argument>--minify</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

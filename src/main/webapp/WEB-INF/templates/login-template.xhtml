@@ -2,10 +2,55 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="jakarta.faces.html"
       xmlns:ui="jakarta.faces.facelets">
+
 <h:head>
-    <title>Kimwanyi SACCO - Login</title>
+    <title>
+        <ui:insert name="title">Kimwanyi SACCO</ui:insert>
+    </title>
+
+    <h:outputStylesheet library="css" name="app.generated.css"/>
 </h:head>
-<h:body>
-    <ui:insert name="content"></ui:insert>
+
+<h:body styleClass="min-h-screen bg-white">
+
+    <main class="flex min-h-screen items-center justify-center p-6">
+
+        <section class="grid w-full max-w-6xl overflow-hidden
+                        rounded-3xl bg-white shadow-2xl
+                        lg:grid-cols-2">
+
+            <!-- Left side -->
+            <div class="p-10 lg:p-14">
+
+                <div class="mb-14">
+                    <h1 class="text-3xl font-bold">
+                        KIMWANYI
+                        <span class="text-red-600">SACCO</span>
+                    </h1>
+
+                    <p class="text-gray-500">
+                        Secure. Reliable. Together.
+                    </p>
+                </div>
+
+                <ui:insert name="formContent"/>
+
+            </div>
+
+            <!-- Right side -->
+            <div class="relative hidden min-h-[750px]
+                        bg-red-600 p-12 text-white lg:flex
+                        lg:items-center lg:justify-center">
+
+                <div class="relative z-10 text-center">
+                    <ui:insert name="sideContent"/>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
 </h:body>
 </html>

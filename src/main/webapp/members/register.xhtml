@@ -1,5 +1,195 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="jakarta.faces.facelets"
-                template="/WEB-INF/templates/main-template.xhtml">
-    <ui:define name="content"></ui:define>
+<ui:composition
+        template="/WEB-INF/templates/login-template.xhtml"
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="jakarta.faces.html"
+        xmlns:f="jakarta.faces.core"
+        xmlns:ui="jakarta.faces.facelets">
+
+    <ui:define name="title">
+        Register | Kimwanyi SACCO
+    </ui:define>
+
+    <ui:define name="formContent">
+
+        <h2 class="text-4xl font-bold text-gray-900">
+            Create Account
+        </h2>
+
+        <p class="mt-2 text-gray-500">
+            Register as a Kimwanyi SACCO member
+        </p>
+
+        <h:form id="registrationForm"
+                styleClass="mt-8 space-y-5">
+
+            <h:messages
+                    globalOnly="true"
+                    styleClass="block rounded-lg bg-red-50 p-3 text-red-700"/>
+
+            <div class="grid gap-5 md:grid-cols-2">
+
+                <div>
+                    <h:outputLabel
+                            for="firstName"
+                            value="First Name"
+                            styleClass="mb-2 block font-semibold text-gray-800"/>
+
+                    <h:inputText
+                            id="firstName"
+                            value="#{memberRegistrationBean.form.firstName}"
+                            required="true"
+                            requiredMessage="First name is required"
+                            styleClass="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-red-500 focus:ring-2 focus:ring-red-100"/>
+
+                    <h:message
+                            for="firstName"
+                            styleClass="mt-1 block text-sm text-red-600"/>
+                </div>
+
+                <div>
+                    <h:outputLabel
+                            for="lastName"
+                            value="Last Name"
+                            styleClass="mb-2 block font-semibold text-gray-800"/>
+
+                    <h:inputText
+                            id="lastName"
+                            value="#{memberRegistrationBean.form.lastName}"
+                            required="true"
+                            requiredMessage="Last name is required"
+                            styleClass="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-red-500 focus:ring-2 focus:ring-red-100"/>
+
+                    <h:message
+                            for="lastName"
+                            styleClass="mt-1 block text-sm text-red-600"/>
+                </div>
+
+            </div>
+
+            <div>
+                <h:outputLabel
+                        for="username"
+                        value="Username"
+                        styleClass="mb-2 block font-semibold text-gray-800"/>
+
+                <h:inputText
+                        id="username"
+                        value="#{memberRegistrationBean.form.username}"
+                        required="true"
+                        requiredMessage="Username is required"
+                        styleClass="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-red-500 focus:ring-2 focus:ring-red-100"/>
+
+                <h:message
+                        for="username"
+                        styleClass="mt-1 block text-sm text-red-600"/>
+            </div>
+
+            <div>
+                <h:outputLabel
+                        for="email"
+                        value="Email Address"
+                        styleClass="mb-2 block font-semibold text-gray-800"/>
+
+                <h:inputText
+                        id="email"
+                        value="#{memberRegistrationBean.form.email}"
+                        required="true"
+                        requiredMessage="Email is required"
+                        styleClass="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-red-500 focus:ring-2 focus:ring-red-100">
+
+                    <f:validateRegex
+                            pattern="^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$"/>
+
+                </h:inputText>
+
+                <h:message
+                        for="email"
+                        styleClass="mt-1 block text-sm text-red-600"/>
+            </div>
+
+            <div>
+                <h:outputLabel
+                        for="nationalId"
+                        value="National ID"
+                        styleClass="mb-2 block font-semibold text-gray-800"/>
+
+                <h:inputText
+                        id="nationalId"
+                        value="#{memberRegistrationBean.form.nationalId}"
+                        required="true"
+                        requiredMessage="National ID is required"
+                        styleClass="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-red-500 focus:ring-2 focus:ring-red-100"/>
+
+                <h:message
+                        for="nationalId"
+                        styleClass="mt-1 block text-sm text-red-600"/>
+            </div>
+
+            <div>
+                <h:outputLabel
+                        for="password"
+                        value="Password"
+                        styleClass="mb-2 block font-semibold text-gray-800"/>
+
+                <h:inputSecret
+                        id="password"
+                        value="#{memberRegistrationBean.form.password}"
+                        required="true"
+                        requiredMessage="Password is required"
+                        redisplay="true"
+                        styleClass="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-red-500 focus:ring-2 focus:ring-red-100">
+
+                    <f:validateLength minimum="8"/>
+
+                </h:inputSecret>
+
+                <h:message
+                        for="password"
+                        styleClass="mt-1 block text-sm text-red-600"/>
+            </div>
+
+            <h:commandButton
+                    value="CREATE MEMBER ACCOUNT"
+                    action="#{memberRegistrationBean.register}"
+                    styleClass="w-full cursor-pointer rounded-xl bg-red-600 px-6 py-4 font-bold text-white transition hover:bg-red-700"/>
+
+            <div class="border-t border-gray-200 pt-5 text-center">
+
+                <span class="text-gray-600">
+                    Already have an account?
+                </span>
+
+                <h:link
+                        value="SIGN IN"
+                        outcome="/login.xhtml"
+                        styleClass="ml-2 font-bold text-red-600 hover:text-red-700"/>
+
+            </div>
+
+        </h:form>
+
+    </ui:define>
+
+    <ui:define name="sideContent">
+
+        <div class="mx-auto flex h-28 w-28 items-center justify-center rounded-full bg-white text-5xl text-red-600 shadow-lg">
+            +
+        </div>
+
+        <h2 class="mt-8 text-4xl font-bold">
+            Join Kimwanyi SACCO
+        </h2>
+
+        <p class="mt-6 text-lg leading-8">
+            Create your member account and begin accessing savings,
+            loans and account services.
+        </p>
+
+        <h:link
+                value="BACK TO LOGIN"
+                outcome="/login.xhtml"
+                styleClass="mt-10 inline-block rounded-xl border-2 border-white px-10 py-4 font-bold text-white transition hover:bg-white hover:text-red-600"/>
+
+    </ui:define>
+
 </ui:composition>

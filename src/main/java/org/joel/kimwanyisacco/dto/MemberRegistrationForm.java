@@ -1,15 +1,32 @@
 package org.joel.kimwanyisacco.dto;
 
-import java.time.LocalDate;
-
 public class MemberRegistrationForm {
 
+    private String username;
+    private String password;
     private String firstName;
     private String lastName;
     private String email;
-    private String phoneNumber;
     private String nationalId;
-    private LocalDate dateOfBirth;
+
+    public MemberRegistrationForm() {
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     public String getFirstName() {
         return firstName;
@@ -35,27 +52,11 @@ public class MemberRegistrationForm {
         this.email = email;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
     public String getNationalId() {
         return nationalId;
     }
 
     public void setNationalId(String nationalId) {
         this.nationalId = nationalId;
-    }
-
-    public LocalDate getDateOfBirth() {
-        return dateOfBirth;
-    }
-
-    public void setDateOfBirth(LocalDate dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
     }
 }
