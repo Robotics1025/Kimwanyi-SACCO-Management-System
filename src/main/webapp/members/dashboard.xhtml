@@ -171,10 +171,10 @@
 
                     <!-- Apply for Loan → dialog -->
                     <h:form style="margin:0;">
-                        <p:commandButton styleClass="mem-qa-transfer"
-                                         style="background:#fef2f2;"
-                                         oncomplete="PF('dlgLoan').show()"
-                                         update="@none">
+                        <p:commandLink styleClass="mem-qa-transfer"
+                                       style="background:#fef2f2;"
+                                       oncomplete="PF('dlgLoan').show()"
+                                       update="@none">
                             <div style="width:36px; height:36px; border-radius:0.4rem; background:#dc2626; color:#fff; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
                                 <i class="fa-solid fa-file-signature"></i>
                             </div>
@@ -183,15 +183,15 @@
                                 <div style="font-size:0.72rem; color:#9ca3af;">Submit a new loan request</div>
                             </div>
                             <i class="fa-solid fa-chevron-right" style="margin-left:auto; color:#d1d5db; font-size:0.7rem;"></i>
-                        </p:commandButton>
+                        </p:commandLink>
                     </h:form>
 
                     <!-- View Savings → dialog -->
                     <h:form style="margin:0;">
-                        <p:commandButton styleClass="mem-qa-transfer"
-                                         style="background:#faf5ff;"
-                                         oncomplete="PF('dlgSavings').show()"
-                                         update="savingsDialogContent">
+                        <p:commandLink styleClass="mem-qa-transfer"
+                                       style="background:#faf5ff;"
+                                       oncomplete="PF('dlgSavings').show()"
+                                       update="savingsDialogContent">
                             <div style="width:36px; height:36px; border-radius:0.4rem; background:#7c3aed; color:#fff; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
                                 <i class="fa-solid fa-piggy-bank"></i>
                             </div>
@@ -200,15 +200,15 @@
                                 <div style="font-size:0.72rem; color:#9ca3af;">Check your balance and history</div>
                             </div>
                             <i class="fa-solid fa-chevron-right" style="margin-left:auto; color:#d1d5db; font-size:0.7rem;"></i>
-                        </p:commandButton>
+                        </p:commandLink>
                     </h:form>
 
                     <!-- Deposit Savings → dialog -->
                     <h:form style="margin:0;">
-                        <p:commandButton styleClass="mem-qa-transfer"
-                                         style="background:#f0fdf4;"
-                                         oncomplete="PF('dlgDeposit').show()"
-                                         update="@none">
+                        <p:commandLink styleClass="mem-qa-transfer"
+                                       style="background:#f0fdf4;"
+                                       oncomplete="PF('dlgDeposit').show()"
+                                       update="@none">
                             <div style="width:36px; height:36px; border-radius:0.4rem; background:#16a34a; color:#fff; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
                                 <i class="fa-solid fa-money-bill-wave"></i>
                             </div>
@@ -217,14 +217,14 @@
                                 <div style="font-size:0.72rem; color:#9ca3af;">Add money to your account</div>
                             </div>
                             <i class="fa-solid fa-chevron-right" style="margin-left:auto; color:#d1d5db; font-size:0.7rem;"></i>
-                        </p:commandButton>
+                        </p:commandLink>
                     </h:form>
 
                     <!-- Internal Transfer → dialog -->
                     <h:form style="margin:0;">
-                        <p:commandButton styleClass="mem-qa-transfer"
-                                         oncomplete="PF('dlgTransfer').show()"
-                                         update="@none">
+                        <p:commandLink styleClass="mem-qa-transfer"
+                                       oncomplete="PF('dlgTransfer').show()"
+                                       update="@none">
                             <div class="mem-transfer-icon">
                                 <i class="fa-solid fa-arrow-right-arrow-left"></i>
                             </div>
@@ -233,7 +233,7 @@
                                 <div style="font-size:0.72rem; color:#9ca3af;">Send savings to another member</div>
                             </div>
                             <i class="fa-solid fa-chevron-right" style="margin-left:auto; color:#d1d5db; font-size:0.7rem;"></i>
-                        </p:commandButton>
+                        </p:commandLink>
                     </h:form>
 
                     <!-- My Loans → page -->
