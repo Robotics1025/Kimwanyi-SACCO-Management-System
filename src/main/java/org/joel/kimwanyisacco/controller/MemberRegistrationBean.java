@@ -5,27 +5,63 @@ import org.joel.kimwanyisacco.service.MemberService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
 
-@Component("memberRegistrationBean")
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.FacesContext;
+
+@Component
 @RequestScope
 public class MemberRegistrationBean {
 
     private final MemberService memberService;
 
-    private MemberRegistrationForm registrationForm = new MemberRegistrationForm();
+    private MemberRegistrationForm form =
+            new MemberRegistrationForm();
 
-    public MemberRegistrationBean(MemberService memberService) {
+    public MemberRegistrationBean(
+            MemberService memberService
+    ) {
         this.memberService = memberService;
     }
 
-    public MemberRegistrationForm getRegistrationForm() {
-        return registrationForm;
-    }
-
-    public void setRegistrationForm(MemberRegistrationForm registrationForm) {
-        this.registrationForm = registrationForm;
-    }
-
     public String register() {
-        return null;
+        try {
+            memberService.registerMember(form);
+
+            FacesContext.getCurrentInstance()
+                    .addMessage(
+                            null,
+                            new FacesMessage(
+                                    FacesMessage.SEVERITY_INFO,
+                                    "Success",
+                                    "Member registered successfully"
+                            )
+                    );
+
+            form = new MemberRegistrationForm();
+
+            return "/login.xhtml?faces-redirect=true";
+
+        } catch (IllegalArgumentException exception) {
+
+            FacesContext.getCurrentInstance()
+                    .addMessage(
+                            null,
+                            new FacesMessage(
+                                    FacesMessage.SEVERITY_ERROR,
+                                    "Registration failed",
+                                    exception.getMessage()
+                            )
+                    );
+
+            return null;
+        }
+    }
+
+    public MemberRegistrationForm getForm() {
+        return form;
+    }
+
+    public void setForm(MemberRegistrationForm form) {
+        this.form = form;
     }
 }

@@ -1,5 +1,88 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="jakarta.faces.facelets"
-                template="/WEB-INF/templates/login-template.xhtml">
-    <ui:define name="content"></ui:define>
+<ui:composition
+        template="/WEB-INF/templates/login-template.xhtml"
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="jakarta.faces.html"
+        xmlns:ui="jakarta.faces.facelets">
+
+    <ui:define name="title">
+        Login | Kimwanyi SACCO
+    </ui:define>
+
+    <ui:define name="formContent">
+
+        <h2 class="text-4xl font-bold">
+            Welcome Back!
+        </h2>
+
+        <p class="mt-2 text-gray-500">
+            Please sign in to continue
+        </p>
+
+        <h:form styleClass="mt-10 space-y-6">
+
+            <div>
+                <h:outputLabel
+                        for="username"
+                        value="Username or Email"
+                        styleClass="mb-2 block font-semibold"/>
+
+                <h:inputText
+                        id="username"
+                        value="#{loginBean.form.username}"
+                        styleClass="w-full rounded-xl border
+                                    px-4 py-4"/>
+            </div>
+
+            <div>
+                <h:outputLabel
+                        for="password"
+                        value="Password"
+                        styleClass="mb-2 block font-semibold"/>
+
+                <h:inputSecret
+                        id="password"
+                        value="#{loginBean.form.password}"
+                        styleClass="w-full rounded-xl border
+                                    px-4 py-4"/>
+            </div>
+
+            <h:commandButton
+                    value="SIGN IN"
+                    action="#{loginBean.login}"
+                    styleClass="w-full rounded-xl bg-red-600
+                                px-6 py-4 font-bold text-white"/>
+
+            <div class="text-center">
+                <span>Don’t have an account? </span>
+
+                <h:link
+                        value="REGISTER"
+                        outcome="/members/register.xhtml"
+                        styleClass="font-bold text-red-600"/>
+            </div>
+
+        </h:form>
+
+    </ui:define>
+
+    <ui:define name="sideContent">
+
+        <h2 class="text-4xl font-bold">
+            Join Kimwanyi SACCO
+        </h2>
+
+        <p class="mt-6 text-lg">
+            Create an account today and enjoy seamless access
+            to our services.
+        </p>
+
+        <h:link
+                value="REGISTER NOW"
+                outcome="/members/register.xhtml"
+                styleClass="mt-10 inline-block rounded-xl
+                            border-2 border-white px-10 py-4
+                            font-bold text-white"/>
+
+    </ui:define>
+
 </ui:composition>
