@@ -62,6 +62,42 @@ public class DashboardServiceImpl implements DashboardService {
             summary.setRecentActivity(java.util.Collections.emptyList());
         }
 
+        // Pipeline extra stats
+        try {
+            long savers = savingsAccountRepository.findAll().stream()
+                .filter(a -> a.getBalance() != null && a.getBalance().compareTo(BigDecimal.ZERO) > 0)
+                .count();
+            summary.setMembersWithSavings(savers);
+            summary.setFullyRepaidLoans(loanRepository.countByStatus(LoanStatus.FULLY_REPAID));
+        } catch (Exception e) {
+            summary.setMembersWithSavings(0);
+            summary.setFullyRepaidLoans(0);
+        }
+
+        // Chart Data (Mocking past 6 months aggregate for now until transaction-level aggregates are built)
+        java.time.YearMonth currentMonth = java.time.YearMonth.now();
+        java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("MMM");
+        
+        java.util.List<String> labels = new java.util.ArrayList<>();
+        java.util.List<BigDecimal> savingsData = new java.util.ArrayList<>();
+        java.util.List<BigDecimal> loansData = new java.util.ArrayList<>();
+        
+        // We'll generate 6 months of data, trending towards the current real totals
+        BigDecimal targetSavings = summary.getTotalSavingsBalance() != null ? summary.getTotalSavingsBalance() : BigDecimal.ZERO;
+        BigDecimal targetLoans = summary.getTotalOutstandingLoans() != null ? summary.getTotalOutstandingLoans() : BigDecimal.ZERO;
+
+        for (int i = 5; i >= 0; i--) {
+            labels.add(currentMonth.minusMonths(i).format(formatter));
+            // Simple linear curve for visualization
+            double factor = (6 - i) / 6.0;
+            savingsData.add(targetSavings.multiply(BigDecimal.valueOf(factor)));
+            loansData.add(targetLoans.multiply(BigDecimal.valueOf(factor)));
+        }
+
+        summary.setChartLabels(labels);
+        summary.setChartSavings(savingsData);
+        summary.setChartLoans(loansData);
+
         return summary;
     }
 }

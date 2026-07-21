@@ -167,7 +167,7 @@
                             <div class="tracker-line done"></div>
                             <div class="tracker-content">
                                 <div class="tracker-title">Registered</div>
-                                <div class="tracker-desc">Member registration completed</div>
+                                <div class="tracker-desc">#{dashboardBean.summary.totalMembers} total members</div>
                             </div>
                         </div>
 
@@ -175,8 +175,8 @@
                             <div class="tracker-circle done"><i class="fa-solid fa-check"></i></div>
                             <div class="tracker-line done"></div>
                             <div class="tracker-content">
-                                <div class="tracker-title">Savings Started</div>
-                                <div class="tracker-desc">Member has started saving</div>
+                                <div class="tracker-title">Active Savers</div>
+                                <div class="tracker-desc">#{dashboardBean.summary.membersWithSavings} members saving</div>
                             </div>
                         </div>
 
@@ -184,8 +184,8 @@
                             <div class="tracker-circle done"><i class="fa-solid fa-check"></i></div>
                             <div class="tracker-line done"></div>
                             <div class="tracker-content">
-                                <div class="tracker-title">Loan Requested</div>
-                                <div class="tracker-desc">Loan application submitted</div>
+                                <div class="tracker-title">Pending Loans</div>
+                                <div class="tracker-desc">#{dashboardBean.summary.pendingLoanCount} waiting approval</div>
                             </div>
                         </div>
 
@@ -193,8 +193,8 @@
                             <div class="tracker-circle current">4</div>
                             <div class="tracker-line"></div>
                             <div class="tracker-content">
-                                <div class="tracker-title">Approved</div>
-                                <div class="tracker-desc">Loan application under review</div>
+                                <div class="tracker-title">Active Loans</div>
+                                <div class="tracker-desc">#{dashboardBean.summary.activeLoanCount} currently active</div>
                             </div>
                         </div>
 
@@ -202,8 +202,8 @@
                             <div class="tracker-circle">5</div>
                             <div class="tracker-line" style="display:none;"></div>
                             <div class="tracker-content">
-                                <div class="tracker-title">Repaid</div>
-                                <div class="tracker-desc">Loan fully repaid and closed</div>
+                                <div class="tracker-title">Fully Repaid</div>
+                                <div class="tracker-desc">#{dashboardBean.summary.fullyRepaidLoans} loans closed</div>
                             </div>
                         </div>
 
@@ -276,14 +276,19 @@
             (function() {
                 var ctx = document.getElementById('savingsLoansChart');
                 if (!ctx) return;
+                
+                var chartLabels = #{dashboardBean.summary.chartLabelsAsJson};
+                var chartSavings = #{dashboardBean.summary.chartSavingsAsJson};
+                var chartLoans = #{dashboardBean.summary.chartLoansAsJson};
+
                 new Chart(ctx, {
                     type: 'bar',
                     data: {
-                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                        labels: chartLabels,
                         datasets: [
                             {
                                 label: 'Savings (UGX)',
-                                data: [120000, 180000, 140000, 250000, 200000, 320000, 380000],
+                                data: chartSavings,
                                 backgroundColor: '#4f46e5',
                                 borderRadius: 4,
                                 barPercentage: 0.5,
@@ -291,7 +296,7 @@
                             },
                             {
                                 label: 'Loans (UGX)',
-                                data: [60000, 70000, 80000, 120000, 110000, 130000, 200000],
+                                data: chartLoans,
                                 backgroundColor: '#f97316',
                                 borderRadius: 4,
                                 barPercentage: 0.5,

@@ -41,4 +41,36 @@ public class DashboardSummaryDto {
 
     public List<AuditLogDto> getRecentActivity() { return recentActivity; }
     public void setRecentActivity(List<AuditLogDto> recentActivity) { this.recentActivity = recentActivity; }
+
+    // Chart Data
+    private List<String> chartLabels = List.of();
+    private List<BigDecimal> chartSavings = List.of();
+    private List<BigDecimal> chartLoans = List.of();
+
+    public List<String> getChartLabels() { return chartLabels; }
+    public void setChartLabels(List<String> chartLabels) { this.chartLabels = chartLabels; }
+    public List<BigDecimal> getChartSavings() { return chartSavings; }
+    public void setChartSavings(List<BigDecimal> chartSavings) { this.chartSavings = chartSavings; }
+    public List<BigDecimal> getChartLoans() { return chartLoans; }
+    public void setChartLoans(List<BigDecimal> chartLoans) { this.chartLoans = chartLoans; }
+
+    public String getChartLabelsAsJson() {
+        if (chartLabels == null || chartLabels.isEmpty()) return "[]";
+        return "['" + String.join("', '", chartLabels) + "']";
+    }
+    public String getChartSavingsAsJson() {
+        return chartSavings != null ? chartSavings.toString() : "[]";
+    }
+    public String getChartLoansAsJson() {
+        return chartLoans != null ? chartLoans.toString() : "[]";
+    }
+
+    // Pipeline Data
+    private long membersWithSavings;
+    private long fullyRepaidLoans;
+
+    public long getMembersWithSavings() { return membersWithSavings; }
+    public void setMembersWithSavings(long membersWithSavings) { this.membersWithSavings = membersWithSavings; }
+    public long getFullyRepaidLoans() { return fullyRepaidLoans; }
+    public void setFullyRepaidLoans(long fullyRepaidLoans) { this.fullyRepaidLoans = fullyRepaidLoans; }
 }
