@@ -445,3 +445,65 @@ body {
     padding: 0.85rem 1rem; font-size: 0.8rem; color: #7f1d1d;
     margin-bottom: 1.1rem; line-height: 1.5;
 }
+
+/* ═══════════════════════════════════
+   PrimeFaces Dialog Overlay Overrides
+═══════════════════════════════════ */
+.ui-dialog {
+    border-radius: 1rem !important;
+    border: 1px solid var(--mem-border) !important;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.18) !important;
+    overflow: hidden !important;
+    font-family: 'Inter', 'Segoe UI', sans-serif !important;
+}
+.ui-dialog .ui-dialog-titlebar {
+    background: #0f172a !important;
+    color: #fff !important;
+    border-bottom: none !important;
+    padding: 1rem 1.5rem !important;
+    font-size: 0.95rem !important;
+    font-weight: 700 !important;
+    border-radius: 0 !important;
+}
+.ui-dialog .ui-dialog-titlebar-icon { color: #94a3b8 !important; }
+.ui-dialog .ui-dialog-titlebar-icon:hover { color: #fff !important; }
+.ui-dialog .ui-dialog-content {
+    padding: 1.5rem !important;
+    background: #fff !important;
+}
+.ui-dialog-mask { background: rgba(15,23,42,0.55) !important; backdrop-filter: blur(3px); }
+
+/* Transfer / savings info box */
+.mem-info-box {
+    background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 0.6rem;
+    padding: 0.85rem 1rem; font-size: 0.82rem; color: #1e40af;
+    margin-bottom: 1.1rem; line-height: 1.6;
+}
+.mem-transfer-icon {
+    width: 44px; height: 44px; border-radius: 0.6rem;
+    background: linear-gradient(135deg, #7c3aed, #a78bfa);
+    color: #fff; display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem; flex-shrink: 0;
+}
+.mem-dialog-actions {
+    display: flex; gap: 0.75rem; justify-content: flex-end;
+    margin-top: 1.25rem; padding-top: 1rem;
+    border-top: 1px solid var(--mem-border);
+}
+.mem-btn-cancel {
+    background: #f3f4f6; color: #374151; border: 1px solid #e5e7eb;
+    padding: 0.6rem 1.25rem; border-radius: 0.5rem;
+    font-size: 0.85rem; font-weight: 600; cursor: pointer;
+    transition: background 0.15s; border: none;
+}
+.mem-btn-cancel:hover { background: #e5e7eb; }
+
+/* Quick-action transfer button */
+.mem-qa-transfer {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.85rem 1rem; background: #f5f3ff; border-radius: 0.6rem;
+    text-decoration: none; color: #111827; transition: all 0.15s;
+    cursor: pointer; border: none; width: 100%; text-align: left;
+}
+.mem-qa-transfer:hover { background: #ede9fe; }
+
