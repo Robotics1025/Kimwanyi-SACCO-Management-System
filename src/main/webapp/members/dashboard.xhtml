@@ -90,7 +90,9 @@
             <div class="mem-card" style="margin-bottom:0;">
                 <div class="mem-card-header">
                     <span class="mem-card-title"><i class="fa-solid fa-route" style="color:#f97316; margin-right:6px;"></i> Loan Journey Tracker</span>
-                    <span style="font-size:0.75rem; background:#fff7ed; color:#f97316; font-weight:700; padding:2px 8px; border-radius:4px;">Step 1 of 5</span>
+                    <!-- Determine current step -->
+                    <ui:param name="loanStep" value="#{loanApplicationBean.hasActiveLoan ? (loanApplicationBean.latestLoanStatus == 'PENDING' ? 4 : 5) : 3}" />
+                    <span style="font-size:0.75rem; background:#fff7ed; color:#f97316; font-weight:700; padding:2px 8px; border-radius:4px;">Step #{loanStep} of 5</span>
                 </div>
                 <div class="mem-card-body">
                     <div class="mem-tracker">
@@ -103,31 +105,37 @@
                             </div>
                         </div>
                         <div class="mem-tracker-step">
-                            <div class="mem-tracker-circle current">2</div>
-                            <div class="mem-tracker-line"></div>
+                            <div class="mem-tracker-circle done"><i class="fa-solid fa-check" style="font-size:0.65rem;"></i></div>
+                            <div class="mem-tracker-line done"></div>
                             <div class="mem-tracker-text">
                                 <div class="mem-tracker-title">Start Saving</div>
                                 <div class="mem-tracker-desc">Maintain min. UGX 20,000</div>
                             </div>
                         </div>
                         <div class="mem-tracker-step">
-                            <div class="mem-tracker-circle">3</div>
-                            <div class="mem-tracker-line"></div>
+                            <div class="mem-tracker-circle #{loanStep == 3 ? 'current' : (loanStep > 3 ? 'done' : '')}">
+                                <h:outputText value="3" rendered="#{loanStep &lt;= 3}"/>
+                                <i class="fa-solid fa-check" style="font-size:0.65rem; display:#{loanStep > 3 ? 'block' : 'none'};"></i>
+                            </div>
+                            <div class="mem-tracker-line #{loanStep > 3 ? 'done' : ''}"></div>
                             <div class="mem-tracker-text">
                                 <div class="mem-tracker-title">Apply for Loan</div>
                                 <div class="mem-tracker-desc">Max 3x your savings balance</div>
                             </div>
                         </div>
                         <div class="mem-tracker-step">
-                            <div class="mem-tracker-circle">4</div>
-                            <div class="mem-tracker-line"></div>
+                            <div class="mem-tracker-circle #{loanStep == 4 ? 'current' : (loanStep > 4 ? 'done' : '')}">
+                                <h:outputText value="4" rendered="#{loanStep &lt;= 4}"/>
+                                <i class="fa-solid fa-check" style="font-size:0.65rem; display:#{loanStep > 4 ? 'block' : 'none'};"></i>
+                            </div>
+                            <div class="mem-tracker-line #{loanStep > 4 ? 'done' : ''}"></div>
                             <div class="mem-tracker-text">
                                 <div class="mem-tracker-title">Approval Decision</div>
                                 <div class="mem-tracker-desc">Admin reviews your application</div>
                             </div>
                         </div>
                         <div class="mem-tracker-step">
-                            <div class="mem-tracker-circle">5</div>
+                            <div class="mem-tracker-circle #{loanStep == 5 ? 'current' : ''}">5</div>
                             <div class="mem-tracker-text">
                                 <div class="mem-tracker-title">Repay Loan</div>
                                 <div class="mem-tracker-desc">10% flat rate on principal</div>
@@ -154,11 +162,40 @@
                     </h:form>
                 </div>
                 <div class="mem-card-body" style="padding:0 1.5rem 1rem;">
-                    <div class="mem-empty">
-                        <i class="fa-solid fa-receipt"></i>
-                        <strong style="color:#374151;">No Transactions Yet</strong>
-                        <p>Your savings and loan transactions will appear here.</p>
-                    </div>
+                    <h:panelGroup rendered="#{empty savingsHistoryBean.transactions}">
+                        <div class="mem-empty">
+                            <i class="fa-solid fa-receipt"></i>
+                            <strong style="color:#374151;">No Transactions Yet</strong>
+                            <p>Your savings transactions will appear here.</p>
+                        </div>
+                    </h:panelGroup>
+                    
+                    <h:panelGroup rendered="#{not empty savingsHistoryBean.transactions}">
+                        <table class="mem-table" style="margin-top:0.5rem; font-size:0.85rem;">
+                            <tbody>
+                                <ui:repeat value="#{savingsHistoryBean.transactions.stream().limit(5).toList()}" var="tx">
+                                    <tr>
+                                        <td style="padding:0.75rem 0;">
+                                            <div style="font-weight:600; color:#111827;">#{tx.transactionType}</div>
+                                            <div style="font-size:0.75rem; color:#6b7280;">
+                                                <h:outputText value="#{tx.createdAt}">
+                                                    <f:convertDateTime type="localDateTime" pattern="dd MMM yy"/>
+                                                </h:outputText>
+                                            </div>
+                                        </td>
+                                        <td style="text-align:right; font-weight:700; color:#111827; padding:0.75rem 0;">
+                                            <span style="#{tx.transactionType == 'WITHDRAW' or tx.transactionType == 'TRANSFER_OUT' ? 'color:#dc2626;' : 'color:#16a34a;'}">
+                                                #{tx.transactionType == 'WITHDRAW' or tx.transactionType == 'TRANSFER_OUT' ? '-' : '+'}
+                                                <h:outputText value="#{tx.amount}">
+                                                    <f:convertNumber type="currency" currencySymbol="UGX " maxFractionDigits="0"/>
+                                                </h:outputText>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </ui:repeat>
+                            </tbody>
+                        </table>
+                    </h:panelGroup>
                 </div>
             </div>
 

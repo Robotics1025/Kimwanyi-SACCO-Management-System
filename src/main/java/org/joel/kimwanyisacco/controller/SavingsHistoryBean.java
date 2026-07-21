@@ -60,4 +60,20 @@ public class SavingsHistoryBean {
     public List<SavingsTransactionDto> getTransactions() {
         return transactions;
     }
+
+    public boolean globalFilterFunction(Object value, Object filter, java.util.Locale locale) {
+        String filterText = (filter == null) ? null : filter.toString().trim().toLowerCase();
+        if (filterText == null || filterText.isEmpty()) {
+            return true;
+        }
+
+        SavingsTransactionDto tx = (SavingsTransactionDto) value;
+
+        boolean matchesRef = tx.getReference() != null && tx.getReference().toLowerCase().contains(filterText);
+        boolean matchesType = tx.getTransactionType() != null && tx.getTransactionType().toLowerCase().contains(filterText);
+        boolean matchesDesc = tx.getDescription() != null && tx.getDescription().toLowerCase().contains(filterText);
+        boolean matchesAmt = tx.getAmount() != null && tx.getAmount().toPlainString().contains(filterText);
+
+        return matchesRef || matchesType || matchesDesc || matchesAmt;
+    }
 }

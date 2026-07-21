@@ -27,6 +27,7 @@ public class LoanApplicationBean {
     private Long memberId;
     private BigDecimal maxEligibleAmount = BigDecimal.ZERO;
     private boolean hasActiveLoan;
+    private String latestLoanStatus;
 
     private BigDecimal principalAmount;
     private Integer termMonths;
@@ -54,10 +55,18 @@ public class LoanApplicationBean {
         maxEligibleAmount = balance.multiply(new BigDecimal("3"));
 
         List<Loan> memberLoans = loanService.getLoansByMember(memberId);
-        hasActiveLoan = memberLoans.stream().anyMatch(loan ->
+        Loan activeLoan = memberLoans.stream().filter(loan ->
                 loan.getStatus() == LoanStatus.PENDING
                         || loan.getStatus() == LoanStatus.ACTIVE
-                        || loan.getStatus() == LoanStatus.OVERDUE);
+                        || loan.getStatus() == LoanStatus.OVERDUE)
+                .findFirst().orElse(null);
+
+        if (activeLoan != null) {
+            hasActiveLoan = true;
+            latestLoanStatus = activeLoan.getStatus().name();
+        } else {
+            hasActiveLoan = false;
+        }
     }
 
     public String apply() {
@@ -83,6 +92,10 @@ public class LoanApplicationBean {
 
     public boolean isHasActiveLoan() {
         return hasActiveLoan;
+    }
+
+    public String getLatestLoanStatus() {
+        return latestLoanStatus;
     }
 
     public BigDecimal getPrincipalAmount() {
