@@ -40,6 +40,7 @@ public class AuditLogServiceImpl implements AuditLogService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<AuditLogDto> search(AuditLogFilterForm filter) {
         // Fetch all newest-first and filter in memory to keep it simple
         // (volume is low per spec — no pagination needed)
@@ -70,6 +71,7 @@ public class AuditLogServiceImpl implements AuditLogService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<AuditLogDto> findRecent(int limit) {
         return auditLogRepository.findTop10ByOrderByCreatedAtDesc()
                 .stream()

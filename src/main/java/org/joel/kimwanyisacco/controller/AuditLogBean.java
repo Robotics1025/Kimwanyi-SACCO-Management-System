@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.joel.kimwanyisacco.dto.AuditLogDto;
 import org.joel.kimwanyisacco.dto.AuditLogFilterForm;
+import org.joel.kimwanyisacco.model.enums.AuditAction;
 import org.joel.kimwanyisacco.service.AuditLogService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
@@ -37,4 +38,6 @@ public class AuditLogBean {
 
     public List<AuditLogDto> getResults() { return results; }
     public void setResults(List<AuditLogDto> results) { this.results = results; }
+
+    public AuditAction[] getActionOptions() { return AuditAction.values(); }
 }

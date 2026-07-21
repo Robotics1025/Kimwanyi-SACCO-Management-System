@@ -18,13 +18,13 @@
                     
                     <div style="display: flex; flex-direction: column; gap: 0.25rem;">
                         <h:outputLabel value="Start Date" style="font-size: 0.8rem; font-weight: 600; color: #6b7280;"/>
-                        <p:datePicker value="#{auditLogBean.filter.startDate}" pattern="dd MMM yyyy" 
+                        <p:datePicker value="#{auditLogBean.filter.dateFrom}" pattern="dd MMM yyyy"
                                       styleClass="audit-filter-input" placeholder="Any" />
                     </div>
 
                     <div style="display: flex; flex-direction: column; gap: 0.25rem;">
                         <h:outputLabel value="End Date" style="font-size: 0.8rem; font-weight: 600; color: #6b7280;"/>
-                        <p:datePicker value="#{auditLogBean.filter.endDate}" pattern="dd MMM yyyy" 
+                        <p:datePicker value="#{auditLogBean.filter.dateTo}" pattern="dd MMM yyyy"
                                       styleClass="audit-filter-input" placeholder="Any" />
                     </div>
 
@@ -32,15 +32,7 @@
                         <h:outputLabel value="Action" style="font-size: 0.8rem; font-weight: 600; color: #6b7280;"/>
                         <h:selectOneMenu value="#{auditLogBean.filter.action}" style="padding: 0.5rem; border-radius: 0.4rem; border: 1px solid var(--border-color); background: white;">
                             <f:selectItem itemLabel="All Actions" itemValue="#{null}" />
-                            <f:selectItems value="#{['LOGIN_SUCCESS', 'LOGIN_FAILED', 'LOGOUT', 'MEMBER_REGISTERED', 'LOAN_APPLIED', 'LOAN_APPROVED', 'LOAN_REJECTED', 'LOAN_REPAID', 'SAVINGS_DEPOSITED', 'SAVINGS_WITHDRAWN', 'PASSWORD_CHANGED', 'USER_ACCOUNT_ENABLED', 'USER_ACCOUNT_DISABLED']}" var="act" itemLabel="#{act}" itemValue="#{act}" />
-                        </h:selectOneMenu>
-                    </div>
-                    
-                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                        <h:outputLabel value="Entity Type" style="font-size: 0.8rem; font-weight: 600; color: #6b7280;"/>
-                        <h:selectOneMenu value="#{auditLogBean.filter.entityType}" style="padding: 0.5rem; border-radius: 0.4rem; border: 1px solid var(--border-color); background: white;">
-                            <f:selectItem itemLabel="All Entities" itemValue="#{null}" />
-                            <f:selectItems value="#{['UserAccount', 'Member', 'Loan', 'SavingsAccount', 'Transaction']}" var="ent" itemLabel="#{ent}" itemValue="#{ent}" />
+                            <f:selectItems value="#{auditLogBean.actionOptions}" var="act" itemLabel="#{act}" itemValue="#{act}" />
                         </h:selectOneMenu>
                     </div>
 
