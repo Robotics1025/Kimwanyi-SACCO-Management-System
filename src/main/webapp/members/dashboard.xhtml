@@ -45,11 +45,11 @@
                 <i class="fa-solid fa-hand-holding-dollar mem-kpi-icon"></i>
                 <div class="mem-kpi-label">Outstanding Loan</div>
                 <div class="mem-kpi-value">
-                    <h:outputText value="#{dashboardBean.outstandingLoanBalance}">
+                    <h:outputText value="#{memberDashboardBean.outstandingLoanBalance}">
                         <f:convertNumber type="currency" currencySymbol="UGX " maxFractionDigits="0"/>
                     </h:outputText>
                 </div>
-                <div class="mem-kpi-sub">#{dashboardBean.hasActiveLoan ? dashboardBean.activeLoanStatus : 'No active loan'}</div>
+                <div class="mem-kpi-sub">#{memberDashboardBean.hasActiveLoan ? memberDashboardBean.activeLoanStatus : 'No active loan'}</div>
             </div>
 
             <div class="mem-kpi-card status">
@@ -94,7 +94,7 @@
             <div class="mem-card" style="margin-bottom:0;">
                 <div class="mem-card-header">
                     <span class="mem-card-title"><i class="fa-solid fa-route" style="color:#f97316; margin-right:6px;"></i> Loan Journey Tracker</span>
-                    <span style="font-size:0.75rem; background:#fff7ed; color:#f97316; font-weight:700; padding:2px 8px; border-radius:4px;">Step #{dashboardBean.loanJourneyStep} of 5</span>
+                    <span style="font-size:0.75rem; background:#fff7ed; color:#f97316; font-weight:700; padding:2px 8px; border-radius:4px;">Step #{memberDashboardBean.loanJourneyStep} of 5</span>
                 </div>
                 <div class="mem-card-body">
                     <div class="mem-tracker">
@@ -115,29 +115,29 @@
                             </div>
                         </div>
                         <div class="mem-tracker-step">
-                            <div class="mem-tracker-circle #{dashboardBean.loanJourneyStep == '3' ? 'current' : 'done'}">
-                                <h:outputText value="3" rendered="#{dashboardBean.loanJourneyStep == '3'}"/>
-                                <i class="fa-solid fa-check" style="font-size:0.65rem;" rendered="#{dashboardBean.loanJourneyStep != '3'}"></i>
+                            <div class="mem-tracker-circle #{memberDashboardBean.loanJourneyStep == '3' ? 'current' : 'done'}">
+                                <h:outputText value="3" rendered="#{memberDashboardBean.loanJourneyStep == '3'}"/>
+                                <i class="fa-solid fa-check" style="font-size:0.65rem;" rendered="#{memberDashboardBean.loanJourneyStep != '3'}"></i>
                             </div>
-                            <div class="mem-tracker-line #{dashboardBean.loanJourneyStep != '3' ? 'done' : ''}"></div>
+                            <div class="mem-tracker-line #{memberDashboardBean.loanJourneyStep != '3' ? 'done' : ''}"></div>
                             <div class="mem-tracker-text">
                                 <div class="mem-tracker-title">Apply for Loan</div>
                                 <div class="mem-tracker-desc">Max 3x your savings balance</div>
                             </div>
                         </div>
                         <div class="mem-tracker-step">
-                            <div class="mem-tracker-circle #{dashboardBean.loanJourneyStep == '4' ? 'current' : (dashboardBean.loanJourneyStep == '5' ? 'done' : '')}">
-                                <h:outputText value="4" rendered="#{dashboardBean.loanJourneyStep != '5'}"/>
-                                <i class="fa-solid fa-check" style="font-size:0.65rem;" rendered="#{dashboardBean.loanJourneyStep == '5'}"></i>
+                            <div class="mem-tracker-circle #{memberDashboardBean.loanJourneyStep == '4' ? 'current' : (memberDashboardBean.loanJourneyStep == '5' ? 'done' : '')}">
+                                <h:outputText value="4" rendered="#{memberDashboardBean.loanJourneyStep != '5'}"/>
+                                <i class="fa-solid fa-check" style="font-size:0.65rem;" rendered="#{memberDashboardBean.loanJourneyStep == '5'}"></i>
                             </div>
-                            <div class="mem-tracker-line #{dashboardBean.loanJourneyStep == '5' ? 'done' : ''}"></div>
+                            <div class="mem-tracker-line #{memberDashboardBean.loanJourneyStep == '5' ? 'done' : ''}"></div>
                             <div class="mem-tracker-text">
                                 <div class="mem-tracker-title">Approval Decision</div>
                                 <div class="mem-tracker-desc">Admin reviews your application</div>
                             </div>
                         </div>
                         <div class="mem-tracker-step">
-                            <div class="mem-tracker-circle #{dashboardBean.loanJourneyStep == '5' ? 'current' : ''}">5</div>
+                            <div class="mem-tracker-circle #{memberDashboardBean.loanJourneyStep == '5' ? 'current' : ''}">5</div>
                             <div class="mem-tracker-text">
                                 <div class="mem-tracker-title">Repay Loan</div>
                                 <div class="mem-tracker-desc">10% flat rate on principal</div>
@@ -160,7 +160,7 @@
                     <h:link outcome="/savings/account" style="font-size:0.8rem; color:#dc2626; text-decoration:none; font-weight:600;">View All</h:link>
                 </div>
                 <div class="mem-card-body" style="padding:0 1.5rem 1rem;">
-                    <h:panelGroup rendered="#{empty dashboardBean.recentActivity}">
+                    <h:panelGroup rendered="#{empty memberDashboardBean.recentActivity}">
                         <div class="mem-empty">
                             <i class="fa-solid fa-receipt"></i>
                             <strong style="color:#374151;">No Activity Yet</strong>
@@ -168,9 +168,9 @@
                         </div>
                     </h:panelGroup>
 
-                    <h:panelGroup rendered="#{not empty dashboardBean.recentActivity}">
+                    <h:panelGroup rendered="#{not empty memberDashboardBean.recentActivity}">
                         <div class="activity-feed">
-                            <ui:repeat value="#{dashboardBean.recentActivity}" var="item">
+                            <ui:repeat value="#{memberDashboardBean.recentActivity}" var="item">
                                 <div class="activity-item">
                                     <div class="activity-icon" style="background:#{item.categoryBg}; color:#{item.categoryColor};">
                                         <i class="#{item.categoryIcon}"></i>
