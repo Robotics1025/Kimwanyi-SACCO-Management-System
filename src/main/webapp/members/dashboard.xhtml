@@ -22,8 +22,7 @@
                 <p:commandButton value="Apply for Loan" icon="fa fa-plus"
                                  styleClass="mem-btn mem-btn-primary"
                                  oncomplete="PF('dlgLoan').show()"
-                                 update="@none"
-                                 type="button"/>
+                                 update="@none"/>
             </h:form>
         </div>
 
@@ -81,8 +80,7 @@
                             <p:commandButton value="Apply Now" icon="fa fa-plus"
                                              styleClass="mem-btn mem-btn-primary"
                                              oncomplete="PF('dlgLoan').show()"
-                                             update="@none"
-                                             type="button"/>
+                                             update="@none"/>
                         </h:form>
                     </div>
                 </div>
@@ -152,8 +150,7 @@
                     <h:form style="margin:0;">
                         <p:commandButton value="View All" styleClass="" style="font-size:0.8rem; color:#dc2626; background:none; border:none; cursor:pointer; font-weight:600; padding:0;"
                                          oncomplete="PF('dlgSavings').show()"
-                                         update="savingsDialogContent"
-                                         type="button"/>
+                                         update="savingsDialogContent"/>
                     </h:form>
                 </div>
                 <div class="mem-card-body" style="padding:0 1.5rem 1rem;">
@@ -177,8 +174,7 @@
                         <p:commandButton styleClass="mem-qa-transfer"
                                          style="background:#fef2f2;"
                                          oncomplete="PF('dlgLoan').show()"
-                                         update="@none"
-                                         type="button">
+                                         update="@none">
                             <div style="width:36px; height:36px; border-radius:0.4rem; background:#dc2626; color:#fff; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
                                 <i class="fa-solid fa-file-signature"></i>
                             </div>
@@ -195,8 +191,7 @@
                         <p:commandButton styleClass="mem-qa-transfer"
                                          style="background:#faf5ff;"
                                          oncomplete="PF('dlgSavings').show()"
-                                         update="savingsDialogContent"
-                                         type="button">
+                                         update="savingsDialogContent">
                             <div style="width:36px; height:36px; border-radius:0.4rem; background:#7c3aed; color:#fff; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
                                 <i class="fa-solid fa-piggy-bank"></i>
                             </div>
@@ -208,12 +203,28 @@
                         </p:commandButton>
                     </h:form>
 
+                    <!-- Deposit Savings → dialog -->
+                    <h:form style="margin:0;">
+                        <p:commandButton styleClass="mem-qa-transfer"
+                                         style="background:#f0fdf4;"
+                                         oncomplete="PF('dlgDeposit').show()"
+                                         update="@none">
+                            <div style="width:36px; height:36px; border-radius:0.4rem; background:#16a34a; color:#fff; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                <i class="fa-solid fa-money-bill-wave"></i>
+                            </div>
+                            <div>
+                                <div style="font-weight:700; font-size:0.85rem;">Deposit Savings</div>
+                                <div style="font-size:0.72rem; color:#9ca3af;">Add money to your account</div>
+                            </div>
+                            <i class="fa-solid fa-chevron-right" style="margin-left:auto; color:#d1d5db; font-size:0.7rem;"></i>
+                        </p:commandButton>
+                    </h:form>
+
                     <!-- Internal Transfer → dialog -->
                     <h:form style="margin:0;">
                         <p:commandButton styleClass="mem-qa-transfer"
                                          oncomplete="PF('dlgTransfer').show()"
-                                         update="@none"
-                                         type="button">
+                                         update="@none">
                             <div class="mem-transfer-icon">
                                 <i class="fa-solid fa-arrow-right-arrow-left"></i>
                             </div>
@@ -442,6 +453,47 @@
                                          action="#{internalTransferBean.transfer}"
                                          update="transferDialogContent growl"
                                          process="transferOverlayForm"/>
+                    </div>
+                </h:form>
+            </p:outputPanel>
+        </p:dialog>
+
+        <!-- ═══════════════════════════════════════════════════
+             OVERLAY 4: Deposit Savings Dialog
+        ═══════════════════════════════════════════════════ -->
+        <p:dialog header="Deposit Savings"
+                  widgetVar="dlgDeposit"
+                  modal="true"
+                  resizable="false"
+                  closable="true"
+                  style="width:400px; max-width:96vw;">
+            <p:outputPanel id="depositDialogContent">
+                <div class="mem-info-box" style="background:#f0fdf4; border-color:#bbf7d0; color:#166534;">
+                    Add funds to your savings account.
+                </div>
+
+                <h:form id="depositOverlayForm">
+                    <div class="mem-field">
+                        <h:outputLabel for="depAmt" value="Deposit Amount (UGX)"/>
+                        <h:inputText id="depAmt"
+                                     value="#{depositBean.amount}"
+                                     placeholder="0"
+                                     required="true"
+                                     requiredMessage="Deposit amount is required"
+                                     styleClass="mem-input">
+                            <f:convertNumber type="number" maxFractionDigits="2"/>
+                        </h:inputText>
+                        <h:message for="depAmt" styleClass="mem-error"/>
+                    </div>
+                    <div class="mem-dialog-actions">
+                        <button type="button" class="mem-btn-cancel" onclick="PF('dlgDeposit').hide();">Cancel</button>
+                        <p:commandButton value="Deposit"
+                                         icon="fa fa-piggy-bank"
+                                         styleClass="mem-btn mem-btn-primary"
+                                         style="background:#16a34a; border-color:#16a34a;"
+                                         action="#{depositBean.deposit}"
+                                         update="depositDialogContent growl @(.mem-kpi-grid) @(.mem-card-body)"
+                                         process="depositOverlayForm"/>
                     </div>
                 </h:form>
             </p:outputPanel>

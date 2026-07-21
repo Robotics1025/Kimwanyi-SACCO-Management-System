@@ -44,8 +44,33 @@ public class SavingsServiceImpl implements SavingsService {
     }
 
     @Override
+    @Transactional
     public SavingsTransactionDto deposit(DepositForm form) {
-        throw new UnsupportedOperationException("not implemented");
+        if (form.getAmount() == null || form.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Deposit amount must be greater than zero");
+        }
+
+        SavingsAccount account = savingsAccountRepository.findById(form.getSavingsAccountId())
+                .orElseThrow(() -> new ResourceNotFoundException("Savings account not found"));
+
+        BigDecimal balanceBefore = account.getBalance();
+        BigDecimal balanceAfter = balanceBefore.add(form.getAmount());
+
+        account.setBalance(balanceAfter);
+        savingsAccountRepository.save(account);
+
+        SavingsTransaction tx = new SavingsTransaction();
+        tx.setSavingsAccount(account);
+        tx.setReference("DEP-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+        tx.setType(TransactionType.DEPOSIT);
+        tx.setAmount(form.getAmount());
+        tx.setBalanceBefore(balanceBefore);
+        tx.setBalanceAfter(balanceAfter);
+        tx.setDescription("Member deposit");
+        tx.setCreatedAt(LocalDateTime.now());
+        savingsTransactionRepository.save(tx);
+
+        return savingsTransactionConverter.toDto(tx);
     }
 
     @Override
