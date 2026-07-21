@@ -1,5 +1,6 @@
 package org.joel.kimwanyisacco.service;
 
+import org.joel.kimwanyisacco.common.util.MembershipNumberGenerator;
 import org.joel.kimwanyisacco.common.util.converter.MemberConverter;
 import org.joel.kimwanyisacco.dto.MemberRegistrationForm;
 import org.joel.kimwanyisacco.model.Member;
@@ -17,17 +18,20 @@ public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
     private final MemberConverter memberConverter;
     private final PasswordEncoder passwordEncoder;
+    private final MembershipNumberGenerator membershipNumberGenerator;
 
     public MemberServiceImpl(
             UserAccountRepository userAccountRepository,
             MemberRepository memberRepository,
             MemberConverter memberConverter,
-            PasswordEncoder passwordEncoder
+            PasswordEncoder passwordEncoder,
+            MembershipNumberGenerator membershipNumberGenerator
     ) {
         this.userAccountRepository = userAccountRepository;
         this.memberRepository = memberRepository;
         this.memberConverter = memberConverter;
         this.passwordEncoder = passwordEncoder;
+        this.membershipNumberGenerator = membershipNumberGenerator;
     }
 
     @Override
@@ -71,7 +75,7 @@ public class MemberServiceImpl implements MemberService {
                 userAccountRepository.save(userAccount);
 
         String membershipNumber =
-                generateMembershipNumber();
+                membershipNumberGenerator.generate();
 
         Member member =
                 memberConverter.toMember(
@@ -132,9 +136,5 @@ public class MemberServiceImpl implements MemberService {
                     "National ID is required"
             );
         }
-    }
-
-    private String generateMembershipNumber() {
-        return "KIM-" + System.currentTimeMillis();
     }
 }

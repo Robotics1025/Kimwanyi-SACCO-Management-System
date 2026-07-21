@@ -40,7 +40,3 @@ build/
 
 ### Mac OS ###
 .DS_Store
-
-### Tailwind CSS ###
-bin/tailwindcss
-src/main/webapp/resources/css/app.generated.css

@@ -8,49 +8,189 @@
         <ui:insert name="title">Kimwanyi SACCO</ui:insert>
     </title>
 
-    <h:outputStylesheet library="css" name="app.generated.css"/>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            min-height: 100vh;
+            background: #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            padding: 1.5rem;
+        }
+
+        .login-card {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            width: 100%;
+            max-width: 960px;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.18);
+            background: #ffffff;
+        }
+
+        /* ── LEFT PANEL ── */
+        .left-panel {
+            background: #ffffff;
+            padding: 3rem 3.5rem;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .logo-name {
+            font-size: 1.2rem;
+            font-weight: 900;
+            letter-spacing: 0.05em;
+            color: #111827;
+        }
+
+        .logo-name span { color: #dc2626; }
+
+        .logo-tagline {
+            font-size: 0.7rem;
+            color: #9ca3af;
+            margin-top: 2px;
+        }
+
+        /* ── RIGHT PANEL ── */
+        .right-panel {
+            position: relative;
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            padding: 3rem;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 600px;
+            overflow: hidden;
+        }
+
+        .right-watermark {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.08;
+            pointer-events: none;
+        }
+
+        .dot-grid {
+            position: absolute;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 5px;
+            opacity: 0.28;
+        }
+
+        .dot-grid.top-left  { top: 2rem;    left: 2rem; }
+        .dot-grid.bot-right { bottom: 2rem; right: 2rem; }
+
+        .dot {
+            width: 5px; height: 5px;
+            border-radius: 50%;
+            background: white;
+            display: block;
+        }
+
+        .right-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .icon-circle {
+            width: 5.5rem;
+            height: 5.5rem;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        }
+    </style>
 </h:head>
 
-<h:body styleClass="min-h-screen bg-white">
+<h:body>
 
-    <main class="flex min-h-screen items-center justify-center p-6">
+    <div class="login-card">
 
-        <section class="grid w-full max-w-6xl overflow-hidden
-                        rounded-3xl bg-white shadow-2xl
-                        lg:grid-cols-2">
+        <!-- ===== LEFT PANEL ===== -->
+        <div class="left-panel">
 
-            <!-- Left side -->
-            <div class="p-10 lg:p-14">
-
-                <div class="mb-14">
-                    <h1 class="text-3xl font-bold">
-                        KIMWANYI
-                        <span class="text-red-600">SACCO</span>
-                    </h1>
-
-                    <p class="text-gray-500">
-                        Secure. Reliable. Together.
-                    </p>
+            <!-- Logo -->
+            <div class="logo-area">
+                <svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="26" cy="14" r="7" fill="#dc2626"/>
+                    <path d="M12 44c0-7.732 6.268-14 14-14s14 6.268 14 14" stroke="#dc2626" stroke-width="3.5" stroke-linecap="round"/>
+                    <circle cx="10" cy="18" r="5" fill="#dc2626" opacity="0.65"/>
+                    <path d="M2 41c0-4.5 3.5-8 8-9" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round" opacity="0.65"/>
+                    <circle cx="42" cy="18" r="5" fill="#dc2626" opacity="0.65"/>
+                    <path d="M50 41c0-4.5-3.5-8-8-9" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round" opacity="0.65"/>
+                </svg>
+                <div>
+                    <div class="logo-name">KIMWANYI <span>SACCO</span></div>
+                    <p class="logo-tagline">Secure. Reliable. Together.</p>
                 </div>
-
-                <ui:insert name="formContent"/>
-
             </div>
 
-            <!-- Right side -->
-            <div class="relative hidden min-h-[750px]
-                        bg-red-600 p-12 text-white lg:flex
-                        lg:items-center lg:justify-center">
+            <ui:insert name="formContent"/>
 
-                <div class="relative z-10 text-center">
-                    <ui:insert name="sideContent"/>
-                </div>
+        </div>
 
+        <!-- ===== RIGHT PANEL ===== -->
+        <div class="right-panel">
+
+            <!-- Watermark -->
+            <div class="right-watermark">
+                <svg width="380" height="380" viewBox="0 0 100 100" fill="white" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M50 4 L92 26 L92 72 Q50 96 8 72 L8 26 Z"/>
+                    <rect x="37" y="54" width="26" height="42" fill="white"/>
+                    <rect x="27" y="34" width="46" height="6" rx="2" fill="white"/>
+                </svg>
             </div>
 
-        </section>
+            <!-- Dots -->
+            <div class="dot-grid top-left">
+                <span class="dot"/><span class="dot"/><span class="dot"/><span class="dot"/><span class="dot"/>
+                <span class="dot"/><span class="dot"/><span class="dot"/><span class="dot"/><span class="dot"/>
+                <span class="dot"/><span class="dot"/><span class="dot"/><span class="dot"/><span class="dot"/>
+            </div>
+            <div class="dot-grid bot-right">
+                <span class="dot"/><span class="dot"/><span class="dot"/><span class="dot"/><span class="dot"/>
+                <span class="dot"/><span class="dot"/><span class="dot"/><span class="dot"/><span class="dot"/>
+                <span class="dot"/><span class="dot"/><span class="dot"/><span class="dot"/><span class="dot"/>
+            </div>
 
-    </main>
+            <div class="right-content">
+                <!-- Circle icon -->
+                <div class="icon-circle">
+                    <svg width="44" height="44" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="26" cy="14" r="7" fill="#dc2626"/>
+                        <path d="M12 44c0-7.732 6.268-14 14-14s14 6.268 14 14" stroke="#dc2626" stroke-width="3.5" stroke-linecap="round"/>
+                        <circle cx="10" cy="18" r="5" fill="#dc2626" opacity="0.65"/>
+                        <path d="M2 41c0-4.5 3.5-8 8-9" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round" opacity="0.65"/>
+                        <circle cx="42" cy="18" r="5" fill="#dc2626" opacity="0.65"/>
+                        <path d="M50 41c0-4.5-3.5-8-8-9" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round" opacity="0.65"/>
+                    </svg>
+                </div>
+
+                <ui:insert name="sideContent"/>
+            </div>
+
+        </div>
+
+    </div>
 
 </h:body>
 </html>

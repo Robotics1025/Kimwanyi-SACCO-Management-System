@@ -11,125 +11,256 @@
 
     <ui:define name="formContent">
 
-        <h2 class="text-4xl font-bold text-gray-900">
+        <style>
+            .register-heading {
+                font-size: 2rem;
+                font-weight: 800;
+                color: #111827;
+            }
+            .register-subtitle {
+                margin-top: 0.4rem;
+                color: #6b7280;
+            }
+            .register-form {
+                margin-top: 2rem;
+                display: flex;
+                flex-direction: column;
+                gap: 1.25rem;
+            }
+            .glow-toast {
+                position: fixed;
+                top: 1.5rem;
+                right: 1.5rem;
+                z-index: 1000;
+                display: flex;
+                flex-direction: column;
+                gap: 0.75rem;
+                max-width: 360px;
+                margin: 0;
+                padding: 0;
+                list-style: none;
+            }
+            .glow-toast:empty {
+                display: none;
+            }
+            .glow-toast li {
+                position: relative;
+                border-left: 4px solid #f87171;
+                border-radius: 0.85rem;
+                background: #1f2937;
+                padding: 1rem 1.25rem;
+                color: #fff;
+                font-size: 0.875rem;
+                line-height: 1.4;
+                box-shadow:
+                        0 0 0 1px rgba(220,38,38,0.4),
+                        0 0 18px 2px rgba(220,38,38,0.55),
+                        0 0 40px 6px rgba(220,38,38,0.25);
+                animation: glow-toast-in 0.35s ease-out, glow-pulse 2.2s ease-in-out infinite;
+            }
+            @keyframes glow-toast-in {
+                from { transform: translateX(30px); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes glow-pulse {
+                0%, 100% {
+                    box-shadow:
+                            0 0 0 1px rgba(220,38,38,0.4),
+                            0 0 18px 2px rgba(220,38,38,0.55),
+                            0 0 40px 6px rgba(220,38,38,0.25);
+                }
+                50% {
+                    box-shadow:
+                            0 0 0 1px rgba(220,38,38,0.6),
+                            0 0 26px 4px rgba(220,38,38,0.75),
+                            0 0 55px 10px rgba(220,38,38,0.4);
+                }
+            }
+            .register-grid {
+                display: grid;
+                gap: 1.25rem;
+            }
+            @media (min-width: 768px) {
+                .register-grid {
+                    grid-template-columns: 1fr 1fr;
+                }
+            }
+            .register-field label {
+                display: block;
+                margin-bottom: 0.5rem;
+                font-weight: 600;
+                color: #1f2937;
+            }
+            .register-input {
+                width: 100%;
+                border-radius: 0.75rem;
+                border: 1px solid #d1d5db;
+                padding: 0.75rem 1rem;
+                outline: none;
+                transition: border-color 0.2s, box-shadow 0.2s;
+            }
+            .register-input:focus {
+                border-color: #dc2626;
+                box-shadow: 0 0 0 3px rgba(220,38,38,0.12);
+            }
+            .register-error {
+                display: block;
+                margin-top: 0.25rem;
+                font-size: 0.875rem;
+                color: #dc2626;
+            }
+            .btn-register-submit {
+                width: 100%;
+                cursor: pointer;
+                border: none;
+                border-radius: 0.75rem;
+                background: #dc2626;
+                padding: 1rem 1.5rem;
+                font-weight: 700;
+                color: white;
+                transition: background 0.2s;
+            }
+            .btn-register-submit:hover {
+                background: #b91c1c;
+            }
+            .register-footer {
+                border-top: 1px solid #e5e7eb;
+                padding-top: 1.25rem;
+                text-align: center;
+            }
+            .register-footer span {
+                color: #4b5563;
+            }
+            .register-footer a {
+                margin-left: 0.5rem;
+                font-weight: 700;
+                color: #dc2626;
+                text-decoration: none;
+            }
+            .register-footer a:hover {
+                color: #b91c1c;
+            }
+        </style>
+
+        <h2 class="register-heading">
             Create Account
         </h2>
 
-        <p class="mt-2 text-gray-500">
+        <p class="register-subtitle">
             Register as a Kimwanyi SACCO member
         </p>
 
         <h:form id="registrationForm"
-                styleClass="mt-8 space-y-5">
+                styleClass="register-form">
 
             <h:messages
-                    globalOnly="true"
-                    styleClass="block rounded-lg bg-red-50 p-3 text-red-700"/>
+                    globalOnly="false"
+                    layout="list"
+                    styleClass="glow-toast"/>
 
-            <div class="grid gap-5 md:grid-cols-2">
+            <div class="register-grid">
 
-                <div>
+                <div class="register-field">
                     <h:outputLabel
                             for="firstName"
-                            value="First Name"
-                            styleClass="mb-2 block font-semibold text-gray-800"/>
+                            value="First Name"/>
 
                     <h:inputText
                             id="firstName"
                             value="#{memberRegistrationBean.form.firstName}"
+                            label="First Name"
                             required="true"
                             requiredMessage="First name is required"
-                            styleClass="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-red-500 focus:ring-2 focus:ring-red-100"/>
+                            styleClass="register-input"/>
 
                     <h:message
                             for="firstName"
-                            styleClass="mt-1 block text-sm text-red-600"/>
+                            styleClass="register-error"/>
                 </div>
 
-                <div>
+                <div class="register-field">
                     <h:outputLabel
                             for="lastName"
-                            value="Last Name"
-                            styleClass="mb-2 block font-semibold text-gray-800"/>
+                            value="Last Name"/>
 
                     <h:inputText
                             id="lastName"
                             value="#{memberRegistrationBean.form.lastName}"
+                            label="Last Name"
                             required="true"
                             requiredMessage="Last name is required"
-                            styleClass="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-red-500 focus:ring-2 focus:ring-red-100"/>
+                            styleClass="register-input"/>
 
                     <h:message
                             for="lastName"
-                            styleClass="mt-1 block text-sm text-red-600"/>
+                            styleClass="register-error"/>
                 </div>
 
             </div>
 
-            <div>
+            <div class="register-field">
                 <h:outputLabel
                         for="username"
-                        value="Username"
-                        styleClass="mb-2 block font-semibold text-gray-800"/>
+                        value="Username"/>
 
                 <h:inputText
                         id="username"
                         value="#{memberRegistrationBean.form.username}"
+                        label="Username"
                         required="true"
                         requiredMessage="Username is required"
-                        styleClass="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-red-500 focus:ring-2 focus:ring-red-100"/>
+                        styleClass="register-input"/>
 
                 <h:message
                         for="username"
-                        styleClass="mt-1 block text-sm text-red-600"/>
+                        styleClass="register-error"/>
             </div>
 
-            <div>
+            <div class="register-field">
                 <h:outputLabel
                         for="email"
-                        value="Email Address"
-                        styleClass="mb-2 block font-semibold text-gray-800"/>
+                        value="Email Address"/>
 
                 <h:inputText
                         id="email"
                         value="#{memberRegistrationBean.form.email}"
+                        label="Email Address"
                         required="true"
                         requiredMessage="Email is required"
-                        styleClass="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-red-500 focus:ring-2 focus:ring-red-100">
+                        styleClass="register-input">
 
                     <f:validateRegex
-                            pattern="^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$"/>
+                            pattern="^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$"
+                            message="Enter a valid email address (e.g. name@example.com)"/>
 
                 </h:inputText>
 
                 <h:message
                         for="email"
-                        styleClass="mt-1 block text-sm text-red-600"/>
+                        styleClass="register-error"/>
             </div>
 
-            <div>
+            <div class="register-field">
                 <h:outputLabel
                         for="nationalId"
-                        value="National ID"
-                        styleClass="mb-2 block font-semibold text-gray-800"/>
+                        value="National ID"/>
 
                 <h:inputText
                         id="nationalId"
                         value="#{memberRegistrationBean.form.nationalId}"
                         required="true"
                         requiredMessage="National ID is required"
-                        styleClass="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-red-500 focus:ring-2 focus:ring-red-100"/>
+                        styleClass="register-input"/>
 
                 <h:message
                         for="nationalId"
-                        styleClass="mt-1 block text-sm text-red-600"/>
+                        styleClass="register-error"/>
             </div>
 
-            <div>
+            <div class="register-field">
                 <h:outputLabel
                         for="password"
-                        value="Password"
-                        styleClass="mb-2 block font-semibold text-gray-800"/>
+                        value="Password"/>
 
                 <h:inputSecret
                         id="password"
@@ -137,7 +268,7 @@
                         required="true"
                         requiredMessage="Password is required"
                         redisplay="true"
-                        styleClass="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-red-500 focus:ring-2 focus:ring-red-100">
+                        styleClass="register-input">
 
                     <f:validateLength minimum="8"/>
 
@@ -145,24 +276,23 @@
 
                 <h:message
                         for="password"
-                        styleClass="mt-1 block text-sm text-red-600"/>
+                        styleClass="register-error"/>
             </div>
 
             <h:commandButton
                     value="CREATE MEMBER ACCOUNT"
                     action="#{memberRegistrationBean.register}"
-                    styleClass="w-full cursor-pointer rounded-xl bg-red-600 px-6 py-4 font-bold text-white transition hover:bg-red-700"/>
+                    styleClass="btn-register-submit"/>
 
-            <div class="border-t border-gray-200 pt-5 text-center">
+            <div class="register-footer">
 
-                <span class="text-gray-600">
+                <span>
                     Already have an account?
                 </span>
 
                 <h:link
                         value="SIGN IN"
-                        outcome="/login.xhtml"
-                        styleClass="ml-2 font-bold text-red-600 hover:text-red-700"/>
+                        outcome="/login.xhtml"/>
 
             </div>
 
@@ -172,15 +302,56 @@
 
     <ui:define name="sideContent">
 
-        <div class="mx-auto flex h-28 w-28 items-center justify-center rounded-full bg-white text-5xl text-red-600 shadow-lg">
+        <style>
+            .register-side-icon {
+                margin: 0 auto;
+                display: flex;
+                height: 7rem;
+                width: 7rem;
+                align-items: center;
+                justify-content: center;
+                border-radius: 50%;
+                background: white;
+                font-size: 3rem;
+                color: #dc2626;
+                box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            }
+            .register-side-heading {
+                margin-top: 2rem;
+                font-size: 1.8rem;
+                font-weight: 800;
+            }
+            .register-side-text {
+                margin-top: 1.5rem;
+                font-size: 1.05rem;
+                line-height: 1.6;
+            }
+            .btn-back-to-login {
+                display: inline-block;
+                margin-top: 2.5rem;
+                border: 2px solid white;
+                border-radius: 0.75rem;
+                padding: 1rem 2.5rem;
+                font-weight: 700;
+                color: white;
+                text-decoration: none;
+                transition: background 0.2s, color 0.2s;
+            }
+            .btn-back-to-login:hover {
+                background: white;
+                color: #dc2626;
+            }
+        </style>
+
+        <div class="register-side-icon">
             +
         </div>
 
-        <h2 class="mt-8 text-4xl font-bold">
+        <h2 class="register-side-heading">
             Join Kimwanyi SACCO
         </h2>
 
-        <p class="mt-6 text-lg leading-8">
+        <p class="register-side-text">
             Create your member account and begin accessing savings,
             loans and account services.
         </p>
@@ -188,7 +359,7 @@
         <h:link
                 value="BACK TO LOGIN"
                 outcome="/login.xhtml"
-                styleClass="mt-10 inline-block rounded-xl border-2 border-white px-10 py-4 font-bold text-white transition hover:bg-white hover:text-red-600"/>
+                styleClass="btn-back-to-login"/>
 
     </ui:define>
 
