@@ -173,7 +173,7 @@
                     <h:panelGroup rendered="#{not empty savingsHistoryBean.transactions}">
                         <table class="mem-table" style="margin-top:0.5rem; font-size:0.85rem;">
                             <tbody>
-                                <ui:repeat value="#{savingsHistoryBean.transactions.stream().limit(5).toList()}" var="tx">
+                                <ui:repeat value="#{savingsHistoryBean.recentTransactions}" var="tx">
                                     <tr>
                                         <td style="padding:0.75rem 0;">
                                             <div style="font-weight:600; color:#111827;">#{tx.transactionType}</div>

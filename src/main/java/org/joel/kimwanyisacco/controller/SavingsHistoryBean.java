@@ -61,6 +61,13 @@ public class SavingsHistoryBean {
         return transactions;
     }
 
+    public List<SavingsTransactionDto> getRecentTransactions() {
+        if (transactions == null || transactions.isEmpty()) {
+            return List.of();
+        }
+        return transactions.subList(0, Math.min(5, transactions.size()));
+    }
+
     public boolean globalFilterFunction(Object value, Object filter, java.util.Locale locale) {
         String filterText = (filter == null) ? null : filter.toString().trim().toLowerCase();
         if (filterText == null || filterText.isEmpty()) {
