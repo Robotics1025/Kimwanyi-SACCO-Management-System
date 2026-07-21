@@ -28,11 +28,14 @@ class AuthenticationServiceImplTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
+    @Mock
+    private AuditLogService auditLogService;
+
     private AuthenticationServiceImpl authenticationService;
 
     @BeforeEach
     void setUp() {
-        authenticationService = new AuthenticationServiceImpl(userAccountRepository, passwordEncoder);
+        authenticationService = new AuthenticationServiceImpl(userAccountRepository, passwordEncoder, auditLogService);
     }
 
     private UserAccount buildEnabledAccount() {

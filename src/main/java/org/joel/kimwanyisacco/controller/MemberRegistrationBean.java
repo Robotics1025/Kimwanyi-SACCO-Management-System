@@ -27,18 +27,15 @@ public class MemberRegistrationBean {
         try {
             memberService.registerMember(form);
 
-            FacesContext.getCurrentInstance()
-                    .addMessage(
-                            null,
-                            new FacesMessage(
-                                    FacesMessage.SEVERITY_INFO,
-                                    "Success",
-                                    "Member registered successfully"
-                            )
-                    );
+            FacesContext fc = FacesContext.getCurrentInstance();
+            fc.getExternalContext().getFlash().setKeepMessages(true);
+            fc.addMessage(null, new FacesMessage(
+                    FacesMessage.SEVERITY_INFO,
+                    "Account Created!",
+                    "Your account was created successfully. Please sign in."
+            ));
 
             form = new MemberRegistrationForm();
-
             return "/login.xhtml?faces-redirect=true";
 
         } catch (IllegalArgumentException exception) {

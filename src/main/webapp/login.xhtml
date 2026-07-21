@@ -11,125 +11,13 @@
 
     <ui:define name="formContent">
 
-        <style>
-            .form-heading {
-                font-size: 2rem;
-                font-weight: 800;
-                color: #111827;
-            }
-            .form-subtitle {
-                margin-top: 0.4rem;
-                color: #6b7280;
-                font-size: 0.9rem;
-            }
-            .login-form {
-                margin-top: 2rem;
-            }
-            .field {
-                margin-bottom: 1.25rem;
-            }
-            .field label {
-                display: block;
-                font-size: 0.875rem;
-                font-weight: 600;
-                color: #374151;
-                margin-bottom: 0.4rem;
-            }
-            .input-wrap {
-                position: relative;
-            }
-            .input-icon {
-                position: absolute;
-                top: 50%;
-                left: 0.9rem;
-                transform: translateY(-50%);
-                color: #9ca3af;
-                pointer-events: none;
-                display: flex;
-            }
-            .input-eye {
-                position: absolute;
-                top: 50%;
-                right: 0.9rem;
-                transform: translateY(-50%);
-                color: #9ca3af;
-                cursor: pointer;
-                display: flex;
-            }
-            .sacco-field {
-                width: 100%;
-                padding: 0.85rem 1rem 0.85rem 2.75rem;
-                border: 1px solid #d1d5db;
-                border-radius: 0.75rem;
-                font-size: 0.9rem;
-                color: #111827;
-                background: #f9fafb;
-                outline: none;
-                transition: border-color 0.2s, box-shadow 0.2s;
-            }
-            .sacco-field:focus {
-                border-color: #dc2626;
-                background: #ffffff;
-                box-shadow: 0 0 0 3px rgba(220,38,38,0.12);
-            }
-            .sacco-field-eye { padding-right: 2.75rem; }
-            .remember-row {
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-                margin-bottom: 1.5rem;
-                font-size: 0.875rem;
-                color: #374151;
-                cursor: pointer;
-            }
-            .remember-row input[type="checkbox"] {
-                width: 1rem;
-                height: 1rem;
-                accent-color: #dc2626;
-                cursor: pointer;
-            }
-            .btn-signin {
-                width: 100%;
-                background: #dc2626;
-                color: white;
-                border: none;
-                border-radius: 0.75rem;
-                padding: 1rem;
-                font-size: 1rem;
-                font-weight: 700;
-                letter-spacing: 0.06em;
-                cursor: pointer;
-                transition: background 0.2s;
-            }
-            .btn-signin:hover { background: #b91c1c; }
-            .register-row {
-                margin-top: 1.25rem;
-                text-align: center;
-                font-size: 0.875rem;
-                color: #6b7280;
-            }
-            .register-row a {
-                color: #dc2626;
-                font-weight: 700;
-                text-decoration: none;
-            }
-            .register-row a:hover { text-decoration: underline; }
-            .login-messages {
-                display: block;
-                margin-top: 1.25rem;
-                border-radius: 0.75rem;
-                background: #fef2f2;
-                padding: 0.75rem 1rem;
-                color: #b91c1c;
-                font-size: 0.875rem;
-            }
-            .login-messages:empty { display: none; }
-        </style>
+
+
 
         <h2 class="form-heading">Welcome Back!</h2>
         <p class="form-subtitle">Please sign in to continue</p>
 
-        <h:messages globalOnly="true" styleClass="login-messages"/>
+
 
         <h:form styleClass="login-form">
 

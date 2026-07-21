@@ -4,6 +4,16 @@
          xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
          version="6.0">
 
+    <!-- MyFaces caches h:outputStylesheet/outputScript resources with a 7-day
+         Cache-Control max-age by default (org.apache.myfaces.RESOURCE_MAX_TIME_EXPIRES).
+         During active CSS/JS development this makes browsers keep serving a stale copy
+         of e.g. admin.css long after the file on disk has changed. Force revalidation
+         on every request instead. -->
+    <context-param>
+        <param-name>org.apache.myfaces.RESOURCE_MAX_TIME_EXPIRES</param-name>
+        <param-value>0</param-value>
+    </context-param>
+
     <servlet>
         <servlet-name>Faces Servlet</servlet-name>
         <servlet-class>jakarta.faces.webapp.FacesServlet</servlet-class>

@@ -1,0 +1,221 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                template="/WEB-INF/templates/member-template.xhtml">
+
+    <ui:define name="title">My Dashboard | Kimwanyi SACCO</ui:define>
+    <ui:define name="pageTitle">My Dashboard</ui:define>
+
+    <ui:define name="content">
+
+        <!-- Welcome Banner -->
+        <div class="mem-welcome-banner">
+            <div>
+                <div class="mem-welcome-title">Welcome back, <strong>#{userSessionBean.loggedInUser.username}</strong> 👋</div>
+                <div class="mem-welcome-sub">Here's a summary of your Kimwanyi SACCO account.</div>
+            </div>
+            <h:link outcome="/loans/apply" styleClass="mem-btn mem-btn-primary">
+                <i class="fa-solid fa-plus"></i> Apply for Loan
+            </h:link>
+        </div>
+
+        <!-- KPI Cards Row -->
+        <div class="mem-kpi-grid">
+
+            <div class="mem-kpi-card savings">
+                <i class="fa-solid fa-piggy-bank mem-kpi-icon"></i>
+                <div class="mem-kpi-label">Savings Balance</div>
+                <div class="mem-kpi-value">UGX 0</div>
+                <div class="mem-kpi-sub">Available savings in your account</div>
+            </div>
+
+            <div class="mem-kpi-card loan">
+                <i class="fa-solid fa-hand-holding-dollar mem-kpi-icon"></i>
+                <div class="mem-kpi-label">Outstanding Loan</div>
+                <div class="mem-kpi-value">UGX 0</div>
+                <div class="mem-kpi-sub">Balance remaining to repay</div>
+            </div>
+
+            <div class="mem-kpi-card status">
+                <i class="fa-solid fa-circle-check mem-kpi-icon"></i>
+                <div class="mem-kpi-label">Max Loan Eligible</div>
+                <div class="mem-kpi-value">UGX 0</div>
+                <div class="mem-kpi-sub">3x your current savings balance</div>
+            </div>
+
+        </div>
+
+        <!-- Middle: Loan Status + Member Progress Tracker -->
+        <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+
+            <!-- Left: Active Loan Status -->
+            <div class="mem-card" style="margin-bottom:0;">
+                <div class="mem-card-header">
+                    <span class="mem-card-title"><i class="fa-solid fa-file-invoice-dollar" style="color:#dc2626; margin-right:6px;"></i> Active Loan Status</span>
+                    <h:link outcome="/loans/applications" style="font-size:0.8rem; color:#dc2626; text-decoration:none; font-weight:600;">View All</h:link>
+                </div>
+                <div class="mem-card-body">
+                    <!-- Empty state (will be replaced when loans exist) -->
+                    <div class="mem-empty" style="padding: 2.5rem 1rem;">
+                        <i class="fa-solid fa-hand-holding-dollar"></i>
+                        <strong style="color:#374151;">No Active Loans</strong>
+                        <p>You currently have no active loan. You can apply for a loan up to 3x your savings balance.</p>
+                        <h:link outcome="/loans/apply" styleClass="mem-btn mem-btn-primary" style="margin-top:0.5rem;">
+                            <i class="fa-solid fa-plus"></i> Apply Now
+                        </h:link>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Loan Progress Tracker -->
+            <div class="mem-card" style="margin-bottom:0;">
+                <div class="mem-card-header">
+                    <span class="mem-card-title"><i class="fa-solid fa-route" style="color:#f97316; margin-right:6px;"></i> Loan Journey Tracker</span>
+                    <span style="font-size:0.75rem; background:#fff7ed; color:#f97316; font-weight:700; padding:2px 8px; border-radius:4px;">Step 1 of 5</span>
+                </div>
+                <div class="mem-card-body">
+                    <div class="mem-tracker">
+
+                        <div class="mem-tracker-step">
+                            <div class="mem-tracker-circle done"><i class="fa-solid fa-check" style="font-size:0.65rem;"></i></div>
+                            <div class="mem-tracker-line done"></div>
+                            <div class="mem-tracker-text">
+                                <div class="mem-tracker-title">Registered</div>
+                                <div class="mem-tracker-desc">Account created successfully</div>
+                            </div>
+                        </div>
+
+                        <div class="mem-tracker-step">
+                            <div class="mem-tracker-circle current">2</div>
+                            <div class="mem-tracker-line"></div>
+                            <div class="mem-tracker-text">
+                                <div class="mem-tracker-title">Start Saving</div>
+                                <div class="mem-tracker-desc">Maintain min. UGX 20,000</div>
+                            </div>
+                        </div>
+
+                        <div class="mem-tracker-step">
+                            <div class="mem-tracker-circle">3</div>
+                            <div class="mem-tracker-line"></div>
+                            <div class="mem-tracker-text">
+                                <div class="mem-tracker-title">Apply for Loan</div>
+                                <div class="mem-tracker-desc">Max 3x your savings balance</div>
+                            </div>
+                        </div>
+
+                        <div class="mem-tracker-step">
+                            <div class="mem-tracker-circle">4</div>
+                            <div class="mem-tracker-line"></div>
+                            <div class="mem-tracker-text">
+                                <div class="mem-tracker-title">Approval Decision</div>
+                                <div class="mem-tracker-desc">Admin reviews your application</div>
+                            </div>
+                        </div>
+
+                        <div class="mem-tracker-step">
+                            <div class="mem-tracker-circle">5</div>
+                            <div class="mem-tracker-text">
+                                <div class="mem-tracker-title">Repay Loan</div>
+                                <div class="mem-tracker-desc">10% flat rate on principal</div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Bottom: Recent Transactions + Quick Actions -->
+        <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 1.5rem;">
+
+            <!-- Recent Savings Activity -->
+            <div class="mem-card" style="margin-bottom:0;">
+                <div class="mem-card-header">
+                    <span class="mem-card-title"><i class="fa-solid fa-clock-rotate-left" style="color:#7c3aed; margin-right:6px;"></i> Recent Transactions</span>
+                    <h:link outcome="/savings/history" style="font-size:0.8rem; color:#dc2626; text-decoration:none; font-weight:600;">View All</h:link>
+                </div>
+                <div class="mem-card-body" style="padding:0 1.5rem 1rem;">
+                    <div class="mem-empty">
+                        <i class="fa-solid fa-receipt"></i>
+                        <strong style="color:#374151;">No Transactions Yet</strong>
+                        <p>Your savings and loan transactions will appear here.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="mem-card" style="margin-bottom:0;">
+                <div class="mem-card-header">
+                    <span class="mem-card-title"><i class="fa-solid fa-bolt" style="color:#eab308; margin-right:6px;"></i> Quick Actions</span>
+                </div>
+                <div class="mem-card-body" style="display:flex; flex-direction:column; gap:0.75rem;">
+
+                    <h:link outcome="/loans/apply" style="display:flex; align-items:center; gap:0.75rem; padding:0.85rem 1rem; background:#fef2f2; border-radius:0.6rem; text-decoration:none; color:#111827; transition: all 0.15s;">
+                        <div style="width:36px; height:36px; border-radius:0.4rem; background:#dc2626; color:#fff; display:flex; align-items:center; justify-content:center;">
+                            <i class="fa-solid fa-file-signature"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight:700; font-size:0.85rem;">Apply for Loan</div>
+                            <div style="font-size:0.72rem; color:#9ca3af;">Submit a new loan request</div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right" style="margin-left:auto; color:#d1d5db; font-size:0.7rem;"></i>
+                    </h:link>
+
+                    <h:link outcome="/savings/balance" style="display:flex; align-items:center; gap:0.75rem; padding:0.85rem 1rem; background:#faf5ff; border-radius:0.6rem; text-decoration:none; color:#111827; transition: all 0.15s;">
+                        <div style="width:36px; height:36px; border-radius:0.4rem; background:#7c3aed; color:#fff; display:flex; align-items:center; justify-content:center;">
+                            <i class="fa-solid fa-piggy-bank"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight:700; font-size:0.85rem;">View Savings</div>
+                            <div style="font-size:0.72rem; color:#9ca3af;">Check your balance</div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right" style="margin-left:auto; color:#d1d5db; font-size:0.7rem;"></i>
+                    </h:link>
+
+                    <h:link outcome="/loans/applications" style="display:flex; align-items:center; gap:0.75rem; padding:0.85rem 1rem; background:#fff7ed; border-radius:0.6rem; text-decoration:none; color:#111827; transition: all 0.15s;">
+                        <div style="width:36px; height:36px; border-radius:0.4rem; background:#f97316; color:#fff; display:flex; align-items:center; justify-content:center;">
+                            <i class="fa-solid fa-list-check"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight:700; font-size:0.85rem;">My Loans</div>
+                            <div style="font-size:0.72rem; color:#9ca3af;">View loan applications</div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right" style="margin-left:auto; color:#d1d5db; font-size:0.7rem;"></i>
+                    </h:link>
+
+                    <h:link outcome="/members/profile" style="display:flex; align-items:center; gap:0.75rem; padding:0.85rem 1rem; background:#f0fdf4; border-radius:0.6rem; text-decoration:none; color:#111827; transition: all 0.15s;">
+                        <div style="width:36px; height:36px; border-radius:0.4rem; background:#16a34a; color:#fff; display:flex; align-items:center; justify-content:center;">
+                            <i class="fa-solid fa-circle-user"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight:700; font-size:0.85rem;">My Profile</div>
+                            <div style="font-size:0.72rem; color:#9ca3af;">View account details</div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right" style="margin-left:auto; color:#d1d5db; font-size:0.7rem;"></i>
+                    </h:link>
+
+                </div>
+            </div>
+
+        </div>
+
+        <style>
+            .mem-welcome-banner {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+                color: #fff;
+                padding: 1.5rem 2rem;
+                border-radius: 1rem;
+                margin-bottom: 1.5rem;
+                box-shadow: 0 4px 20px rgba(15,23,42,0.2);
+            }
+            .mem-welcome-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem; }
+            .mem-welcome-sub   { font-size: 0.82rem; color: #94a3b8; }
+        </style>
+
+    </ui:define>
+</ui:composition>

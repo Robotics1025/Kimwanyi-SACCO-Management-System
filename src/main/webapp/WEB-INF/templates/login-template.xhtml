@@ -1,127 +1,22 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="jakarta.faces.html"
-      xmlns:ui="jakarta.faces.facelets">
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:p="http://primefaces.org/ui">
 
 <h:head>
     <title>
         <ui:insert name="title">Kimwanyi SACCO</ui:insert>
     </title>
 
-    <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            min-height: 100vh;
-            background: #f3f4f6;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Segoe UI', Arial, sans-serif;
-            padding: 1.5rem;
-        }
-
-        .login-card {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            width: 100%;
-            max-width: 960px;
-            border-radius: 1.5rem;
-            overflow: hidden;
-            box-shadow: 0 25px 60px rgba(0,0,0,0.18);
-            background: #ffffff;
-        }
-
-        /* ── LEFT PANEL ── */
-        .left-panel {
-            background: #ffffff;
-            padding: 3rem 3.5rem;
-        }
-
-        .logo-area {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 2.5rem;
-        }
-
-        .logo-name {
-            font-size: 1.2rem;
-            font-weight: 900;
-            letter-spacing: 0.05em;
-            color: #111827;
-        }
-
-        .logo-name span { color: #dc2626; }
-
-        .logo-tagline {
-            font-size: 0.7rem;
-            color: #9ca3af;
-            margin-top: 2px;
-        }
-
-        /* ── RIGHT PANEL ── */
-        .right-panel {
-            position: relative;
-            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
-            padding: 3rem;
-            color: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 600px;
-            overflow: hidden;
-        }
-
-        .right-watermark {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0.08;
-            pointer-events: none;
-        }
-
-        .dot-grid {
-            position: absolute;
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 5px;
-            opacity: 0.28;
-        }
-
-        .dot-grid.top-left  { top: 2rem;    left: 2rem; }
-        .dot-grid.bot-right { bottom: 2rem; right: 2rem; }
-
-        .dot {
-            width: 5px; height: 5px;
-            border-radius: 50%;
-            background: white;
-            display: block;
-        }
-
-        .right-content {
-            position: relative;
-            z-index: 1;
-            text-align: center;
-        }
-
-        .icon-circle {
-            width: 5.5rem;
-            height: 5.5rem;
-            border-radius: 50%;
-            background: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 2rem;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-        }
-    </style>
+    <!-- Global stylesheet -->
+    <h:outputStylesheet library="css" name="global.css"/>
 </h:head>
 
 <h:body>
+
+    <!-- PrimeFaces Growl — global toast for all messages on this template -->
+    <p:growl id="growl" globalOnly="true" showDetail="true" life="6000" sticky="false"/>
 
     <div class="login-card">
 

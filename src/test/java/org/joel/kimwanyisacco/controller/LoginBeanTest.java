@@ -14,6 +14,8 @@ import org.joel.kimwanyisacco.common.exception.AuthenticationException;
 import org.joel.kimwanyisacco.dto.LoggedInUserDto;
 import org.joel.kimwanyisacco.dto.LoginForm;
 import org.joel.kimwanyisacco.service.AuthenticationService;
+import org.joel.kimwanyisacco.service.AuditLogService;
+import org.joel.kimwanyisacco.repository.UserAccountRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -29,6 +31,12 @@ class LoginBeanTest {
     @Mock
     private UserSessionBean userSessionBean;
 
+    @Mock
+    private AuditLogService auditLogService;
+
+    @Mock
+    private UserAccountRepository userAccountRepository;
+
     private LoginForm formFor(String username, String password) {
         LoginForm form = new LoginForm();
         form.setUsername(username);
@@ -38,7 +46,7 @@ class LoginBeanTest {
 
     @Test
     void loginRedirectsToAdminDashboardForAdminUser() {
-        LoginBean loginBean = new LoginBean(authenticationService, userSessionBean);
+        LoginBean loginBean = new LoginBean(authenticationService, userSessionBean, auditLogService, userAccountRepository);
         loginBean.setLoginForm(formFor("admin1", "secret"));
         LoggedInUserDto dto = new LoggedInUserDto();
         dto.setRoles(List.of("ADMIN"));
@@ -52,7 +60,7 @@ class LoginBeanTest {
 
     @Test
     void loginRedirectsToIndexForMemberUser() {
-        LoginBean loginBean = new LoginBean(authenticationService, userSessionBean);
+        LoginBean loginBean = new LoginBean(authenticationService, userSessionBean, auditLogService, userAccountRepository);
         loginBean.setLoginForm(formFor("member1", "secret"));
         LoggedInUserDto dto = new LoggedInUserDto();
         dto.setRoles(List.of("MEMBER"));
@@ -60,13 +68,13 @@ class LoginBeanTest {
 
         String outcome = loginBean.login();
 
-        assertEquals("/index?faces-redirect=true", outcome);
+        assertEquals("/members/dashboard?faces-redirect=true", outcome);
         verify(userSessionBean).setLoggedInUser(dto);
     }
 
     @Test
     void loginReturnsNullAndAddsErrorMessageOnBadCredentials() {
-        LoginBean loginBean = new LoginBean(authenticationService, userSessionBean);
+        LoginBean loginBean = new LoginBean(authenticationService, userSessionBean, auditLogService, userAccountRepository);
         loginBean.setLoginForm(formFor("member1", "wrong"));
         when(authenticationService.authenticate(loginBean.getLoginForm()))
                 .thenThrow(new AuthenticationException("Invalid username or password"));
@@ -85,7 +93,7 @@ class LoginBeanTest {
 
     @Test
     void logoutInvalidatesSessionAndReturnsLoginOutcome() {
-        LoginBean loginBean = new LoginBean(authenticationService, userSessionBean);
+        LoginBean loginBean = new LoginBean(authenticationService, userSessionBean, auditLogService, userAccountRepository);
 
         FacesContext facesContext = mock(FacesContext.class);
         ExternalContext externalContext = mock(ExternalContext.class);

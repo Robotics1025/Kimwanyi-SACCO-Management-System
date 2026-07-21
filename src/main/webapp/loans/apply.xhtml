@@ -1,5 +1,81 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="jakarta.faces.facelets"
-                template="/WEB-INF/templates/main-template.xhtml">
-    <ui:define name="content"></ui:define>
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                template="/WEB-INF/templates/member-template.xhtml">
+
+    <ui:define name="title">Apply for Loan | Kimwanyi SACCO</ui:define>
+    <ui:define name="pageTitle">Apply for Loan</ui:define>
+
+    <ui:define name="content">
+
+        <h:panelGroup rendered="#{loanApplicationBean.hasActiveLoan}">
+            <div class="mem-card">
+                <div class="mem-card-header">
+                    <span class="mem-card-title"><i class="fa-solid fa-circle-info" style="color:#dc2626; margin-right:6px;"></i> Loan In Progress</span>
+                </div>
+                <div class="mem-card-body">
+                    <div class="mem-empty" style="padding: 2rem 1rem;">
+                        <i class="fa-solid fa-hand-holding-dollar"></i>
+                        <strong style="color:#374151;">You already have a loan in progress</strong>
+                        <p>You can only apply for a new loan once your current one is fully repaid.</p>
+                        <h:link outcome="/loans/applications" styleClass="mem-btn mem-btn-primary" style="margin-top:0.5rem;">
+                            <i class="fa-solid fa-list-check"></i> View My Loans
+                        </h:link>
+                    </div>
+                </div>
+            </div>
+        </h:panelGroup>
+
+        <h:panelGroup rendered="#{not loanApplicationBean.hasActiveLoan}">
+            <div class="mem-card">
+                <div class="mem-card-header">
+                    <span class="mem-card-title"><i class="fa-solid fa-file-signature" style="color:#dc2626; margin-right:6px;"></i> New Loan Application</span>
+                </div>
+                <div class="mem-card-body">
+
+                    <div class="mem-helper-box">
+                        Maximum eligible amount: <strong>
+                            <h:outputText value="#{loanApplicationBean.maxEligibleAmount}">
+                                <f:convertNumber type="currency" currencySymbol="UGX " maxFractionDigits="0"/>
+                            </h:outputText>
+                        </strong> (3x your savings balance).
+                        Interest is a flat 10% of the principal, added to your total repayable amount.
+                    </div>
+
+                    <h:form id="loanForm">
+                        <div class="mem-field">
+                            <h:outputLabel for="principalAmount" value="Principal Amount (UGX)"/>
+                            <h:inputText id="principalAmount"
+                                         value="#{loanApplicationBean.principalAmount}"
+                                         label="Principal Amount"
+                                         required="true"
+                                         requiredMessage="Principal amount is required"
+                                         styleClass="mem-input">
+                                <f:convertNumber type="number" maxFractionDigits="2"/>
+                            </h:inputText>
+                            <h:message for="principalAmount" styleClass="mem-error"/>
+                        </div>
+
+                        <div class="mem-field">
+                            <h:outputLabel for="termMonths" value="Term (months)"/>
+                            <h:inputText id="termMonths"
+                                         value="#{loanApplicationBean.termMonths}"
+                                         label="Term"
+                                         required="true"
+                                         requiredMessage="Loan term is required"
+                                         styleClass="mem-input">
+                                <f:convertNumber type="number" integerOnly="true"/>
+                            </h:inputText>
+                            <h:message for="termMonths" styleClass="mem-error"/>
+                        </div>
+
+                        <h:commandButton value="Submit Application" action="#{loanApplicationBean.apply}" styleClass="mem-btn mem-btn-primary"/>
+                    </h:form>
+
+                </div>
+            </div>
+        </h:panelGroup>
+
+    </ui:define>
 </ui:composition>

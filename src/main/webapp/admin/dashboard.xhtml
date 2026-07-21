@@ -1,5 +1,323 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="jakarta.faces.facelets"
-                template="/WEB-INF/templates/main-template.xhtml">
-    <ui:define name="content"></ui:define>
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                template="/WEB-INF/templates/admin-template.xhtml">
+
+    <ui:define name="title">Dashboard | Kimwanyi SACCO</ui:define>
+    <ui:define name="pageHeader">Dashboard</ui:define>
+
+    <ui:define name="content">
+
+        <div style="font-size:0.9rem; color:#6b7280; margin-bottom:1.5rem; font-weight:500;">
+            Welcome back, <strong>#{userSessionBean.loggedInUser.username}</strong>! Here's what's happening with Kimwanyi SACCO.
+        </div>
+
+        <!-- ROW 1: 4 KPI Stat Cards -->
+        <div class="kpi-row">
+
+            <div class="kpi-card">
+                <div class="kpi-left">
+                    <div class="kpi-icon kpi-icon-red"><i class="fa-solid fa-users"></i></div>
+                    <div>
+                        <div class="kpi-label">Total Members</div>
+                        <div class="kpi-value">#{dashboardBean.summary.totalMembers}</div>
+                        <div class="kpi-sub">Active: #{dashboardBean.summary.activeMembers} | Inactive: #{dashboardBean.summary.inactiveMembers}</div>
+                    </div>
+                </div>
+                <div class="kpi-bar kpi-bar-red"></div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-left">
+                    <div class="kpi-icon kpi-icon-purple"><i class="fa-solid fa-piggy-bank"></i></div>
+                    <div>
+                        <div class="kpi-label">Total Savings Balance</div>
+                        <div class="kpi-value">
+                            <h:outputText value="#{dashboardBean.summary.totalSavingsBalance}">
+                                <f:convertNumber type="currency" currencySymbol="UGX " maxFractionDigits="0"/>
+                            </h:outputText>
+                        </div>
+                        <div class="kpi-sub">Accumulated member savings</div>
+                    </div>
+                </div>
+                <div class="kpi-bar kpi-bar-purple"></div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-left">
+                    <div class="kpi-icon kpi-icon-blue"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+                    <div>
+                        <div class="kpi-label">Active Loans</div>
+                        <div class="kpi-value">#{dashboardBean.summary.activeLoanCount}</div>
+                        <div class="kpi-sub">#{dashboardBean.summary.pendingLoanCount} pending approval</div>
+                    </div>
+                </div>
+                <div class="kpi-bar kpi-bar-blue"></div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-left">
+                    <div class="kpi-icon kpi-icon-orange"><i class="fa-solid fa-coins"></i></div>
+                    <div>
+                        <div class="kpi-label">Outstanding Loans</div>
+                        <div class="kpi-value">
+                            <h:outputText value="#{dashboardBean.summary.totalOutstandingLoans != null ? dashboardBean.summary.totalOutstandingLoans : 0}">
+                                <f:convertNumber type="currency" currencySymbol="UGX " maxFractionDigits="0"/>
+                            </h:outputText>
+                        </div>
+                        <div class="kpi-sub">Total amount yet to be repaid</div>
+                    </div>
+                </div>
+                <div class="kpi-bar kpi-bar-orange"></div>
+            </div>
+
+        </div>
+
+        <!-- ROW 2+3: Graph + Recent Activity (left column) / Progress Tracker (right column, full height) -->
+        <div class="dashboard-main-row">
+
+            <div class="dashboard-left-col">
+
+                <!-- Savings and Loans Bar Chart -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <div>
+                            <div class="section-title">Savings and Loans Overview</div>
+                            <div style="font-size:0.8rem; color:#9ca3af;">Monthly performance overview</div>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:1.5rem;">
+                            <div style="display:flex; align-items:center; gap:0.5rem; font-size:0.8rem; color:#6b7280;">
+                                <span style="width:12px; height:12px; background:#4f46e5; border-radius:2px; display:inline-block;"></span> Savings (UGX)
+                                <span style="width:12px; height:12px; background:#f97316; border-radius:2px; display:inline-block; margin-left:0.75rem;"></span> Loans (UGX)
+                            </div>
+                            <select style="border:1px solid #e5e7eb; border-radius:0.375rem; padding:4px 8px; font-size:0.8rem; color:#374151;">
+                                <option>This Year</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="section-body" style="padding: 1.5rem;">
+                        <canvas id="savingsLoansChart" style="width:100%; height:220px;"></canvas>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="section-card activity-card">
+                    <div class="section-header">
+                        <span class="section-title">Recent Activity</span>
+                        <h:link outcome="/admin/audit-logs" style="font-size:0.8rem; color:#4f46e5; text-decoration:none; font-weight:600;">View all</h:link>
+                    </div>
+                    <div class="section-body" style="padding:0 1.5rem 1rem;">
+                        <table style="width:100%; border-collapse:collapse;">
+                            <thead>
+                                <tr style="border-bottom:1px solid #f3f4f6;">
+                                    <th style="padding:10px 0; text-align:left; font-size:0.78rem; color:#9ca3af; font-weight:500;">Time</th>
+                                    <th style="padding:10px 0; text-align:left; font-size:0.78rem; color:#9ca3af; font-weight:500;">Action</th>
+                                    <th style="padding:10px 0; text-align:left; font-size:0.78rem; color:#9ca3af; font-weight:500;">User</th>
+                                </tr>
+                            </thead>
+                        </table>
+                        <h:dataTable value="#{dashboardBean.summary.recentActivity}" var="log"
+                                     style="width:100%; border-collapse:collapse;">
+                            <h:column>
+                                <div style="padding:10px 0; font-size:0.82rem; color:#6b7280; border-bottom:1px solid #f9fafb;">
+                                    <h:outputText value="#{log.createdAt}">
+                                        <f:convertDateTime type="localDateTime" pattern="dd MMM yyyy HH:mm"/>
+                                    </h:outputText>
+                                </div>
+                            </h:column>
+                            <h:column>
+                                <div style="padding:10px 8px; font-size:0.82rem; color:#374151; border-bottom:1px solid #f9fafb; display:flex; align-items:center; gap:6px;">
+                                    <i class="fa-solid fa-circle-dot" style="color:#4f46e5; font-size:0.7rem;"></i>
+                                    #{log.action}
+                                </div>
+                            </h:column>
+                            <h:column>
+                                <div style="padding:10px 0; font-size:0.82rem; color:#374151; border-bottom:1px solid #f9fafb;">
+                                    #{log.actorUsername != null ? log.actorUsername : 'System'}
+                                </div>
+                            </h:column>
+                        </h:dataTable>
+
+                        <h:panelGroup rendered="#{empty dashboardBean.summary.recentActivity}">
+                            <div class="activity-empty">No recent activity.</div>
+                        </h:panelGroup>
+
+                        <div class="activity-view-all">
+                            <h:link outcome="/admin/audit-logs" style="display:inline-block; padding:8px 24px; background:#f0f0ff; color:#4f46e5; border-radius:6px; text-decoration:none; font-weight:600; font-size:0.82rem;">
+                                View all activity
+                            </h:link>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Member / Loan Progress Tracker -->
+            <div class="section-card tracker-card">
+                <div class="section-header">
+                    <span class="section-title">Member / Loan Progress Tracker</span>
+                    <span style="font-size:0.78rem; color:#9ca3af;">3 of 5 completed</span>
+                </div>
+                <div class="section-body">
+                    <div class="progress-tracker">
+
+                        <div class="tracker-step done">
+                            <div class="tracker-circle done"><i class="fa-solid fa-check"></i></div>
+                            <div class="tracker-line done"></div>
+                            <div class="tracker-content">
+                                <div class="tracker-title">Registered</div>
+                                <div class="tracker-desc">Member registration completed</div>
+                            </div>
+                        </div>
+
+                        <div class="tracker-step done">
+                            <div class="tracker-circle done"><i class="fa-solid fa-check"></i></div>
+                            <div class="tracker-line done"></div>
+                            <div class="tracker-content">
+                                <div class="tracker-title">Savings Started</div>
+                                <div class="tracker-desc">Member has started saving</div>
+                            </div>
+                        </div>
+
+                        <div class="tracker-step done">
+                            <div class="tracker-circle done"><i class="fa-solid fa-check"></i></div>
+                            <div class="tracker-line done"></div>
+                            <div class="tracker-content">
+                                <div class="tracker-title">Loan Requested</div>
+                                <div class="tracker-desc">Loan application submitted</div>
+                            </div>
+                        </div>
+
+                        <div class="tracker-step current">
+                            <div class="tracker-circle current">4</div>
+                            <div class="tracker-line"></div>
+                            <div class="tracker-content">
+                                <div class="tracker-title">Approved</div>
+                                <div class="tracker-desc">Loan application under review</div>
+                            </div>
+                        </div>
+
+                        <div class="tracker-step">
+                            <div class="tracker-circle">5</div>
+                            <div class="tracker-line" style="display:none;"></div>
+                            <div class="tracker-content">
+                                <div class="tracker-title">Repaid</div>
+                                <div class="tracker-desc">Loan fully repaid and closed</div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ROW 4: Quick Actions -->
+        <div class="section-card" style="margin-bottom:0;">
+            <div class="section-header">
+                <span class="section-title">Quick Actions</span>
+            </div>
+            <div class="section-body">
+                <div class="quick-actions-row">
+
+                    <h:link outcome="/members/register" class="qa-btn">
+                        <div class="qa-icon qa-icon-purple"><i class="fa-solid fa-user-plus"></i></div>
+                        <div class="qa-text">
+                            <div class="qa-title">Register Member</div>
+                            <div class="qa-desc">Add a new member</div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right qa-arrow"></i>
+                    </h:link>
+
+                    <a href="#" class="qa-btn">
+                        <div class="qa-icon qa-icon-green"><i class="fa-solid fa-piggy-bank"></i></div>
+                        <div class="qa-text">
+                            <div class="qa-title">Record Savings</div>
+                            <div class="qa-desc">Add member savings</div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right qa-arrow"></i>
+                    </a>
+
+                    <h:link outcome="/admin/loans" class="qa-btn">
+                        <div class="qa-icon qa-icon-blue"><i class="fa-solid fa-file-signature"></i></div>
+                        <div class="qa-text">
+                            <div class="qa-title">Create Loan Application</div>
+                            <div class="qa-desc">New loan application</div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right qa-arrow"></i>
+                    </h:link>
+
+                    <h:link outcome="/admin/loans" class="qa-btn">
+                        <div class="qa-icon qa-icon-orange"><i class="fa-solid fa-stamp"></i></div>
+                        <div class="qa-text">
+                            <div class="qa-title">Review Approvals</div>
+                            <div class="qa-desc">Pending approvals</div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right qa-arrow"></i>
+                    </h:link>
+
+                    <h:link outcome="/admin/audit-logs" class="qa-btn">
+                        <div class="qa-icon qa-icon-indigo"><i class="fa-solid fa-chart-bar"></i></div>
+                        <div class="qa-text">
+                            <div class="qa-title">Generate Reports</div>
+                            <div class="qa-desc">View reports</div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right qa-arrow"></i>
+                    </h:link>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart.js Bar Chart Script -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+        <script>
+            (function() {
+                var ctx = document.getElementById('savingsLoansChart');
+                if (!ctx) return;
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                        datasets: [
+                            {
+                                label: 'Savings (UGX)',
+                                data: [120000, 180000, 140000, 250000, 200000, 320000, 380000],
+                                backgroundColor: '#4f46e5',
+                                borderRadius: 4,
+                                barPercentage: 0.5,
+                                categoryPercentage: 0.6
+                            },
+                            {
+                                label: 'Loans (UGX)',
+                                data: [60000, 70000, 80000, 120000, 110000, 130000, 200000],
+                                backgroundColor: '#f97316',
+                                borderRadius: 4,
+                                barPercentage: 0.5,
+                                categoryPercentage: 0.6
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { grid: { display: false }, ticks: { color: '#9ca3af', font: { size: 12 } } },
+                            y: {
+                                grid: { color: '#f3f4f6' },
+                                ticks: {
+                                    color: '#9ca3af',
+                                    font: { size: 11 },
+                                    callback: function(v) { return v >= 1000 ? (v/1000) + 'K' : v; }
+                                }
+                            }
+                        }
+                    }
+                });
+            })();
+        </script>
+
+    </ui:define>
 </ui:composition>

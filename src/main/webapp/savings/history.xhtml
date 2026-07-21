@@ -1,5 +1,75 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="jakarta.faces.facelets"
-                template="/WEB-INF/templates/main-template.xhtml">
-    <ui:define name="content"></ui:define>
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                template="/WEB-INF/templates/member-template.xhtml">
+
+    <ui:define name="title">Savings History | Kimwanyi SACCO</ui:define>
+    <ui:define name="pageTitle">Savings History</ui:define>
+
+    <ui:define name="content">
+
+        <div class="mem-card">
+            <div class="mem-card-header">
+                <span class="mem-card-title"><i class="fa-solid fa-clock-rotate-left" style="color:#7c3aed; margin-right:6px;"></i> Transaction History</span>
+                <span style="font-size:0.8rem; color:#9ca3af;">
+                    Account <strong>#{savingsHistoryBean.account.accountNumber}</strong> &#8226; Balance:
+                    <h:outputText value="#{savingsHistoryBean.account.balance}">
+                        <f:convertNumber type="currency" currencySymbol="UGX " maxFractionDigits="0"/>
+                    </h:outputText>
+                </span>
+            </div>
+            <div class="mem-card-body">
+
+                <h:panelGroup rendered="#{empty savingsHistoryBean.transactions}">
+                    <div class="mem-empty">
+                        <i class="fa-solid fa-receipt"></i>
+                        <strong style="color:#374151;">No Transactions Yet</strong>
+                        <p>Your savings transactions will appear here.</p>
+                    </div>
+                </h:panelGroup>
+
+                <h:panelGroup rendered="#{not empty savingsHistoryBean.transactions}">
+                    <table class="mem-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Balance After</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <ui:repeat value="#{savingsHistoryBean.transactions}" var="tx">
+                                <tr>
+                                    <td>
+                                        <h:outputText value="#{tx.createdAt}">
+                                            <f:convertDateTime type="localDateTime" pattern="dd MMM yyyy HH:mm"/>
+                                        </h:outputText>
+                                    </td>
+                                    <td>
+                                        <span class="badge #{tx.transactionType == 'DEPOSIT' or tx.transactionType == 'TRANSFER_IN' or tx.transactionType == 'INTEREST' ? 'badge-green' : 'badge-red'}">
+                                            #{tx.transactionType}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <h:outputText value="#{tx.amount}">
+                                            <f:convertNumber type="currency" currencySymbol="UGX " maxFractionDigits="0"/>
+                                        </h:outputText>
+                                    </td>
+                                    <td>
+                                        <h:outputText value="#{tx.balanceAfter}">
+                                            <f:convertNumber type="currency" currencySymbol="UGX " maxFractionDigits="0"/>
+                                        </h:outputText>
+                                    </td>
+                                </tr>
+                            </ui:repeat>
+                        </tbody>
+                    </table>
+                </h:panelGroup>
+
+            </div>
+        </div>
+
+    </ui:define>
 </ui:composition>

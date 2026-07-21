@@ -1,0 +1,123 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/admin-template.xhtml">
+
+    <ui:define name="title">Loan Approvals | Admin</ui:define>
+    
+    <ui:define name="pageHeader">Pending Loan Applications</ui:define>
+
+    <ui:define name="content">
+        <p:growl id="growl" showDetail="false" globalOnly="true" />
+
+        <div class="section-card">
+            <div class="section-header">
+                <span class="section-title">Applications Awaiting Decision</span>
+            </div>
+            
+            <div class="section-body" style="padding: 0;">
+                <h:form id="loansForm">
+                    <h:dataTable id="loansTable" value="#{loanApprovalBean.pendingLoans}" var="loan" 
+                                 styleClass="activity-table" style="width: 100%; border-collapse: collapse; text-align: left;">
+                        
+                        <h:column>
+                            <f:facet name="header"><div style="padding:15px; border-bottom:1px solid #e5e7eb; color:#9ca3af; font-size:0.8rem; font-weight: 500;">Member</div></f:facet>
+                            <div style="padding:15px; border-bottom:1px dashed #f3f4f6; font-size: 0.9rem;">
+                                <div style="font-weight: 600; color: #1f2937;">#{loan.member.userAccount.firstName} #{loan.member.userAccount.lastName}</div>
+                                <div style="font-size: 0.8rem; color: #6b7280;">No: #{loan.member.membershipNumber}</div>
+                            </div>
+                        </h:column>
+                        
+                        <h:column>
+                            <f:facet name="header"><div style="padding:15px; border-bottom:1px solid #e5e7eb; color:#9ca3af; font-size:0.8rem; font-weight: 500;">Principal</div></f:facet>
+                            <div style="padding:15px; border-bottom:1px dashed #f3f4f6; font-size: 0.9rem; font-weight: 600; color: #111827;">
+                                <h:outputText value="#{loan.principal}">
+                                    <f:convertNumber type="currency" currencySymbol="UGX " maxFractionDigits="0"/>
+                                </h:outputText>
+                            </div>
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header"><div style="padding:15px; border-bottom:1px solid #e5e7eb; color:#9ca3af; font-size:0.8rem; font-weight: 500;">Interest (10% Flat)</div></f:facet>
+                            <div style="padding:15px; border-bottom:1px dashed #f3f4f6; font-size: 0.9rem; color: #dc2626;">
+                                <h:outputText value="#{loan.interestAmount}">
+                                    <f:convertNumber type="currency" currencySymbol="UGX " maxFractionDigits="0"/>
+                                </h:outputText>
+                            </div>
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header"><div style="padding:15px; border-bottom:1px solid #e5e7eb; color:#9ca3af; font-size:0.8rem; font-weight: 500;">Total Repayable</div></f:facet>
+                            <div style="padding:15px; border-bottom:1px dashed #f3f4f6; font-size: 0.9rem; font-weight: 600; color: #059669;">
+                                <h:outputText value="#{loan.totalRepayable}">
+                                    <f:convertNumber type="currency" currencySymbol="UGX " maxFractionDigits="0"/>
+                                </h:outputText>
+                            </div>
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header"><div style="padding:15px; border-bottom:1px solid #e5e7eb; color:#9ca3af; font-size:0.8rem; font-weight: 500;">Purpose</div></f:facet>
+                            <div style="padding:15px; border-bottom:1px dashed #f3f4f6; font-size: 0.85rem; color: #4b5563; max-width: 200px;">
+                                #{loan.purpose}
+                            </div>
+                        </h:column>
+                        
+                        <h:column>
+                            <f:facet name="header"><div style="padding:15px; border-bottom:1px solid #e5e7eb; color:#9ca3af; font-size:0.8rem; font-weight: 500;">Applied On</div></f:facet>
+                            <div style="padding:15px; border-bottom:1px dashed #f3f4f6; font-size: 0.85rem; color: #6b7280;">
+                                <h:outputText value="#{loan.applicationDate}">
+                                    <f:convertDateTime type="localDate" pattern="dd MMM yyyy"/>
+                                </h:outputText>
+                            </div>
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header"><div style="padding:15px; border-bottom:1px solid #e5e7eb; color:#9ca3af; font-size:0.8rem; font-weight: 500; text-align: right;">Actions</div></f:facet>
+                            <div style="padding:15px; border-bottom:1px dashed #f3f4f6; text-align: right; display: flex; gap: 0.5rem; justify-content: flex-end;">
+                                <h:commandLink action="#{loanApprovalBean.approve(loan.id)}" styleClass="action-btn-approve" style="text-decoration:none; background:#dcfce7; color:#15803d; padding:6px 12px; border-radius:4px; font-weight:600; font-size:0.8rem; display:inline-flex; align-items:center; gap:4px;">
+                                    <i class="fa-solid fa-check"></i> Approve
+                                    <f:ajax render="@form :growl"/>
+                                </h:commandLink>
+                                
+                                <p:commandLink action="#{loanApprovalBean.setSelectedLoanId(loan.id)}" 
+                                               oncomplete="PF('rejectDialog').show();" 
+                                               update=":rejectForm"
+                                               styleClass="action-btn-reject" 
+                                               style="text-decoration:none; background:#fee2e2; color:#b91c1c; padding:6px 12px; border-radius:4px; font-weight:600; font-size:0.8rem; display:inline-flex; align-items:center; gap:4px;">
+                                    <i class="fa-solid fa-xmark"></i> Reject
+                                </p:commandLink>
+                            </div>
+                        </h:column>
+                        
+                    </h:dataTable>
+
+                    <h:panelGroup rendered="#{empty loanApprovalBean.pendingLoans}">
+                        <div style="padding: 4rem; text-align: center; color: #9ca3af;">
+                            <i class="fa-solid fa-hand-holding-dollar fa-3x" style="margin-bottom: 1rem; color: #d1d5db;"></i><br/>
+                            No pending loan applications found.
+                        </div>
+                    </h:panelGroup>
+                </h:form>
+            </div>
+        </div>
+
+        <!-- Reject Reason Dialog -->
+        <p:dialog header="Reject Loan Application" widgetVar="rejectDialog" modal="true" responsive="true" width="400" resizable="false">
+            <h:form id="rejectForm">
+                <div style="display: flex; flex-direction: column; gap: 1rem; padding: 0.5rem 0;">
+                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                        <h:outputLabel for="rejectReason" value="Rejection Reason" style="font-weight: 600; font-size: 0.85rem; color: #4b5563;"/>
+                        <p:inputTextarea id="rejectReason" value="#{loanApprovalBean.rejectionReason}" rows="4" autoResize="false" style="padding: 0.5rem; border-radius: 0.375rem; border: 1px solid var(--border-color); width: 100%; box-sizing: border-box;" placeholder="Enter details on why this application is rejected..."/>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 0.5rem;">
+                        <p:commandButton value="Cancel" onclick="PF('rejectDialog').hide();" type="button" styleClass="ui-button-flat ui-button-secondary"/>
+                        <p:commandButton value="Submit Rejection" action="#{loanApprovalBean.reject}" update=":loansForm :growl" oncomplete="if (!args.validationFailed) PF('rejectDialog').hide();" styleClass="ui-button-danger"/>
+                    </div>
+                </div>
+            </h:form>
+        </p:dialog>
+    </ui:define>
+</ui:composition>

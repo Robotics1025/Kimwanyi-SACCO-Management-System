@@ -3,363 +3,346 @@
         xmlns="http://www.w3.org/1999/xhtml"
         xmlns:h="jakarta.faces.html"
         xmlns:f="jakarta.faces.core"
-        xmlns:ui="jakarta.faces.facelets">
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:pt="jakarta.faces.passthrough">
 
-    <ui:define name="title">
-        Register | Kimwanyi SACCO
-    </ui:define>
+    <ui:define name="title">Register | Kimwanyi SACCO</ui:define>
 
+    <!-- ═══════════════════════════════════════════════
+         LEFT PANEL — Multi-step Registration Form
+    ═══════════════════════════════════════════════ -->
     <ui:define name="formContent">
 
-        <style>
-            .register-heading {
-                font-size: 2rem;
-                font-weight: 800;
-                color: #111827;
-            }
-            .register-subtitle {
-                margin-top: 0.4rem;
-                color: #6b7280;
-            }
-            .register-form {
-                margin-top: 2rem;
-                display: flex;
-                flex-direction: column;
-                gap: 1.25rem;
-            }
-            .glow-toast {
-                position: fixed;
-                top: 1.5rem;
-                right: 1.5rem;
-                z-index: 1000;
-                display: flex;
-                flex-direction: column;
-                gap: 0.75rem;
-                max-width: 360px;
-                margin: 0;
-                padding: 0;
-                list-style: none;
-            }
-            .glow-toast:empty {
-                display: none;
-            }
-            .glow-toast li {
-                position: relative;
-                border-left: 4px solid #f87171;
-                border-radius: 0.85rem;
-                background: #1f2937;
-                padding: 1rem 1.25rem;
-                color: #fff;
-                font-size: 0.875rem;
-                line-height: 1.4;
-                box-shadow:
-                        0 0 0 1px rgba(220,38,38,0.4),
-                        0 0 18px 2px rgba(220,38,38,0.55),
-                        0 0 40px 6px rgba(220,38,38,0.25);
-                animation: glow-toast-in 0.35s ease-out, glow-pulse 2.2s ease-in-out infinite;
-            }
-            @keyframes glow-toast-in {
-                from { transform: translateX(30px); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
-            }
-            @keyframes glow-pulse {
-                0%, 100% {
-                    box-shadow:
-                            0 0 0 1px rgba(220,38,38,0.4),
-                            0 0 18px 2px rgba(220,38,38,0.55),
-                            0 0 40px 6px rgba(220,38,38,0.25);
-                }
-                50% {
-                    box-shadow:
-                            0 0 0 1px rgba(220,38,38,0.6),
-                            0 0 26px 4px rgba(220,38,38,0.75),
-                            0 0 55px 10px rgba(220,38,38,0.4);
-                }
-            }
-            .register-grid {
-                display: grid;
-                gap: 1.25rem;
-            }
-            @media (min-width: 768px) {
-                .register-grid {
-                    grid-template-columns: 1fr 1fr;
-                }
-            }
-            .register-field label {
-                display: block;
-                margin-bottom: 0.5rem;
-                font-weight: 600;
-                color: #1f2937;
-            }
-            .register-input {
-                width: 100%;
-                border-radius: 0.75rem;
-                border: 1px solid #d1d5db;
-                padding: 0.75rem 1rem;
-                outline: none;
-                transition: border-color 0.2s, box-shadow 0.2s;
-            }
-            .register-input:focus {
-                border-color: #dc2626;
-                box-shadow: 0 0 0 3px rgba(220,38,38,0.12);
-            }
-            .register-error {
-                display: block;
-                margin-top: 0.25rem;
-                font-size: 0.875rem;
-                color: #dc2626;
-            }
-            .btn-register-submit {
-                width: 100%;
-                cursor: pointer;
-                border: none;
-                border-radius: 0.75rem;
-                background: #dc2626;
-                padding: 1rem 1.5rem;
-                font-weight: 700;
-                color: white;
-                transition: background 0.2s;
-            }
-            .btn-register-submit:hover {
-                background: #b91c1c;
-            }
-            .register-footer {
-                border-top: 1px solid #e5e7eb;
-                padding-top: 1.25rem;
-                text-align: center;
-            }
-            .register-footer span {
-                color: #4b5563;
-            }
-            .register-footer a {
-                margin-left: 0.5rem;
-                font-weight: 700;
-                color: #dc2626;
-                text-decoration: none;
-            }
-            .register-footer a:hover {
-                color: #b91c1c;
-            }
-        </style>
 
-        <h2 class="register-heading">
-            Create Account
-        </h2>
+        <h2 class="reg-heading">Create Account</h2>
+        <p class="reg-subtitle">Register as a Kimwanyi SACCO member</p>
 
-        <p class="register-subtitle">
-            Register as a Kimwanyi SACCO member
-        </p>
+        <h:form id="regForm">
 
-        <h:form id="registrationForm"
-                styleClass="register-form">
+            <!-- ─── Step Indicator ─── -->
+            <div class="step-bar">
+                <div id="si1" class="step-item active">
+                    <div class="step-circle">1</div>
+                    <span class="step-label">Personal</span>
+                </div>
+                <div id="si2" class="step-item">
+                    <div class="step-circle">2</div>
+                    <span class="step-label">Account</span>
+                </div>
+                <div id="si3" class="step-item">
+                    <div class="step-circle">3</div>
+                    <span class="step-label">Security</span>
+                </div>
+            </div>
 
-            <h:messages
-                    globalOnly="false"
-                    layout="list"
-                    styleClass="glow-toast"/>
+            <!-- ════ STEP 1 — Personal Info ════ -->
+            <div id="step1">
 
-            <div class="register-grid">
-
-                <div class="register-field">
-                    <h:outputLabel
-                            for="firstName"
-                            value="First Name"/>
-
-                    <h:inputText
-                            id="firstName"
-                            value="#{memberRegistrationBean.form.firstName}"
-                            label="First Name"
-                            required="true"
-                            requiredMessage="First name is required"
-                            styleClass="register-input"/>
-
-                    <h:message
-                            for="firstName"
-                            styleClass="register-error"/>
+                <div class="reg-field">
+                    <h:outputLabel for="firstName" value="First Name"/>
+                    <h:inputText id="firstName"
+                                 value="#{memberRegistrationBean.form.firstName}"
+                                 pt:placeholder="e.g. John"
+                                 label="First Name" required="true"
+                                 requiredMessage="First name is required"
+                                 styleClass="reg-input"/>
+                    <h:message for="firstName" styleClass="reg-error"/>
                 </div>
 
-                <div class="register-field">
-                    <h:outputLabel
-                            for="lastName"
-                            value="Last Name"/>
-
-                    <h:inputText
-                            id="lastName"
-                            value="#{memberRegistrationBean.form.lastName}"
-                            label="Last Name"
-                            required="true"
-                            requiredMessage="Last name is required"
-                            styleClass="register-input"/>
-
-                    <h:message
-                            for="lastName"
-                            styleClass="register-error"/>
+                <div class="reg-field">
+                    <h:outputLabel for="lastName" value="Last Name"/>
+                    <h:inputText id="lastName"
+                                 value="#{memberRegistrationBean.form.lastName}"
+                                 pt:placeholder="e.g. Kamau"
+                                 label="Last Name" required="true"
+                                 requiredMessage="Last name is required"
+                                 styleClass="reg-input"/>
+                    <h:message for="lastName" styleClass="reg-error"/>
                 </div>
 
+                <div class="reg-field">
+                    <h:outputLabel for="nationalId" value="National ID Number"/>
+                    <h:inputText id="nationalId"
+                                 value="#{memberRegistrationBean.form.nationalId}"
+                                 pt:placeholder="e.g. 12345678"
+                                 label="National ID" required="true"
+                                 requiredMessage="National ID is required"
+                                 styleClass="reg-input"/>
+                    <h:message for="nationalId" styleClass="reg-error"/>
+                </div>
+
+                <div class="btn-row">
+                    <button type="button" class="btn-next" onclick="goStep(1,2)">
+                        Next &#8594;
+                    </button>
+                </div>
             </div>
 
-            <div class="register-field">
-                <h:outputLabel
-                        for="username"
-                        value="Username"/>
+            <!-- ════ STEP 2 — Account Info ════ -->
+            <div id="step2" style="display:none;">
 
-                <h:inputText
-                        id="username"
-                        value="#{memberRegistrationBean.form.username}"
-                        label="Username"
-                        required="true"
-                        requiredMessage="Username is required"
-                        styleClass="register-input"/>
+                <div class="reg-field">
+                    <h:outputLabel for="username" value="Username"/>
+                    <h:inputText id="username"
+                                 value="#{memberRegistrationBean.form.username}"
+                                 pt:placeholder="Choose a username"
+                                 label="Username" required="true"
+                                 requiredMessage="Username is required"
+                                 styleClass="reg-input"/>
+                    <h:message for="username" styleClass="reg-error"/>
+                </div>
 
-                <h:message
-                        for="username"
-                        styleClass="register-error"/>
+                <div class="reg-field">
+                    <h:outputLabel for="email" value="Email Address"/>
+                    <h:inputText id="email"
+                                 value="#{memberRegistrationBean.form.email}"
+                                 pt:placeholder="e.g. john@email.com"
+                                 label="Email" required="true"
+                                 requiredMessage="Email address is required"
+                                 styleClass="reg-input">
+                        <f:validateRegex pattern="^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$"/>
+                    </h:inputText>
+                    <h:message for="email" styleClass="reg-error"/>
+                </div>
+
+                <div class="btn-row">
+                    <button type="button" class="btn-back" onclick="goStep(2,1)">
+                        &#8592; Back
+                    </button>
+                    <button type="button" class="btn-next" onclick="goStep(2,3)">
+                        Next &#8594;
+                    </button>
+                </div>
             </div>
 
-            <div class="register-field">
-                <h:outputLabel
-                        for="email"
-                        value="Email Address"/>
+            <!-- ════ STEP 3 — Security ════ -->
+            <div id="step3" style="display:none;">
 
-                <h:inputText
-                        id="email"
-                        value="#{memberRegistrationBean.form.email}"
-                        label="Email Address"
-                        required="true"
-                        requiredMessage="Email is required"
-                        styleClass="register-input">
+                <div class="reg-field">
+                    <h:outputLabel for="password" value="Password"/>
+                    <div style="position:relative;">
+                        <h:inputSecret id="password"
+                                       value="#{memberRegistrationBean.form.password}"
+                                       pt:placeholder="Min. 8 characters"
+                                       label="Password" required="true"
+                                       requiredMessage="Password is required"
+                                       redisplay="true"
+                                       styleClass="reg-input">
+                            <f:validateLength minimum="8"/>
+                        </h:inputSecret>
+                    </div>
+                    <h:message for="password" styleClass="reg-error"/>
+                </div>
 
-                    <f:validateRegex
-                            pattern="^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$"
-                            message="Enter a valid email address (e.g. name@example.com)"/>
+                <div class="reg-field">
+                    <label for="confirmPwd">Confirm Password</label>
+                    <input type="password" id="confirmPwd" class="reg-input"
+                           placeholder="Re-enter your password"/>
+                </div>
 
-                </h:inputText>
-
-                <h:message
-                        for="email"
-                        styleClass="register-error"/>
-            </div>
-
-            <div class="register-field">
-                <h:outputLabel
-                        for="nationalId"
-                        value="National ID"/>
-
-                <h:inputText
-                        id="nationalId"
-                        value="#{memberRegistrationBean.form.nationalId}"
-                        required="true"
-                        requiredMessage="National ID is required"
-                        styleClass="register-input"/>
-
-                <h:message
-                        for="nationalId"
-                        styleClass="register-error"/>
-            </div>
-
-            <div class="register-field">
-                <h:outputLabel
-                        for="password"
-                        value="Password"/>
-
-                <h:inputSecret
-                        id="password"
-                        value="#{memberRegistrationBean.form.password}"
-                        required="true"
-                        requiredMessage="Password is required"
-                        redisplay="true"
-                        styleClass="register-input">
-
-                    <f:validateLength minimum="8"/>
-
-                </h:inputSecret>
-
-                <h:message
-                        for="password"
-                        styleClass="register-error"/>
-            </div>
-
-            <h:commandButton
-                    value="CREATE MEMBER ACCOUNT"
-                    action="#{memberRegistrationBean.register}"
-                    styleClass="btn-register-submit"/>
-
-            <div class="register-footer">
-
-                <span>
-                    Already have an account?
-                </span>
-
-                <h:link
-                        value="SIGN IN"
-                        outcome="/login.xhtml"/>
-
+                <div class="btn-row">
+                    <button type="button" class="btn-back" onclick="goStep(3,2)">
+                        &#8592; Back
+                    </button>
+                    <h:commandButton value="Create Account"
+                                     action="#{memberRegistrationBean.register}"
+                                     onclick="return validateStep3()"
+                                     styleClass="btn-submit"/>
+                </div>
             </div>
 
         </h:form>
 
+        <div class="reg-footer">
+            Already have an account?
+            <h:link value="Sign In" outcome="/login.xhtml"/>
+        </div>
+
+        <script>
+            // ── Step navigation ──────────────────────────────
+            function goStep(from, to) {
+                var fields = getStepFields(from);
+                if (to > from) {
+                    for (var i = 0; i &lt; fields.length; i++) {
+                        if (!fields[i].value.trim()) {
+                            showToast('error', 'Missing Information',
+                                      'Please fill in all fields before continuing.');
+                            fields[i].focus();
+                            return;
+                        }
+                    }
+                }
+                document.getElementById('step' + from).style.display = 'none';
+                document.getElementById('step' + to).style.display = 'block';
+                updateStepBar(to);
+            }
+
+            function getStepFields(step) {
+                var s = document.getElementById('step' + step);
+                return Array.prototype.slice.call(s.querySelectorAll('input[type="text"],input[type="password"]'));
+            }
+
+            function updateStepBar(active) {
+                for (var i = 1; i &lt;= 3; i++) {
+                    var item = document.getElementById('si' + i);
+                    item.className = 'step-item' +
+                        (i === active ? ' active' : (i &lt; active ? ' done' : ''));
+                    var circle = item.querySelector('.step-circle');
+                    circle.innerHTML = i &lt; active ? '&#10003;' : i;
+                }
+            }
+
+            // ── Password match validation ─────────────────────
+            function validateStep3() {
+                var pwd  = document.getElementById('regForm:password').value;
+                var cpwd = document.getElementById('confirmPwd').value;
+                if (pwd !== cpwd) {
+                    showToast('error', 'Password Mismatch',
+                              'Passwords do not match. Please try again.');
+                    return false;
+                }
+                if (pwd.length &lt; 8) {
+                    showToast('error', 'Too Short',
+                              'Password must be at least 8 characters.');
+                    return false;
+                }
+                return true;
+            }
+
+            // ── Toast engine ─────────────────────────────────
+            function showToast(type, title, message) {
+                var c = document.querySelector('.toast-container');
+                if (!c) {
+                    c = document.createElement('ul');
+                    c.className = 'toast-container';
+                    document.body.appendChild(c);
+                }
+                var icon = type === 'success' ? '&#10003;' : '&#33;';
+                var li = document.createElement('li');
+                li.className = 'toast-item toast-' + type;
+                li.innerHTML =
+                    '&lt;div class="toast-icon"&gt;' + icon + '&lt;/div&gt;' +
+                    '&lt;div class="toast-body"&gt;' +
+                        '&lt;div class="toast-title"&gt;' + title + '&lt;/div&gt;' +
+                        '&lt;div class="toast-msg"&gt;'   + message + '&lt;/div&gt;' +
+                    '&lt;/div&gt;';
+                c.appendChild(li);
+                setTimeout(function() {
+                    li.style.transition = 'opacity 0.4s, transform 0.4s';
+                    li.style.opacity    = '0';
+                    li.style.transform  = 'translateX(60px)';
+                    setTimeout(function() { li.remove(); }, 420);
+                }, 5000);
+            }
+
+            // ── Auto-dismiss server-side messages ────────────
+            document.addEventListener('DOMContentLoaded', function() {
+                var items = document.querySelectorAll('.toast-container li, .toast-item');
+                items.forEach(function(el, i) {
+                    setTimeout(function() {
+                        el.style.transition = 'opacity 0.4s, transform 0.4s';
+                        el.style.opacity    = '0';
+                        el.style.transform  = 'translateX(60px)';
+                        setTimeout(function() { el.remove(); }, 420);
+                    }, 5000 + i * 300);
+                });
+
+                // Restore step position after validation error (page reload)
+                var hasErrors = document.querySelector('.reg-error');
+                if (hasErrors) {
+                    // Try to show the right step
+                    var steps = ['step1','step2','step3'];
+                    steps.forEach(function(id) {
+                        var s = document.getElementById(id);
+                        var err = s ? s.querySelector('.reg-error:not(:empty)') : null;
+                        if (err) {
+                            steps.forEach(function(x) {
+                                document.getElementById(x).style.display = 'none';
+                            });
+                            s.style.display = 'block';
+                            updateStepBar(parseInt(id.replace('step',''), 10));
+                        }
+                    });
+                }
+            });
+        </script>
     </ui:define>
 
+    <!-- ═══════════════════════════════════════════════
+         RIGHT PANEL
+    ═══════════════════════════════════════════════ -->
     <ui:define name="sideContent">
-
         <style>
-            .register-side-icon {
-                margin: 0 auto;
-                display: flex;
-                height: 7rem;
-                width: 7rem;
-                align-items: center;
-                justify-content: center;
+            .rs-icon {
+                width: 6rem; height: 6rem;
                 border-radius: 50%;
                 background: white;
-                font-size: 3rem;
-                color: #dc2626;
+                display: flex; align-items: center; justify-content: center;
+                margin: 0 auto 1.75rem;
                 box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+                font-size: 2.5rem; color: #dc2626;
             }
-            .register-side-heading {
-                margin-top: 2rem;
-                font-size: 1.8rem;
-                font-weight: 800;
+            .rs-heading { font-size: 1.65rem; font-weight: 800; }
+            .rs-benefits { margin-top: 1.5rem; text-align: left; display: flex; flex-direction: column; gap: 0.8rem; }
+            .rs-benefit {
+                display: flex; align-items: flex-start; gap: 0.6rem;
+                font-size: 0.85rem; color: rgba(255,255,255,0.9);
             }
-            .register-side-text {
-                margin-top: 1.5rem;
-                font-size: 1.05rem;
-                line-height: 1.6;
+            .rs-check {
+                flex-shrink: 0; margin-top: 2px;
+                width: 18px; height: 18px;
+                border-radius: 50%; background: rgba(255,255,255,0.25);
+                display: flex; align-items: center; justify-content: center;
+                font-size: 0.65rem; font-weight: 700;
             }
-            .btn-back-to-login {
+            .btn-login-link {
                 display: inline-block;
-                margin-top: 2.5rem;
+                margin-top: 2rem;
                 border: 2px solid white;
-                border-radius: 0.75rem;
-                padding: 1rem 2.5rem;
-                font-weight: 700;
-                color: white;
+                border-radius: 0.65rem;
+                padding: 0.75rem 2rem;
+                color: white; font-weight: 700; font-size: 0.875rem;
                 text-decoration: none;
                 transition: background 0.2s, color 0.2s;
             }
-            .btn-back-to-login:hover {
-                background: white;
-                color: #dc2626;
-            }
+            .btn-login-link:hover { background: white; color: #dc2626; }
         </style>
 
-        <div class="register-side-icon">
-            +
+        <div class="rs-icon">
+            <svg width="38" height="38" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="26" cy="14" r="7" fill="#dc2626"/>
+                <path d="M12 44c0-7.732 6.268-14 14-14s14 6.268 14 14" stroke="#dc2626" stroke-width="3.5" stroke-linecap="round"/>
+                <circle cx="10" cy="18" r="5" fill="#dc2626" opacity="0.6"/>
+                <path d="M2 41c0-4.5 3.5-8 8-9" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+                <circle cx="42" cy="18" r="5" fill="#dc2626" opacity="0.6"/>
+                <path d="M50 41c0-4.5-3.5-8-8-9" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+            </svg>
         </div>
 
-        <h2 class="register-side-heading">
-            Join Kimwanyi SACCO
-        </h2>
+        <h2 class="rs-heading">Join Kimwanyi SACCO</h2>
 
-        <p class="register-side-text">
-            Create your member account and begin accessing savings,
-            loans and account services.
-        </p>
+        <div class="rs-benefits">
+            <div class="rs-benefit">
+                <span class="rs-check">&#10003;</span>
+                <span>Open a savings account instantly</span>
+            </div>
+            <div class="rs-benefit">
+                <span class="rs-check">&#10003;</span>
+                <span>Apply for affordable loans</span>
+            </div>
+            <div class="rs-benefit">
+                <span class="rs-check">&#10003;</span>
+                <span>Track your transactions anytime</span>
+            </div>
+            <div class="rs-benefit">
+                <span class="rs-check">&#10003;</span>
+                <span>Secure and member-owned</span>
+            </div>
+        </div>
 
-        <h:link
-                value="BACK TO LOGIN"
+        <h:link value="Back to Login"
                 outcome="/login.xhtml"
-                styleClass="btn-back-to-login"/>
+                styleClass="btn-login-link"/>
 
     </ui:define>
 
