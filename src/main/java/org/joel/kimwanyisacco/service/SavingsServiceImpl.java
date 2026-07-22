@@ -15,7 +15,9 @@ import org.joel.kimwanyisacco.dto.SavingsTransactionDto;
 import org.joel.kimwanyisacco.dto.WithdrawalForm;
 import org.joel.kimwanyisacco.model.SavingsAccount;
 import org.joel.kimwanyisacco.model.SavingsTransaction;
+import org.joel.kimwanyisacco.model.enums.NotificationType;
 import org.joel.kimwanyisacco.model.enums.TransactionType;
+import org.joel.kimwanyisacco.policy.WithdrawalPolicy;
 import org.joel.kimwanyisacco.repository.SavingsAccountRepository;
 import org.joel.kimwanyisacco.repository.SavingsTransactionRepository;
 import org.springframework.stereotype.Service;
@@ -30,17 +32,23 @@ public class SavingsServiceImpl implements SavingsService {
     private final SavingsTransactionRepository savingsTransactionRepository;
     private final SavingsAccountConverter savingsAccountConverter;
     private final SavingsTransactionConverter savingsTransactionConverter;
+    private final WithdrawalPolicy withdrawalPolicy;
+    private final NotificationService notificationService;
 
     public SavingsServiceImpl(
             SavingsAccountRepository savingsAccountRepository,
             SavingsTransactionRepository savingsTransactionRepository,
             SavingsAccountConverter savingsAccountConverter,
-            SavingsTransactionConverter savingsTransactionConverter
+            SavingsTransactionConverter savingsTransactionConverter,
+            WithdrawalPolicy withdrawalPolicy,
+            NotificationService notificationService
     ) {
         this.savingsAccountRepository = savingsAccountRepository;
         this.savingsTransactionRepository = savingsTransactionRepository;
         this.savingsAccountConverter = savingsAccountConverter;
         this.savingsTransactionConverter = savingsTransactionConverter;
+        this.withdrawalPolicy = withdrawalPolicy;
+        this.notificationService = notificationService;
     }
 
     @Override
@@ -70,12 +78,46 @@ public class SavingsServiceImpl implements SavingsService {
         tx.setCreatedAt(LocalDateTime.now());
         savingsTransactionRepository.save(tx);
 
+        notificationService.notify(account.getMember().getUserAccount(), NotificationType.DEPOSIT,
+                "Deposit Received", "UGX " + form.getAmount() + " deposited. New balance: UGX " + balanceAfter + ".");
+
         return savingsTransactionConverter.toDto(tx);
     }
 
     @Override
+    @Transactional
     public SavingsTransactionDto withdraw(WithdrawalForm form) {
-        throw new UnsupportedOperationException("not implemented");
+        SavingsAccount account = savingsAccountRepository.findById(form.getSavingsAccountId())
+                .orElseThrow(() -> new ResourceNotFoundException("Savings account not found"));
+
+        BigDecimal balanceBefore = account.getBalance();
+
+        if (!withdrawalPolicy.isWithdrawalAllowed(balanceBefore, form.getAmount())) {
+            throw new IllegalArgumentException(
+                    "Withdrawal not allowed: amount must be positive and leave at least UGX 20,000 in the account.");
+        }
+
+        BigDecimal balanceAfter = balanceBefore.subtract(form.getAmount());
+
+        account.setBalance(balanceAfter);
+        savingsAccountRepository.save(account);
+
+        SavingsTransaction tx = new SavingsTransaction();
+        tx.setSavingsAccount(account);
+        tx.setReference("WTH-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+        tx.setType(TransactionType.WITHDRAW);
+        tx.setAmount(form.getAmount());
+        tx.setBalanceBefore(balanceBefore);
+        tx.setBalanceAfter(balanceAfter);
+        tx.setDescription(form.getDescription() != null && !form.getDescription().isBlank()
+                ? form.getDescription().trim() : "Member withdrawal");
+        tx.setCreatedAt(LocalDateTime.now());
+        savingsTransactionRepository.save(tx);
+
+        notificationService.notify(account.getMember().getUserAccount(), NotificationType.WITHDRAWAL,
+                "Withdrawal Processed", "UGX " + form.getAmount() + " withdrawn. New balance: UGX " + balanceAfter + ".");
+
+        return savingsTransactionConverter.toDto(tx);
     }
 
     @Override

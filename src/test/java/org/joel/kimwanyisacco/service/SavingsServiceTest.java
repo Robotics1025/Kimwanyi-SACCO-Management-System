@@ -13,9 +13,11 @@ import org.joel.kimwanyisacco.common.util.converter.SavingsAccountConverter;
 import org.joel.kimwanyisacco.common.util.converter.SavingsTransactionConverter;
 import org.joel.kimwanyisacco.dto.SavingsAccountDto;
 import org.joel.kimwanyisacco.dto.SavingsTransactionDto;
+import org.joel.kimwanyisacco.dto.WithdrawalForm;
 import org.joel.kimwanyisacco.model.SavingsAccount;
 import org.joel.kimwanyisacco.model.SavingsTransaction;
 import org.joel.kimwanyisacco.model.enums.TransactionType;
+import org.joel.kimwanyisacco.policy.WithdrawalPolicy;
 import org.joel.kimwanyisacco.repository.SavingsAccountRepository;
 import org.joel.kimwanyisacco.repository.SavingsTransactionRepository;
 import org.junit.jupiter.api.Test;
@@ -28,14 +30,17 @@ class SavingsServiceTest {
 
     @Mock private SavingsAccountRepository savingsAccountRepository;
     @Mock private SavingsTransactionRepository savingsTransactionRepository;
+    @Mock private NotificationService notificationService;
 
     private final SavingsAccountConverter savingsAccountConverter = new SavingsAccountConverter();
     private final SavingsTransactionConverter savingsTransactionConverter = new SavingsTransactionConverter();
+    private final WithdrawalPolicy withdrawalPolicy = new WithdrawalPolicy();
 
     private SavingsServiceImpl service() {
         return new SavingsServiceImpl(
                 savingsAccountRepository, savingsTransactionRepository,
-                savingsAccountConverter, savingsTransactionConverter);
+                savingsAccountConverter, savingsTransactionConverter,
+                withdrawalPolicy, notificationService);
     }
 
     @Test
@@ -79,6 +84,44 @@ class SavingsServiceTest {
         assertEquals(2, history.size());
         assertEquals("WITHDRAW", history.get(0).getTransactionType());
         assertEquals("DEPOSIT", history.get(1).getTransactionType());
+    }
+
+    @Test
+    void withdrawSucceedsAndReturnsDebitedTransaction() {
+        org.joel.kimwanyisacco.model.UserAccount userAccount = new org.joel.kimwanyisacco.model.UserAccount();
+        userAccount.setUsername("jkamau");
+        org.joel.kimwanyisacco.model.Member member = new org.joel.kimwanyisacco.model.Member();
+        member.setUserAccount(userAccount);
+
+        SavingsAccount account = new SavingsAccount();
+        account.setId(7L);
+        account.setBalance(new BigDecimal("50000.00"));
+        account.setMember(member);
+        when(savingsAccountRepository.findById(7L)).thenReturn(Optional.of(account));
+
+        WithdrawalForm form = new WithdrawalForm();
+        form.setSavingsAccountId(7L);
+        form.setAmount(new BigDecimal("20000.00"));
+
+        SavingsTransactionDto result = service().withdraw(form);
+
+        assertEquals("WITHDRAW", result.getTransactionType());
+        assertEquals(new BigDecimal("20000.00"), result.getAmount());
+        assertEquals(new BigDecimal("30000.00"), account.getBalance());
+    }
+
+    @Test
+    void withdrawThrowsWhenItWouldDropBelowMinimumBalance() {
+        SavingsAccount account = new SavingsAccount();
+        account.setId(7L);
+        account.setBalance(new BigDecimal("30000.00"));
+        when(savingsAccountRepository.findById(7L)).thenReturn(Optional.of(account));
+
+        WithdrawalForm form = new WithdrawalForm();
+        form.setSavingsAccountId(7L);
+        form.setAmount(new BigDecimal("15000.00"));
+
+        assertThrows(IllegalArgumentException.class, () -> service().withdraw(form));
     }
 
     private void setCreatedAt(SavingsTransaction transaction, LocalDateTime createdAt) {

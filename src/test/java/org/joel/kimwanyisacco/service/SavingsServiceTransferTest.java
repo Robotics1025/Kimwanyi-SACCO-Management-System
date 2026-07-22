@@ -25,6 +25,8 @@ public class SavingsServiceTransferTest {
     @Mock private SavingsTransactionRepository savingsTransactionRepository;
     @Mock private SavingsAccountConverter savingsAccountConverter;
     @Mock private SavingsTransactionConverter savingsTransactionConverter;
+    @Mock private org.joel.kimwanyisacco.policy.WithdrawalPolicy withdrawalPolicy;
+    @Mock private NotificationService notificationService;
 
     @InjectMocks
     private SavingsServiceImpl savingsService;
