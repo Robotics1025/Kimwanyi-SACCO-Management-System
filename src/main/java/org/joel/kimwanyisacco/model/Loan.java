@@ -149,6 +149,10 @@ public class Loan {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public Member getMember() {
         return member;
     }

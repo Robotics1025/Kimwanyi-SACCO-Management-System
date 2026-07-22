@@ -13,6 +13,7 @@ import org.joel.kimwanyisacco.model.SavingsAccount;
 import org.joel.kimwanyisacco.model.UserAccount;
 import org.joel.kimwanyisacco.model.enums.AuditAction;
 import org.joel.kimwanyisacco.model.enums.LoanStatus;
+import org.joel.kimwanyisacco.model.enums.NotificationType;
 import org.joel.kimwanyisacco.policy.LoanEligibilityPolicy;
 import org.joel.kimwanyisacco.policy.LoanInterestCalculator;
 import org.joel.kimwanyisacco.repository.LoanRepository;
@@ -34,6 +35,7 @@ public class LoanServiceImpl implements LoanService {
     private final LoanEligibilityPolicy loanEligibilityPolicy;
     private final LoanInterestCalculator loanInterestCalculator;
     private final AuditLogService auditLogService;
+    private final NotificationService notificationService;
 
     public LoanServiceImpl(
             LoanRepository loanRepository,
@@ -43,7 +45,8 @@ public class LoanServiceImpl implements LoanService {
             UserAccountRepository userAccountRepository,
             LoanEligibilityPolicy loanEligibilityPolicy,
             LoanInterestCalculator loanInterestCalculator,
-            AuditLogService auditLogService
+            AuditLogService auditLogService,
+            NotificationService notificationService
     ) {
         this.loanRepository = loanRepository;
         this.loanRepaymentRepository = loanRepaymentRepository;
@@ -53,6 +56,7 @@ public class LoanServiceImpl implements LoanService {
         this.loanEligibilityPolicy = loanEligibilityPolicy;
         this.loanInterestCalculator = loanInterestCalculator;
         this.auditLogService = auditLogService;
+        this.notificationService = notificationService;
     }
 
     @Override
@@ -87,6 +91,9 @@ public class LoanServiceImpl implements LoanService {
         auditLogService.record(member.getUserAccount(), AuditAction.LOAN_APPLIED, "Loan", saved.getId(),
                 "Applied for loan: UGX " + principal);
 
+        notificationService.notifyAdmins(NotificationType.LOAN_APPLICATION, "New Loan Application",
+                member.getUserAccount().getUsername() + " applied for UGX " + principal);
+
         return saved;
     }
 
@@ -113,6 +120,9 @@ public class LoanServiceImpl implements LoanService {
 
             auditLogService.record(admin, AuditAction.LOAN_APPROVED, "Loan", loan.getId(),
                     "Approved loan for member: " + loan.getMember().getUserAccount().getUsername());
+
+            notificationService.notify(loan.getMember().getUserAccount(), NotificationType.LOAN_APPROVED,
+                    "Loan Approved", "Your loan of UGX " + loan.getPrincipal() + " was approved.");
         } else {
             loan.setStatus(LoanStatus.REJECTED);
             loan.setRejectionReason(form.getRemarks());
@@ -120,6 +130,9 @@ public class LoanServiceImpl implements LoanService {
 
             auditLogService.record(admin, AuditAction.LOAN_REJECTED, "Loan", loan.getId(),
                     "Rejected loan. Reason: " + form.getRemarks());
+
+            notificationService.notify(loan.getMember().getUserAccount(), NotificationType.LOAN_REJECTED,
+                    "Loan Rejected", "Your loan application was rejected. Reason: " + form.getRemarks());
         }
 
         return loan;
@@ -170,6 +183,9 @@ public class LoanServiceImpl implements LoanService {
 
         auditLogService.record(loan.getMember().getUserAccount(), AuditAction.LOAN_REPAYMENT_RECORDED, "LoanRepayment", repayment.getId(),
                 "Repaid UGX " + amount + " for Loan #" + loan.getId());
+
+        notificationService.notify(loan.getMember().getUserAccount(), NotificationType.LOAN_REPAYMENT,
+                "Repayment Recorded", "UGX " + amount + " repaid. Outstanding balance: UGX " + newOutstanding + ".");
     }
 
     @Override
