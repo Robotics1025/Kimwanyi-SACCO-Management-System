@@ -526,3 +526,18 @@ body {
 .activity-title { font-weight: 600; font-size: 0.88rem; color: #111827; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .activity-sub { font-size: 0.73rem; color: #9ca3af; margin-top: 1px; }
 .activity-amount { font-weight: 700; font-size: 0.88rem; white-space: nowrap; }
+
+/* Notification bell badge */
+.notif-badge {
+    position: absolute;
+    top: -6px; right: -8px;
+    min-width: 16px; height: 16px;
+    padding: 0 4px;
+    background: #dc2626;
+    color: #fff;
+    border-radius: 999px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    line-height: 1;
+}
