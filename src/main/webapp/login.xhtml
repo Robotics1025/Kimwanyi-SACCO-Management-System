@@ -2,7 +2,8 @@
         template="/WEB-INF/templates/login-template.xhtml"
         xmlns="http://www.w3.org/1999/xhtml"
         xmlns:h="jakarta.faces.html"
-        xmlns:ui="jakarta.faces.facelets">
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:pt="jakarta.faces.passthrough">
 
     <ui:define name="title">
         Login | Kimwanyi SACCO
@@ -10,55 +11,72 @@
 
     <ui:define name="formContent">
 
-        <h2 class="text-4xl font-bold">
-            Welcome Back!
-        </h2>
 
-        <p class="mt-2 text-gray-500">
-            Please sign in to continue
-        </p>
 
-        <h:form styleClass="mt-10 space-y-6">
 
-            <div>
-                <h:outputLabel
-                        for="username"
-                        value="Username or Email"
-                        styleClass="mb-2 block font-semibold"/>
+        <h2 class="form-heading">Welcome Back!</h2>
+        <p class="form-subtitle">Please sign in to continue</p>
 
-                <h:inputText
-                        id="username"
-                        value="#{loginBean.form.username}"
-                        styleClass="w-full rounded-xl border
-                                    px-4 py-4"/>
+
+
+        <h:form styleClass="login-form">
+
+            <!-- Username -->
+            <div class="field">
+                <h:outputLabel for="username" value="Username or Email"/>
+                <div class="input-wrap">
+                    <span class="input-icon">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"
+                             stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                    </span>
+                    <h:inputText id="username" value="#{loginBean.loginForm.username}"
+                                 pt:placeholder="Enter username or email"
+                                 styleClass="sacco-field"/>
+                </div>
             </div>
 
-            <div>
-                <h:outputLabel
-                        for="password"
-                        value="Password"
-                        styleClass="mb-2 block font-semibold"/>
-
-                <h:inputSecret
-                        id="password"
-                        value="#{loginBean.form.password}"
-                        styleClass="w-full rounded-xl border
-                                    px-4 py-4"/>
+            <!-- Password -->
+            <div class="field">
+                <h:outputLabel for="password" value="Password"/>
+                <div class="input-wrap">
+                    <span class="input-icon">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"
+                             stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                            <path d="M7 11V7a5 5 0 0110 0v4"/>
+                        </svg>
+                    </span>
+                    <h:inputSecret id="password" value="#{loginBean.loginForm.password}"
+                                   pt:placeholder="Enter password"
+                                   styleClass="sacco-field sacco-field-eye"/>
+                    <span class="input-eye">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"
+                             stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </span>
+                </div>
             </div>
 
-            <h:commandButton
-                    value="SIGN IN"
-                    action="#{loginBean.login}"
-                    styleClass="w-full rounded-xl bg-red-600
-                                px-6 py-4 font-bold text-white"/>
+            <!-- Remember me -->
+            <label class="remember-row">
+                <input type="checkbox"/>
+                Remember me
+            </label>
 
-            <div class="text-center">
-                <span>Don’t have an account? </span>
+            <!-- Sign In -->
+            <h:commandButton value="SIGN IN"
+                             action="#{loginBean.login}"
+                             styleClass="btn-signin"/>
 
-                <h:link
-                        value="REGISTER"
-                        outcome="/members/register.xhtml"
-                        styleClass="font-bold text-red-600"/>
+            <!-- Register link -->
+            <div class="register-row">
+                Don't have an account?&#160;
+                <h:link value="REGISTER" outcome="/members/register.xhtml"/>
             </div>
 
         </h:form>
@@ -67,21 +85,47 @@
 
     <ui:define name="sideContent">
 
-        <h2 class="text-4xl font-bold">
-            Join Kimwanyi SACCO
-        </h2>
+        <style>
+            .side-heading {
+                font-size: 1.8rem;
+                font-weight: 800;
+                color: white;
+                line-height: 1.3;
+            }
+            .side-text {
+                margin-top: 1rem;
+                color: rgba(255,255,255,0.85);
+                font-size: 0.95rem;
+                line-height: 1.6;
+            }
+            .btn-register {
+                display: inline-block;
+                margin-top: 2rem;
+                border: 2px solid white;
+                border-radius: 0.75rem;
+                padding: 0.85rem 2.5rem;
+                color: white;
+                font-weight: 700;
+                font-size: 0.9rem;
+                letter-spacing: 0.06em;
+                text-decoration: none;
+                transition: background 0.2s, color 0.2s;
+            }
+            .btn-register:hover {
+                background: white;
+                color: #dc2626;
+            }
+        </style>
 
-        <p class="mt-6 text-lg">
-            Create an account today and enjoy seamless access
-            to our services.
+        <h2 class="side-heading">Join Kimwanyi SACCO</h2>
+
+        <p class="side-text">
+            Create an account today and enjoy seamless access to our services.
         </p>
 
-        <h:link
-                value="REGISTER NOW"
+        <h:link value="REGISTER NOW"
                 outcome="/members/register.xhtml"
-                styleClass="mt-10 inline-block rounded-xl
-                            border-2 border-white px-10 py-4
-                            font-bold text-white"/>
+                styleClass="btn-register"/>
 
     </ui:define>
 

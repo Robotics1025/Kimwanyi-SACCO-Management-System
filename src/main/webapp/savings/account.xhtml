@@ -1,0 +1,103 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/member-template.xhtml">
+
+    <ui:define name="title">Savings Account | Kimwanyi SACCO</ui:define>
+    <ui:define name="pageTitle">Savings Account</ui:define>
+
+    <ui:define name="content">
+        <div class="mem-card">
+            <div class="mem-card-header" style="display:flex; justify-content:space-between; align-items:center;">
+                <span class="mem-card-title"><i class="fa-solid fa-list-ul" style="margin-right:8px; color:#6366f1;"></i> Transaction History (Account: #{savingsHistoryBean.account.accountNumber})</span>
+            </div>
+            
+            <div class="mem-card-body" style="padding: 1.5rem;">
+                <h:form id="txForm">
+                    <p:dataTable id="txTable" var="tx" value="#{savingsHistoryBean.transactions}"
+                                 paginator="true" rows="10"
+                                 paginatorPosition="bottom"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 currentPageReportTemplate="Showing {startRecord} to {endRecord} of {totalRecords} entries"
+                                 rowsPerPageTemplate="10,25,50"
+                                 emptyMessage="No transactions found."
+                                 globalFilterFunction="#{savingsHistoryBean.globalFilterFunction}"
+                                 widgetVar="txTableWidget"
+                                 styleClass="mem-pf-table">
+
+                        <f:facet name="header">
+                            <div style="display:flex; justify-content:flex-end;">
+                                <span class="ui-input-icon-left">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                    <p:inputText id="globalFilter" onkeyup="PF('txTableWidget').filter()" placeholder="Search transactions..." style="width:300px; padding-left: 2rem;"/>
+                                </span>
+                            </div>
+                        </f:facet>
+
+                        <p:column headerText="Date &amp; Time" sortBy="#{tx.createdAt}">
+                            <h:outputText value="#{tx.createdAt}">
+                                <f:convertDateTime type="localDateTime" pattern="dd MMM yyyy, HH:mm"/>
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column headerText="Reference" sortBy="#{tx.reference}" filterBy="#{tx.reference}" filterMatchMode="contains" filterStyle="display:none;">
+                            <span style="font-family:monospace; color:#6b7280; font-size:0.85rem;">#{tx.reference}</span>
+                        </p:column>
+
+                        <p:column headerText="Type" sortBy="#{tx.transactionType}" filterBy="#{tx.transactionType}" filterMatchMode="exact" filterStyle="display:none;">
+                            <span class="badge #{tx.transactionType == 'DEPOSIT' or tx.transactionType == 'TRANSFER_IN' or tx.transactionType == 'INTEREST' ? 'badge-green' : 'badge-red'}">
+                                #{tx.transactionType}
+                            </span>
+                        </p:column>
+
+                        <p:column headerText="Description" filterBy="#{tx.description}" filterMatchMode="contains" filterStyle="display:none;">
+                            <h:outputText value="#{tx.description}" style="color:#4b5563;"/>
+                        </p:column>
+
+                        <p:column headerText="Amount" sortBy="#{tx.amount}" style="text-align:right;">
+                            <h:outputText value="#{tx.amount}" style="font-weight:600; color:#111827;">
+                                <f:convertNumber type="currency" currencySymbol="UGX " maxFractionDigits="0"/>
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column headerText="Balance After" style="text-align:right;">
+                            <h:outputText value="#{tx.balanceAfter}" style="font-weight:700; color:#7c3aed;">
+                                <f:convertNumber type="currency" currencySymbol="UGX " maxFractionDigits="0"/>
+                            </h:outputText>
+                        </p:column>
+                    </p:dataTable>
+                </h:form>
+            </div>
+        </div>
+
+        <style>
+            /* Custom styling for PrimeFaces DataTable to match our modern UI */
+            .mem-pf-table .ui-datatable-header {
+                background: #fff; border: none; border-bottom: 1px solid var(--mem-border);
+                padding: 1rem 0; text-align: right;
+            }
+            .mem-pf-table th {
+                background: #f8fafc !important; color: #475569 !important;
+                font-weight: 600 !important; font-size: 0.8rem !important;
+                text-transform: uppercase !important; border-top: none !important;
+                border-left: none !important; border-right: none !important;
+                border-bottom: 2px solid #e2e8f0 !important;
+            }
+            .mem-pf-table td {
+                border-left: none !important; border-right: none !important;
+                border-bottom: 1px solid #f1f5f9 !important;
+                padding: 1rem 0.75rem !important; font-size: 0.9rem !important;
+            }
+            .mem-pf-table tr:hover { background: #f8fafc !important; }
+            .ui-paginator {
+                background: #fff !important; border: none !important;
+                border-top: 1px solid var(--mem-border) !important;
+                padding: 1rem 0 0 !important; text-align: right !important;
+            }
+            .ui-input-icon-left i { position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: #94a3b8; }
+            .ui-input-icon-left input { padding-left: 2.25rem !important; }
+        </style>
+    </ui:define>
+</ui:composition>

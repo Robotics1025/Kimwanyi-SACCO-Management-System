@@ -20,4 +20,6 @@ public interface MemberRepository
     boolean existsByNationalId(String nationalId);
 
     long countByStatus(MemberStatus status);
+
+    long countByMembershipNumberStartingWith(String prefix);
 }

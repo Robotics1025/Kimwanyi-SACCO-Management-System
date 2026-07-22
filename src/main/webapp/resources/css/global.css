@@ -1,0 +1,429 @@
+/* ═══════════════════════════════════════════════════════════
+   global.css  –  Kimwanyi SACCO Management System
+   Shared styles for login-template and all auth pages.
+═══════════════════════════════════════════════════════════ */
+
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── Body ── */
+body {
+    min-height: 100vh;
+    background: #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    padding: 1.5rem;
+}
+
+/* ══════════════════════════════════════
+   AUTH CARD LAYOUT
+══════════════════════════════════════ */
+.login-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+    max-width: 960px;
+    border-radius: 1.5rem;
+    overflow: hidden;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.18);
+    background: #ffffff;
+}
+
+/* ── Left panel ── */
+.left-panel {
+    background: #ffffff;
+    padding: 3rem 3.5rem;
+    overflow-y: auto;
+    max-height: 100vh;
+}
+
+/* ── Logo ── */
+.logo-area {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 2.5rem;
+}
+
+.logo-name {
+    font-size: 1.2rem;
+    font-weight: 900;
+    letter-spacing: 0.05em;
+    color: #111827;
+}
+
+.logo-name span { color: #dc2626; }
+
+.logo-tagline {
+    font-size: 0.7rem;
+    color: #9ca3af;
+    margin-top: 2px;
+}
+
+/* ── Right panel ── */
+.right-panel {
+    position: relative;
+    background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+    padding: 3rem;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 600px;
+    overflow: hidden;
+}
+
+.right-watermark {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.08;
+    pointer-events: none;
+}
+
+.dot-grid {
+    position: absolute;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 5px;
+    opacity: 0.28;
+}
+
+.dot-grid.top-left  { top: 2rem;    left: 2rem; }
+.dot-grid.bot-right { bottom: 2rem; right: 2rem; }
+
+.dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: white;
+    display: block;
+}
+
+.right-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+}
+
+.icon-circle {
+    width: 5.5rem;
+    height: 5.5rem;
+    border-radius: 50%;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 2rem;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+}
+
+/* ══════════════════════════════════════
+   LOGIN FORM
+══════════════════════════════════════ */
+.form-heading {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #111827;
+}
+
+.form-subtitle {
+    margin-top: 0.4rem;
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.login-form {
+    margin-top: 2rem;
+}
+
+.field {
+    margin-bottom: 1.1rem;
+}
+
+.field label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.35rem;
+}
+
+.input-wrap { position: relative; }
+
+.input-icon {
+    position: absolute;
+    top: 50%;
+    left: 0.9rem;
+    transform: translateY(-50%);
+    color: #9ca3af;
+    pointer-events: none;
+    display: flex;
+}
+
+.input-eye {
+    position: absolute;
+    top: 50%;
+    right: 0.9rem;
+    transform: translateY(-50%);
+    color: #9ca3af;
+    cursor: pointer;
+    display: flex;
+}
+
+.sacco-field {
+    width: 100%;
+    padding: 0.8rem 1rem 0.8rem 2.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.65rem;
+    font-size: 0.875rem;
+    color: #111827;
+    background: #f9fafb;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.sacco-field:focus {
+    border-color: #dc2626;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(220,38,38,0.1);
+}
+
+.sacco-field-eye { padding-right: 2.75rem; }
+
+.remember-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.875rem;
+    color: #374151;
+    cursor: pointer;
+}
+
+.remember-row input[type="checkbox"] {
+    width: 1rem;
+    height: 1rem;
+    accent-color: #dc2626;
+    cursor: pointer;
+}
+
+.btn-signin {
+    width: 100%;
+    background: #dc2626;
+    color: white;
+    border: none;
+    border-radius: 0.65rem;
+    padding: 1rem;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-signin:hover { background: #b91c1c; }
+
+.register-row {
+    margin-top: 1.25rem;
+    text-align: center;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.register-row a {
+    color: #dc2626;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.register-row a:hover { text-decoration: underline; }
+
+/* ══════════════════════════════════════
+   REGISTRATION FORM (3-step)
+══════════════════════════════════════ */
+.reg-heading { font-size: 1.75rem; font-weight: 800; color: #111827; }
+.reg-subtitle { margin-top: 0.3rem; font-size: 0.875rem; color: #6b7280; }
+
+/* Step indicator */
+.step-bar {
+    display: flex;
+    align-items: center;
+    margin: 1.5rem 0 1.75rem;
+}
+
+.step-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    position: relative;
+}
+
+.step-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 18px;
+    left: 50%;
+    width: 100%;
+    height: 2px;
+    background: #e5e7eb;
+    z-index: 0;
+}
+
+.step-item.done::after { background: #dc2626; }
+
+.step-circle {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: 2px solid #d1d5db;
+    background: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem; font-weight: 700;
+    color: #9ca3af;
+    position: relative; z-index: 1;
+    transition: all 0.25s;
+}
+
+.step-item.active .step-circle { border-color: #dc2626; color: #dc2626; background: #fff5f5; }
+.step-item.done  .step-circle  { border-color: #dc2626; background: #dc2626; color: white; }
+
+.step-label {
+    margin-top: 5px;
+    font-size: 0.68rem;
+    color: #9ca3af;
+    text-align: center;
+    font-weight: 500;
+}
+
+.step-item.active .step-label { color: #dc2626; font-weight: 700; }
+.step-item.done   .step-label { color: #dc2626; }
+
+/* Fields */
+.reg-field { margin-bottom: 1.1rem; }
+
+.reg-field label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.35rem;
+}
+
+.reg-input {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.65rem;
+    font-size: 0.875rem;
+    color: #111827;
+    background: #f9fafb;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.reg-input:focus {
+    border-color: #dc2626;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(220,38,38,0.1);
+}
+
+.reg-error { font-size: 0.78rem; color: #dc2626; margin-top: 0.25rem; display: block; }
+
+/* Buttons */
+.btn-row { display: flex; gap: 0.75rem; margin-top: 0.5rem; }
+
+.btn-next, .btn-back, .btn-submit {
+    flex: 1; padding: 0.85rem 1rem;
+    border: none; border-radius: 0.65rem;
+    font-weight: 700; font-size: 0.875rem;
+    cursor: pointer; transition: background 0.2s;
+}
+
+.btn-next, .btn-submit { background: #dc2626; color: white; }
+.btn-next:hover, .btn-submit:hover { background: #b91c1c; }
+.btn-back { background: #f3f4f6; color: #374151; }
+.btn-back:hover { background: #e5e7eb; }
+
+/* Footer */
+.reg-footer {
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e5e7eb;
+    text-align: center;
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+
+.reg-footer a { color: #dc2626; font-weight: 700; text-decoration: none; }
+.reg-footer a:hover { text-decoration: underline; }
+
+/* ══════════════════════════════════════
+   RIGHT SIDE CONTENT (register page)
+══════════════════════════════════════ */
+.rs-icon {
+    width: 6rem; height: 6rem;
+    border-radius: 50%;
+    background: white;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1.75rem;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    font-size: 2.5rem; color: #dc2626;
+}
+
+.rs-heading { font-size: 1.65rem; font-weight: 800; }
+
+.rs-benefits {
+    margin-top: 1.5rem;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.rs-benefit {
+    display: flex; align-items: flex-start; gap: 0.6rem;
+    font-size: 0.85rem; color: rgba(255,255,255,0.9);
+}
+
+.rs-check {
+    flex-shrink: 0; margin-top: 2px;
+    width: 18px; height: 18px;
+    border-radius: 50%; background: rgba(255,255,255,0.25);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.65rem; font-weight: 700;
+}
+
+.btn-login-link {
+    display: inline-block;
+    margin-top: 2rem;
+    border: 2px solid white;
+    border-radius: 0.65rem;
+    padding: 0.75rem 2rem;
+    color: white; font-weight: 700; font-size: 0.875rem;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s;
+}
+
+.btn-login-link:hover { background: white; color: #dc2626; }
+
+/* Login side content */
+.side-heading { font-size: 1.8rem; font-weight: 800; color: white; line-height: 1.3; }
+.side-text { margin-top: 1rem; color: rgba(255,255,255,0.85); font-size: 0.95rem; line-height: 1.6; }
+
+.btn-register {
+    display: inline-block;
+    margin-top: 2rem;
+    border: 2px solid white;
+    border-radius: 0.75rem;
+    padding: 0.85rem 2.5rem;
+    color: white; font-weight: 700; font-size: 0.9rem;
+    letter-spacing: 0.06em;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s;
+}
+
+.btn-register:hover { background: white; color: #dc2626; }

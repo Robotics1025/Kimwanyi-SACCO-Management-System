@@ -1,5 +1,114 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="jakarta.faces.facelets"
-                template="/WEB-INF/templates/main-template.xhtml">
-    <ui:define name="content"></ui:define>
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/admin-template.xhtml">
+
+    <ui:define name="title">Audit Logs | Admin</ui:define>
+    
+    <ui:define name="pageHeader">System Audit Logs</ui:define>
+
+    <ui:define name="content">
+        <div class="section-card">
+            
+            <h:form id="auditForm">
+                <!-- Toolbar: Filter -->
+                <div class="section-header" style="display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap;">
+                    
+                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                        <h:outputLabel value="Start Date" style="font-size: 0.8rem; font-weight: 600; color: #6b7280;"/>
+                        <p:datePicker value="#{auditLogBean.filter.dateFrom}" pattern="dd MMM yyyy"
+                                      styleClass="audit-filter-input" placeholder="Any" />
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                        <h:outputLabel value="End Date" style="font-size: 0.8rem; font-weight: 600; color: #6b7280;"/>
+                        <p:datePicker value="#{auditLogBean.filter.dateTo}" pattern="dd MMM yyyy"
+                                      styleClass="audit-filter-input" placeholder="Any" />
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                        <h:outputLabel value="Action" style="font-size: 0.8rem; font-weight: 600; color: #6b7280;"/>
+                        <h:selectOneMenu value="#{auditLogBean.filter.action}" style="padding: 0.5rem; border-radius: 0.4rem; border: 1px solid var(--border-color); background: white;">
+                            <f:selectItem itemLabel="All Actions" itemValue="#{null}" />
+                            <f:selectItems value="#{auditLogBean.actionOptions}" var="act" itemLabel="#{act}" itemValue="#{act}" />
+                        </h:selectOneMenu>
+                    </div>
+
+                    <div>
+                        <h:commandButton action="#{auditLogBean.search}" value="Filter Logs" 
+                                         style="padding: 0.5rem 1.25rem; background: var(--primary); color: white; border: none; border-radius: 0.4rem; cursor: pointer; font-weight: 600;">
+                            <f:ajax execute="@form" render="logTable"/>
+                        </h:commandButton>
+                    </div>
+                </div>
+
+                <!-- Data Table -->
+                <div class="section-body" style="padding: 0;">
+                    <h:dataTable id="logTable" value="#{auditLogBean.results}" var="log" 
+                                 styleClass="activity-table" style="width: 100%; border-collapse: collapse; text-align: left;">
+                        
+                        <h:column>
+                            <f:facet name="header"><div style="padding:15px; border-bottom:1px solid #e5e7eb; color:#9ca3af; font-size:0.8rem; font-weight: 500;">Timestamp</div></f:facet>
+                            <div style="padding:15px; border-bottom:1px dashed #f3f4f6; font-size: 0.9rem; color: #4b5563;">
+                                <h:outputText value="#{log.createdAt}">
+                                    <f:convertDateTime type="localDateTime" pattern="dd MMM yyyy, HH:mm:ss"/>
+                                </h:outputText>
+                            </div>
+                        </h:column>
+                        
+                        <h:column>
+                            <f:facet name="header"><div style="padding:15px; border-bottom:1px solid #e5e7eb; color:#9ca3af; font-size:0.8rem; font-weight: 500;">Actor</div></f:facet>
+                            <div style="padding:15px; border-bottom:1px dashed #f3f4f6; font-size: 0.9rem; font-weight: 600; color: #1f2937;">
+                                #{log.actorUsername != null ? log.actorUsername : 'System'}
+                            </div>
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header"><div style="padding:15px; border-bottom:1px solid #e5e7eb; color:#9ca3af; font-size:0.8rem; font-weight: 500;">Action Performed</div></f:facet>
+                            <div style="padding:15px; border-bottom:1px dashed #f3f4f6;">
+                                <span style="background:#f3f4f6; padding:4px 8px; border-radius:4px; font-size:0.8rem; font-weight:600; color:#374151;">
+                                    #{log.action}
+                                </span>
+                            </div>
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header"><div style="padding:15px; border-bottom:1px solid #e5e7eb; color:#9ca3af; font-size:0.8rem; font-weight: 500;">Target Entity</div></f:facet>
+                            <div style="padding:15px; border-bottom:1px dashed #f3f4f6; font-size: 0.9rem; color: #4b5563;">
+                                #{log.entityType} 
+                                <h:outputText value="##{log.entityId}" rendered="#{not empty log.entityId}" style="color: #9ca3af; font-size: 0.8rem;" />
+                            </div>
+                        </h:column>
+                        
+                        <h:column>
+                            <f:facet name="header"><div style="padding:15px; border-bottom:1px solid #e5e7eb; color:#9ca3af; font-size:0.8rem; font-weight: 500;">Description</div></f:facet>
+                            <div style="padding:15px; border-bottom:1px dashed #f3f4f6; font-size: 0.85rem; color: #6b7280; max-width: 300px;">
+                                #{not empty log.description ? log.description : '-'}
+                            </div>
+                        </h:column>
+                        
+                    </h:dataTable>
+                    
+                    <h:panelGroup rendered="#{empty auditLogBean.results}">
+                        <div style="padding: 3rem; text-align: center; color: #9ca3af; font-size: 1rem;">
+                            <i class="fa-solid fa-filter-circle-xmark fa-3x" style="margin-bottom: 1rem; color: #d1d5db;"></i><br/>
+                            No audit logs match your filters.
+                        </div>
+                    </h:panelGroup>
+                </div>
+            </h:form>
+        </div>
+        
+        <style>
+            /* Quick override for PrimeFaces DatePicker to match styling */
+            .audit-filter-input .ui-inputfield {
+                padding: 0.5rem;
+                border-radius: 0.4rem;
+                border: 1px solid var(--border-color);
+                box-shadow: none;
+            }
+        </style>
+    </ui:define>
 </ui:composition>

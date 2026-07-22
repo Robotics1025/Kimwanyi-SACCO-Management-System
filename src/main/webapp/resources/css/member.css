@@ -1,0 +1,528 @@
+/* ═══════════════════════════════════════════════════════
+   member.css – Kimwanyi SACCO Member Portal
+═══════════════════════════════════════════════════════ */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+    --mem-primary: #dc2626;
+    --mem-primary-light: #fee2e2;
+    --mem-accent: #f97316;
+    --mem-sidebar-bg: #0f172a;
+    --mem-sidebar-w: 240px;
+    --mem-topbar-h: 64px;
+    --mem-text: #111827;
+    --mem-muted: #6b7280;
+    --mem-border: #e5e7eb;
+    --mem-bg: #f8fafc;
+    --shadow: 0 1px 4px rgba(0,0,0,0.07);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+body {
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    background: var(--mem-bg);
+    color: var(--mem-text);
+    display: flex;
+    min-height: 100vh;
+}
+
+/* ══════════════════════
+   SIDEBAR
+══════════════════════ */
+.mem-sidebar {
+    width: var(--mem-sidebar-w);
+    background: var(--mem-sidebar-bg);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    z-index: 100;
+    overflow-y: auto;
+}
+
+.mem-sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.mem-brand-name {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: 0.08em;
+}
+
+.mem-brand-sub {
+    font-size: 0.65rem;
+    color: #dc2626;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+/* Member profile block in sidebar */
+.mem-profile-block {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.25rem 1.5rem;
+    background: rgba(255,255,255,0.04);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    margin: 0;
+}
+
+.mem-avatar {
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #dc2626, #f97316);
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.mem-profile-name {
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.88rem;
+}
+
+.mem-profile-role {
+    font-size: 0.68rem;
+    color: #94a3b8;
+    margin-top: 1px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Navigation */
+.mem-nav {
+    flex: 1;
+    padding: 1.25rem 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.mem-nav-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #475569;
+    letter-spacing: 0.1em;
+    padding: 0.5rem 1.5rem 0.35rem;
+}
+
+.mem-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 1.5rem;
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.15s;
+    border-left: 3px solid transparent;
+}
+
+.mem-nav-item i { font-size: 0.9rem; width: 16px; flex-shrink: 0; }
+
+.mem-nav-item:hover {
+    color: #e2e8f0;
+    background: rgba(255,255,255,0.05);
+}
+
+.mem-nav-item.active {
+    color: #fff;
+    border-left-color: #dc2626;
+    background: rgba(220,38,38,0.12);
+}
+
+.mem-nav-item.active i { color: #f87171; }
+
+/* Sidebar Footer */
+.mem-sidebar-footer {
+    padding: 1.25rem;
+    border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.mem-logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.6rem 0.75rem;
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border-radius: 0.5rem;
+    transition: all 0.15s;
+    width: 100%;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.mem-logout-btn:hover { color: #fff; background: rgba(220,38,38,0.15); }
+
+/* ══════════════════════
+   MAIN CONTENT
+══════════════════════ */
+.mem-main {
+    flex: 1;
+    margin-left: var(--mem-sidebar-w);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.mem-topbar {
+    height: var(--mem-topbar-h);
+    background: #fff;
+    border-bottom: 1px solid var(--mem-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    position: sticky; top: 0;
+    z-index: 90;
+    box-shadow: var(--shadow);
+}
+
+.mem-page-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--mem-text);
+}
+
+.mem-topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.mem-topbar-notif {
+    position: relative;
+    color: #6b7280;
+    font-size: 1.1rem;
+    cursor: pointer;
+}
+
+.notif-dot {
+    position: absolute;
+    top: -2px; right: -2px;
+    width: 8px; height: 8px;
+    background: #dc2626;
+    border-radius: 50%;
+    border: 2px solid #fff;
+}
+
+.mem-topbar-user {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.mem-top-avatar {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #dc2626, #f97316);
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 0.9rem;
+}
+
+.mem-content {
+    flex: 1;
+    padding: 1.75rem 2rem;
+}
+
+/* ══════════════════════
+   MEMBER KPI CARDS
+══════════════════════ */
+.mem-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.mem-kpi-card {
+    background: #fff;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    border: 1px solid var(--mem-border);
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.mem-kpi-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+}
+
+.mem-kpi-card.savings::after   { background: linear-gradient(90deg, #7c3aed, #a78bfa); }
+.mem-kpi-card.loan::after      { background: linear-gradient(90deg, #dc2626, #f87171); }
+.mem-kpi-card.status::after    { background: linear-gradient(90deg, #059669, #34d399); }
+
+.mem-kpi-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--mem-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.mem-kpi-value {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--mem-text);
+    line-height: 1;
+}
+
+.mem-kpi-sub {
+    font-size: 0.75rem;
+    color: var(--mem-muted);
+}
+
+.mem-kpi-icon {
+    position: absolute;
+    top: 1rem; right: 1.25rem;
+    font-size: 2rem;
+    opacity: 0.08;
+}
+
+/* ══════════════════════
+   SECTION CARDS
+══════════════════════ */
+.mem-card {
+    background: #fff;
+    border-radius: 1rem;
+    border: 1px solid var(--mem-border);
+    box-shadow: var(--shadow);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+}
+
+.mem-card-header {
+    padding: 1.1rem 1.5rem;
+    border-bottom: 1px solid var(--mem-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mem-card-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--mem-text);
+}
+
+.mem-card-body { padding: 1.25rem 1.5rem; }
+
+/* Status badges */
+.badge {
+    display: inline-flex; align-items: center;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+}
+.badge-green  { background: #dcfce7; color: #15803d; }
+.badge-yellow { background: #fef9c3; color: #a16207; }
+.badge-red    { background: #fee2e2; color: #b91c1c; }
+.badge-blue   { background: #eff6ff; color: #1d4ed8; }
+.badge-gray   { background: #f3f4f6; color: #6b7280; }
+
+/* Loan progress bar */
+.loan-progress-wrap { margin: 0.75rem 0 0.25rem; }
+.loan-progress-bar {
+    height: 8px;
+    border-radius: 99px;
+    background: #f3f4f6;
+    overflow: hidden;
+}
+.loan-progress-fill {
+    height: 100%;
+    border-radius: 99px;
+    background: linear-gradient(90deg, #dc2626, #f97316);
+}
+
+/* Action buttons */
+.mem-btn {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.6rem 1.25rem;
+    border-radius: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.15s;
+    border: none; cursor: pointer;
+}
+.mem-btn-primary   { background: #dc2626; color: #fff; }
+.mem-btn-primary:hover { background: #b91c1c; }
+.mem-btn-outline   { background: #fff; color: #dc2626; border: 1.5px solid #dc2626; }
+.mem-btn-outline:hover { background: #fee2e2; }
+.mem-btn-ghost     { background: #f9fafb; color: #374151; border: 1px solid #e5e7eb; }
+.mem-btn-ghost:hover { border-color: #dc2626; color: #dc2626; }
+
+/* Table style */
+.mem-table { width: 100%; border-collapse: collapse; }
+.mem-table th {
+    font-size: 0.75rem; color: #9ca3af; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.05em;
+    padding: 0.6rem 0; border-bottom: 1px solid var(--mem-border);
+    text-align: left;
+}
+.mem-table td {
+    padding: 0.85rem 0;
+    font-size: 0.85rem;
+    border-bottom: 1px solid #f9fafb;
+    color: #374151;
+}
+
+/* Stepper / tracker */
+.mem-tracker { display: flex; flex-direction: column; }
+.mem-tracker-step {
+    display: flex; align-items: flex-start; gap: 0.85rem;
+    position: relative;
+}
+.mem-tracker-circle {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    border: 2px solid #d1d5db;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.72rem; font-weight: 700; color: #9ca3af;
+    background: #fff; flex-shrink: 0; z-index: 1;
+}
+.mem-tracker-circle.done    { border-color: #22c55e; background: #22c55e; color: #fff; }
+.mem-tracker-circle.current { border-color: #dc2626; color: #dc2626; background: #fef2f2; }
+.mem-tracker-line {
+    position: absolute; left: 14px; top: 30px;
+    width: 2px; height: 36px; background: #e5e7eb;
+}
+.mem-tracker-line.done { background: #22c55e; }
+.mem-tracker-step:last-child .mem-tracker-line { display: none; }
+.mem-tracker-text { padding-bottom: 1.4rem; }
+.mem-tracker-title { font-weight: 700; font-size: 0.85rem; color: #111827; }
+.mem-tracker-desc  { font-size: 0.75rem; color: #9ca3af; margin-top: 2px; }
+
+/* Empty state */
+.mem-empty {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; padding: 3rem;
+    color: #9ca3af; text-align: center; gap: 0.75rem;
+}
+.mem-empty i { font-size: 2.5rem; opacity: 0.4; }
+.mem-empty p { font-size: 0.85rem; }
+
+/* Form fields (Apply for Loan, etc.) */
+.mem-field { margin-bottom: 1.1rem; }
+.mem-field label {
+    display: block; font-size: 0.8rem; font-weight: 600;
+    color: #374151; margin-bottom: 0.4rem;
+}
+.mem-input {
+    width: 100%; padding: 0.65rem 0.9rem;
+    border: 1px solid var(--mem-border); border-radius: 0.5rem;
+    font-size: 0.88rem; font-family: inherit; color: var(--mem-text);
+    outline: none; transition: border-color 0.15s;
+}
+.mem-input:focus { border-color: var(--mem-primary); }
+.mem-error { color: #b91c1c; font-size: 0.75rem; margin-top: 0.3rem; display: block; }
+.mem-helper-box {
+    background: #fef2f2; border: 1px solid #fecaca; border-radius: 0.6rem;
+    padding: 0.85rem 1rem; font-size: 0.8rem; color: #7f1d1d;
+    margin-bottom: 1.1rem; line-height: 1.5;
+}
+
+/* ═══════════════════════════════════
+   PrimeFaces Dialog Overlay Overrides
+═══════════════════════════════════ */
+.ui-dialog {
+    border-radius: 1rem !important;
+    border: 1px solid var(--mem-border) !important;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.18) !important;
+    overflow: hidden !important;
+    font-family: 'Inter', 'Segoe UI', sans-serif !important;
+}
+.ui-dialog .ui-dialog-titlebar {
+    background: #0f172a !important;
+    color: #fff !important;
+    border-bottom: none !important;
+    padding: 1rem 1.5rem !important;
+    font-size: 0.95rem !important;
+    font-weight: 700 !important;
+    border-radius: 0 !important;
+}
+.ui-dialog .ui-dialog-titlebar-icon { color: #94a3b8 !important; }
+.ui-dialog .ui-dialog-titlebar-icon:hover { color: #fff !important; }
+.ui-dialog .ui-dialog-content {
+    padding: 1.5rem !important;
+    background: #fff !important;
+}
+.ui-dialog-mask { background: rgba(15,23,42,0.55) !important; backdrop-filter: blur(3px); }
+
+/* Transfer / savings info box */
+.mem-info-box {
+    background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 0.6rem;
+    padding: 0.85rem 1rem; font-size: 0.82rem; color: #1e40af;
+    margin-bottom: 1.1rem; line-height: 1.6;
+}
+.mem-transfer-icon {
+    width: 44px; height: 44px; border-radius: 0.6rem;
+    background: linear-gradient(135deg, #7c3aed, #a78bfa);
+    color: #fff; display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem; flex-shrink: 0;
+}
+.mem-dialog-actions {
+    display: flex; gap: 0.75rem; justify-content: flex-end;
+    margin-top: 1.25rem; padding-top: 1rem;
+    border-top: 1px solid var(--mem-border);
+}
+.mem-btn-cancel {
+    background: #f3f4f6; color: #374151; border: 1px solid #e5e7eb;
+    padding: 0.6rem 1.25rem; border-radius: 0.5rem;
+    font-size: 0.85rem; font-weight: 600; cursor: pointer;
+    transition: background 0.15s; border: none;
+}
+.mem-btn-cancel:hover { background: #e5e7eb; }
+
+/* Quick-action transfer button */
+.mem-qa-transfer {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.85rem 1rem; background: #f5f3ff; border-radius: 0.6rem;
+    text-decoration: none; color: #111827; transition: all 0.15s;
+    cursor: pointer; border: none; width: 100%; text-align: left;
+}
+.mem-qa-transfer:hover { background: #ede9fe; }
+
+/* ═══════════════════════════════════
+   Unified Activity Feed
+═══════════════════════════════════ */
+.activity-feed { display: flex; flex-direction: column; gap: 0; padding-top: 0.5rem; }
+.activity-item {
+    display: flex; align-items: center; gap: 0.85rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f1f5f9;
+}
+.activity-item:last-child { border-bottom: none; }
+.activity-icon {
+    width: 36px; height: 36px; border-radius: 0.5rem;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; font-size: 0.8rem;
+}
+.activity-detail { flex: 1; min-width: 0; }
+.activity-title { font-weight: 600; font-size: 0.88rem; color: #111827; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.activity-sub { font-size: 0.73rem; color: #9ca3af; margin-top: 1px; }
+.activity-amount { font-weight: 700; font-size: 0.88rem; white-space: nowrap; }

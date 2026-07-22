@@ -1,10 +1,16 @@
 package org.joel.kimwanyisacco.service;
 
+import java.math.BigDecimal;
+import org.joel.kimwanyisacco.common.util.MembershipNumberGenerator;
+import org.joel.kimwanyisacco.common.util.SavingsAccountNumberGenerator;
 import org.joel.kimwanyisacco.common.util.converter.MemberConverter;
 import org.joel.kimwanyisacco.dto.MemberRegistrationForm;
 import org.joel.kimwanyisacco.model.Member;
+import org.joel.kimwanyisacco.model.SavingsAccount;
 import org.joel.kimwanyisacco.model.UserAccount;
+import org.joel.kimwanyisacco.model.enums.AuditAction;
 import org.joel.kimwanyisacco.repository.MemberRepository;
+import org.joel.kimwanyisacco.repository.SavingsAccountRepository;
 import org.joel.kimwanyisacco.repository.UserAccountRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,19 +21,31 @@ public class MemberServiceImpl implements MemberService {
 
     private final UserAccountRepository userAccountRepository;
     private final MemberRepository memberRepository;
+    private final SavingsAccountRepository savingsAccountRepository;
     private final MemberConverter memberConverter;
     private final PasswordEncoder passwordEncoder;
+    private final MembershipNumberGenerator membershipNumberGenerator;
+    private final SavingsAccountNumberGenerator savingsAccountNumberGenerator;
+    private final AuditLogService auditLogService;
 
     public MemberServiceImpl(
             UserAccountRepository userAccountRepository,
             MemberRepository memberRepository,
+            SavingsAccountRepository savingsAccountRepository,
             MemberConverter memberConverter,
-            PasswordEncoder passwordEncoder
+            PasswordEncoder passwordEncoder,
+            MembershipNumberGenerator membershipNumberGenerator,
+            SavingsAccountNumberGenerator savingsAccountNumberGenerator,
+            AuditLogService auditLogService
     ) {
         this.userAccountRepository = userAccountRepository;
         this.memberRepository = memberRepository;
+        this.savingsAccountRepository = savingsAccountRepository;
         this.memberConverter = memberConverter;
         this.passwordEncoder = passwordEncoder;
+        this.membershipNumberGenerator = membershipNumberGenerator;
+        this.savingsAccountNumberGenerator = savingsAccountNumberGenerator;
+        this.auditLogService = auditLogService;
     }
 
     @Override
@@ -71,7 +89,7 @@ public class MemberServiceImpl implements MemberService {
                 userAccountRepository.save(userAccount);
 
         String membershipNumber =
-                generateMembershipNumber();
+                membershipNumberGenerator.generate();
 
         Member member =
                 memberConverter.toMember(
@@ -80,7 +98,17 @@ public class MemberServiceImpl implements MemberService {
                         membershipNumber
                 );
 
-        return memberRepository.save(member);
+        Member savedMember = memberRepository.save(member);
+
+        SavingsAccount savingsAccount = new SavingsAccount();
+        savingsAccount.setMember(savedMember);
+        savingsAccount.setAccountNumber(savingsAccountNumberGenerator.generate());
+        savingsAccount.setBalance(BigDecimal.ZERO);
+        savingsAccountRepository.save(savingsAccount);
+
+        auditLogService.record(savedAccount, AuditAction.MEMBER_REGISTERED, "Member", savedMember.getId(), "Membership " + membershipNumber);
+        
+        return savedMember;
     }
 
     private void validateForm(MemberRegistrationForm form) {
@@ -132,9 +160,5 @@ public class MemberServiceImpl implements MemberService {
                     "National ID is required"
             );
         }
-    }
-
-    private String generateMembershipNumber() {
-        return "KIM-" + System.currentTimeMillis();
     }
 }

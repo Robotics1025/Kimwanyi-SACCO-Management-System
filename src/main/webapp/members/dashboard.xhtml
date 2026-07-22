@@ -1,0 +1,554 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/member-template.xhtml">
+
+    <ui:define name="title">My Dashboard | Kimwanyi SACCO</ui:define>
+    <ui:define name="pageTitle">My Dashboard</ui:define>
+
+    <ui:define name="content">
+
+        <!-- ═══════════════════════════════════════════════════
+             WELCOME BANNER
+        ═══════════════════════════════════════════════════ -->
+        <div class="mem-welcome-banner">
+            <div>
+                <div class="mem-welcome-title">Welcome back, <strong>#{userSessionBean.loggedInUser.username}</strong> 👋</div>
+                <div class="mem-welcome-sub">Here's a summary of your Kimwanyi SACCO account.</div>
+            </div>
+            <h:form style="margin:0;">
+                <p:commandButton value="Apply for Loan" icon="fa fa-plus"
+                                 styleClass="mem-btn mem-btn-primary"
+                                 oncomplete="PF('dlgLoan').show()"
+                                 update="@none"/>
+            </h:form>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════
+             KPI CARDS
+        ═══════════════════════════════════════════════════ -->
+        <div class="mem-kpi-grid">
+            <div class="mem-kpi-card savings">
+                <i class="fa-solid fa-piggy-bank mem-kpi-icon"></i>
+                <div class="mem-kpi-label">Savings Balance</div>
+                <div class="mem-kpi-value">
+                    <h:outputText value="#{internalTransferBean.myBalance}">
+                        <f:convertNumber type="currency" currencySymbol="UGX " maxFractionDigits="0"/>
+                    </h:outputText>
+                </div>
+                <div class="mem-kpi-sub">Available savings in your account</div>
+            </div>
+
+            <div class="mem-kpi-card loan">
+                <i class="fa-solid fa-hand-holding-dollar mem-kpi-icon"></i>
+                <div class="mem-kpi-label">Outstanding Loan</div>
+                <div class="mem-kpi-value">
+                    <h:outputText value="#{memberDashboardBean.outstandingLoanBalance}">
+                        <f:convertNumber type="currency" currencySymbol="UGX " maxFractionDigits="0"/>
+                    </h:outputText>
+                </div>
+                <div class="mem-kpi-sub">#{memberDashboardBean.hasActiveLoan ? memberDashboardBean.activeLoanStatus : 'No active loan'}</div>
+            </div>
+
+            <div class="mem-kpi-card status">
+                <i class="fa-solid fa-circle-check mem-kpi-icon"></i>
+                <div class="mem-kpi-label">Max Loan Eligible</div>
+                <div class="mem-kpi-value">
+                    <h:outputText value="#{loanApplicationBean.maxEligibleAmount}">
+                        <f:convertNumber type="currency" currencySymbol="UGX " maxFractionDigits="0"/>
+                    </h:outputText>
+                </div>
+                <div class="mem-kpi-sub">3x your current savings balance</div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════
+             MIDDLE ROW: Active Loan + Journey Tracker
+        ═══════════════════════════════════════════════════ -->
+        <div style="display:grid; grid-template-columns:1.4fr 1fr; gap:1.5rem; margin-bottom:1.5rem;">
+
+            <!-- Active Loan Status -->
+            <div class="mem-card" style="margin-bottom:0;">
+                <div class="mem-card-header">
+                    <span class="mem-card-title"><i class="fa-solid fa-file-invoice-dollar" style="color:#dc2626; margin-right:6px;"></i> Active Loan Status</span>
+                    <h:link outcome="/loans/applications" style="font-size:0.8rem; color:#dc2626; text-decoration:none; font-weight:600;">View All</h:link>
+                </div>
+                <div class="mem-card-body">
+                    <div class="mem-empty" style="padding:2.5rem 1rem;">
+                        <i class="fa-solid fa-hand-holding-dollar"></i>
+                        <strong style="color:#374151;">No Active Loans</strong>
+                        <p>You currently have no active loan. You can apply for a loan up to 3x your savings balance.</p>
+                        <h:form style="margin-top:0.5rem; margin:0.5rem 0 0;">
+                            <p:commandButton value="Apply Now" icon="fa fa-plus"
+                                             styleClass="mem-btn mem-btn-primary"
+                                             oncomplete="PF('dlgLoan').show()"
+                                             update="@none"/>
+                        </h:form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loan Journey Tracker -->
+            <div class="mem-card" style="margin-bottom:0;">
+                <div class="mem-card-header">
+                    <span class="mem-card-title"><i class="fa-solid fa-route" style="color:#f97316; margin-right:6px;"></i> Loan Journey Tracker</span>
+                    <span style="font-size:0.75rem; background:#fff7ed; color:#f97316; font-weight:700; padding:2px 8px; border-radius:4px;">Step #{memberDashboardBean.loanJourneyStep} of 5</span>
+                </div>
+                <div class="mem-card-body">
+                    <div class="mem-tracker">
+                        <div class="mem-tracker-step">
+                            <div class="mem-tracker-circle done"><i class="fa-solid fa-check" style="font-size:0.65rem;"></i></div>
+                            <div class="mem-tracker-line done"></div>
+                            <div class="mem-tracker-text">
+                                <div class="mem-tracker-title">Registered</div>
+                                <div class="mem-tracker-desc">Account created successfully</div>
+                            </div>
+                        </div>
+                        <div class="mem-tracker-step">
+                            <div class="mem-tracker-circle done"><i class="fa-solid fa-check" style="font-size:0.65rem;"></i></div>
+                            <div class="mem-tracker-line done"></div>
+                            <div class="mem-tracker-text">
+                                <div class="mem-tracker-title">Start Saving</div>
+                                <div class="mem-tracker-desc">Maintain min. UGX 20,000</div>
+                            </div>
+                        </div>
+                        <div class="mem-tracker-step">
+                            <div class="mem-tracker-circle #{memberDashboardBean.loanJourneyStep == '3' ? 'current' : 'done'}">
+                                <h:outputText value="3" rendered="#{memberDashboardBean.loanJourneyStep == '3'}"/>
+                                <i class="fa-solid fa-check" style="font-size:0.65rem;" rendered="#{memberDashboardBean.loanJourneyStep != '3'}"></i>
+                            </div>
+                            <div class="mem-tracker-line #{memberDashboardBean.loanJourneyStep != '3' ? 'done' : ''}"></div>
+                            <div class="mem-tracker-text">
+                                <div class="mem-tracker-title">Apply for Loan</div>
+                                <div class="mem-tracker-desc">Max 3x your savings balance</div>
+                            </div>
+                        </div>
+                        <div class="mem-tracker-step">
+                            <div class="mem-tracker-circle #{memberDashboardBean.loanJourneyStep == '4' ? 'current' : (memberDashboardBean.loanJourneyStep == '5' ? 'done' : '')}">
+                                <h:outputText value="4" rendered="#{memberDashboardBean.loanJourneyStep != '5'}"/>
+                                <i class="fa-solid fa-check" style="font-size:0.65rem;" rendered="#{memberDashboardBean.loanJourneyStep == '5'}"></i>
+                            </div>
+                            <div class="mem-tracker-line #{memberDashboardBean.loanJourneyStep == '5' ? 'done' : ''}"></div>
+                            <div class="mem-tracker-text">
+                                <div class="mem-tracker-title">Approval Decision</div>
+                                <div class="mem-tracker-desc">Admin reviews your application</div>
+                            </div>
+                        </div>
+                        <div class="mem-tracker-step">
+                            <div class="mem-tracker-circle #{memberDashboardBean.loanJourneyStep == '5' ? 'current' : ''}">5</div>
+                            <div class="mem-tracker-text">
+                                <div class="mem-tracker-title">Repay Loan</div>
+                                <div class="mem-tracker-desc">10% flat rate on principal</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════
+             BOTTOM ROW: Recent Transactions + Quick Actions
+        ═══════════════════════════════════════════════════ -->
+        <div style="display:grid; grid-template-columns:1.4fr 1fr; gap:1.5rem;">
+
+            <!-- Recent Activity (Savings + Loans) -->
+            <div class="mem-card" style="margin-bottom:0;">
+                <div class="mem-card-header">
+                    <span class="mem-card-title"><i class="fa-solid fa-clock-rotate-left" style="color:#7c3aed; margin-right:6px;"></i> Recent Activity</span>
+                    <h:link outcome="/savings/account" style="font-size:0.8rem; color:#dc2626; text-decoration:none; font-weight:600;">View All</h:link>
+                </div>
+                <div class="mem-card-body" style="padding:0 1.5rem 1rem;">
+                    <h:panelGroup rendered="#{empty memberDashboardBean.recentActivity}">
+                        <div class="mem-empty">
+                            <i class="fa-solid fa-receipt"></i>
+                            <strong style="color:#374151;">No Activity Yet</strong>
+                            <p>Your savings deposits, transfers, and loan events will appear here.</p>
+                        </div>
+                    </h:panelGroup>
+
+                    <h:panelGroup rendered="#{not empty memberDashboardBean.recentActivity}">
+                        <div class="activity-feed">
+                            <ui:repeat value="#{memberDashboardBean.recentActivity}" var="item">
+                                <div class="activity-item">
+                                    <div class="activity-icon" style="background:#{item.categoryBg}; color:#{item.categoryColor};">
+                                        <i class="#{item.categoryIcon}"></i>
+                                    </div>
+                                    <div class="activity-detail">
+                                        <div class="activity-title">#{item.title}</div>
+                                        <div class="activity-sub">
+                                            #{item.subtitle} ·
+                                            <h:outputText value="#{item.timestamp}">
+                                                <f:convertDateTime type="localDateTime" pattern="dd MMM yy, HH:mm"/>
+                                            </h:outputText>
+                                        </div>
+                                    </div>
+                                    <div class="activity-amount" style="color:#{item.amountColor};">
+                                        #{item.amountSign}
+                                        <h:outputText value="#{item.amount}">
+                                            <f:convertNumber type="currency" currencySymbol="UGX " maxFractionDigits="0"/>
+                                        </h:outputText>
+                                    </div>
+                                </div>
+                            </ui:repeat>
+                        </div>
+                    </h:panelGroup>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="mem-card" style="margin-bottom:0;">
+                <div class="mem-card-header">
+                    <span class="mem-card-title"><i class="fa-solid fa-bolt" style="color:#eab308; margin-right:6px;"></i> Quick Actions</span>
+                </div>
+                <div class="mem-card-body" style="display:flex; flex-direction:column; gap:0.75rem;">
+
+                    <!-- Apply for Loan → dialog -->
+                    <h:form style="margin:0;">
+                        <p:commandLink styleClass="mem-qa-transfer"
+                                       style="background:#fef2f2;"
+                                       oncomplete="PF('dlgLoan').show()"
+                                       update="@none">
+                            <div style="width:36px; height:36px; border-radius:0.4rem; background:#dc2626; color:#fff; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                <i class="fa-solid fa-file-signature"></i>
+                            </div>
+                            <div>
+                                <div style="font-weight:700; font-size:0.85rem;">Apply for Loan</div>
+                                <div style="font-size:0.72rem; color:#9ca3af;">Submit a new loan request</div>
+                            </div>
+                            <i class="fa-solid fa-chevron-right" style="margin-left:auto; color:#d1d5db; font-size:0.7rem;"></i>
+                        </p:commandLink>
+                    </h:form>
+
+                    <!-- View Savings → dialog -->
+                    <h:form style="margin:0;">
+                        <p:commandLink styleClass="mem-qa-transfer"
+                                       style="background:#faf5ff;"
+                                       oncomplete="PF('dlgSavings').show()"
+                                       update="savingsDialogContent">
+                            <div style="width:36px; height:36px; border-radius:0.4rem; background:#7c3aed; color:#fff; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                <i class="fa-solid fa-piggy-bank"></i>
+                            </div>
+                            <div>
+                                <div style="font-weight:700; font-size:0.85rem;">View Savings</div>
+                                <div style="font-size:0.72rem; color:#9ca3af;">Check your balance and history</div>
+                            </div>
+                            <i class="fa-solid fa-chevron-right" style="margin-left:auto; color:#d1d5db; font-size:0.7rem;"></i>
+                        </p:commandLink>
+                    </h:form>
+
+                    <!-- Deposit Savings → dialog -->
+                    <h:form style="margin:0;">
+                        <p:commandLink styleClass="mem-qa-transfer"
+                                       style="background:#f0fdf4;"
+                                       oncomplete="PF('dlgDeposit').show()"
+                                       update="@none">
+                            <div style="width:36px; height:36px; border-radius:0.4rem; background:#16a34a; color:#fff; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                <i class="fa-solid fa-money-bill-wave"></i>
+                            </div>
+                            <div>
+                                <div style="font-weight:700; font-size:0.85rem;">Deposit Savings</div>
+                                <div style="font-size:0.72rem; color:#9ca3af;">Add money to your account</div>
+                            </div>
+                            <i class="fa-solid fa-chevron-right" style="margin-left:auto; color:#d1d5db; font-size:0.7rem;"></i>
+                        </p:commandLink>
+                    </h:form>
+
+                    <!-- Internal Transfer → dialog -->
+                    <h:form style="margin:0;">
+                        <p:commandLink styleClass="mem-qa-transfer"
+                                       oncomplete="PF('dlgTransfer').show()"
+                                       update="@none">
+                            <div class="mem-transfer-icon">
+                                <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                            </div>
+                            <div>
+                                <div style="font-weight:700; font-size:0.85rem;">Internal Transfer</div>
+                                <div style="font-size:0.72rem; color:#9ca3af;">Send savings to another member</div>
+                            </div>
+                            <i class="fa-solid fa-chevron-right" style="margin-left:auto; color:#d1d5db; font-size:0.7rem;"></i>
+                        </p:commandLink>
+                    </h:form>
+
+                    <!-- My Loans → page -->
+                    <h:link outcome="/loans/applications" style="display:flex; align-items:center; gap:0.75rem; padding:0.85rem 1rem; background:#fff7ed; border-radius:0.6rem; text-decoration:none; color:#111827; transition:all 0.15s;">
+                        <div style="width:36px; height:36px; border-radius:0.4rem; background:#f97316; color:#fff; display:flex; align-items:center; justify-content:center;">
+                            <i class="fa-solid fa-list-check"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight:700; font-size:0.85rem;">My Loans</div>
+                            <div style="font-size:0.72rem; color:#9ca3af;">View loan applications</div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right" style="margin-left:auto; color:#d1d5db; font-size:0.7rem;"></i>
+                    </h:link>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════
+             OVERLAY 1: Apply for Loan Dialog
+        ═══════════════════════════════════════════════════ -->
+        <p:dialog header="Apply for Loan"
+                  widgetVar="dlgLoan"
+                  modal="true"
+                  resizable="false"
+                  closable="true"
+                  style="width:480px; max-width:96vw;">
+            <p:outputPanel>
+                <h:panelGroup rendered="#{loanApplicationBean.hasActiveLoan}">
+                    <div class="mem-empty" style="padding:2rem 1rem;">
+                        <i class="fa-solid fa-circle-info" style="color:#dc2626;"></i>
+                        <strong style="color:#374151;">You already have a loan in progress</strong>
+                        <p>Fully repay your current loan before applying for a new one.</p>
+                        <h:link outcome="/loans/applications" styleClass="mem-btn mem-btn-primary" style="margin-top:0.5rem;" onclick="PF('dlgLoan').hide();">
+                            <i class="fa-solid fa-list-check"></i> View My Loans
+                        </h:link>
+                    </div>
+                </h:panelGroup>
+
+                <h:panelGroup rendered="#{not loanApplicationBean.hasActiveLoan}">
+                    <div class="mem-info-box">
+                        Max eligible: <strong>
+                            <h:outputText value="#{loanApplicationBean.maxEligibleAmount}">
+                                <f:convertNumber type="currency" currencySymbol="UGX " maxFractionDigits="0"/>
+                            </h:outputText>
+                        </strong> (3× savings). Interest: flat 10% of principal.
+                    </div>
+                    <h:form id="loanOverlayForm">
+                        <div class="mem-field">
+                            <h:outputLabel for="dlgPrincipal" value="Principal Amount (UGX)"/>
+                            <h:inputText id="dlgPrincipal"
+                                         value="#{loanApplicationBean.principalAmount}"
+                                         label="Principal Amount"
+                                         required="true"
+                                         requiredMessage="Principal amount is required"
+                                         styleClass="mem-input">
+                                <f:convertNumber type="number" maxFractionDigits="2"/>
+                            </h:inputText>
+                            <h:message for="dlgPrincipal" styleClass="mem-error"/>
+                        </div>
+                        <div class="mem-field">
+                            <h:outputLabel for="dlgTerm" value="Term (months)"/>
+                            <h:inputText id="dlgTerm"
+                                         value="#{loanApplicationBean.termMonths}"
+                                         label="Term"
+                                         required="true"
+                                         requiredMessage="Loan term is required"
+                                         styleClass="mem-input">
+                                <f:convertNumber type="number" integerOnly="true"/>
+                            </h:inputText>
+                            <h:message for="dlgTerm" styleClass="mem-error"/>
+                        </div>
+                        <div class="mem-dialog-actions">
+                            <button type="button" class="mem-btn-cancel" onclick="PF('dlgLoan').hide();">Cancel</button>
+                            <h:commandButton value="Submit Application"
+                                             action="#{loanApplicationBean.apply}"
+                                             styleClass="mem-btn mem-btn-primary"/>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+            </p:outputPanel>
+        </p:dialog>
+
+        <!-- ═══════════════════════════════════════════════════
+             OVERLAY 2: Savings History Dialog
+        ═══════════════════════════════════════════════════ -->
+        <p:dialog header="My Savings History"
+                  widgetVar="dlgSavings"
+                  modal="true"
+                  resizable="false"
+                  closable="true"
+                  style="width:700px; max-width:96vw;">
+            <p:outputPanel id="savingsDialogContent">
+                <h:panelGroup rendered="#{savingsHistoryBean.account != null}">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; padding:0.85rem 1rem; background:#f8fafc; border-radius:0.6rem; border:1px solid var(--mem-border);">
+                        <div>
+                            <div style="font-size:0.7rem; color:#9ca3af; font-weight:600; text-transform:uppercase; letter-spacing:0.05em;">Account Number</div>
+                            <div style="font-weight:700; font-size:0.95rem; color:#111827;">#{savingsHistoryBean.account.accountNumber}</div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="font-size:0.7rem; color:#9ca3af; font-weight:600; text-transform:uppercase; letter-spacing:0.05em;">Current Balance</div>
+                            <div style="font-weight:800; font-size:1.1rem; color:#7c3aed;">
+                                <h:outputText value="#{savingsHistoryBean.account.balance}">
+                                    <f:convertNumber type="currency" currencySymbol="UGX " maxFractionDigits="0"/>
+                                </h:outputText>
+                            </div>
+                        </div>
+                    </div>
+                </h:panelGroup>
+
+                <h:panelGroup rendered="#{empty savingsHistoryBean.transactions}">
+                    <div class="mem-empty">
+                        <i class="fa-solid fa-receipt"></i>
+                        <strong style="color:#374151;">No Transactions Yet</strong>
+                        <p>Your savings transactions will appear here.</p>
+                    </div>
+                </h:panelGroup>
+
+                <h:panelGroup rendered="#{not empty savingsHistoryBean.transactions}">
+                    <table class="mem-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Balance After</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <ui:repeat value="#{savingsHistoryBean.transactions}" var="tx">
+                                <tr>
+                                    <td>
+                                        <h:outputText value="#{tx.createdAt}">
+                                            <f:convertDateTime type="localDateTime" pattern="dd MMM yyyy HH:mm"/>
+                                        </h:outputText>
+                                    </td>
+                                    <td>
+                                        <span class="badge #{tx.transactionType == 'DEPOSIT' or tx.transactionType == 'TRANSFER_IN' or tx.transactionType == 'INTEREST' ? 'badge-green' : 'badge-red'}">
+                                            #{tx.transactionType}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <h:outputText value="#{tx.amount}">
+                                            <f:convertNumber type="currency" currencySymbol="UGX " maxFractionDigits="0"/>
+                                        </h:outputText>
+                                    </td>
+                                    <td>
+                                        <h:outputText value="#{tx.balanceAfter}">
+                                            <f:convertNumber type="currency" currencySymbol="UGX " maxFractionDigits="0"/>
+                                        </h:outputText>
+                                    </td>
+                                </tr>
+                            </ui:repeat>
+                        </tbody>
+                    </table>
+                </h:panelGroup>
+            </p:outputPanel>
+        </p:dialog>
+
+        <!-- ═══════════════════════════════════════════════════
+             OVERLAY 3: Internal Transfer Dialog
+        ═══════════════════════════════════════════════════ -->
+        <p:dialog header="Internal Transfer"
+                  widgetVar="dlgTransfer"
+                  modal="true"
+                  resizable="false"
+                  closable="true"
+                  style="width:480px; max-width:96vw;">
+            <p:outputPanel id="transferDialogContent">
+                <div class="mem-info-box">
+                    <strong>Available to transfer:</strong>
+                    <h:outputText value="#{internalTransferBean.maxTransferable}">
+                        <f:convertNumber type="currency" currencySymbol=" UGX " maxFractionDigits="0"/>
+                    </h:outputText>
+                    <br/>
+                    A minimum balance of UGX 20,000 must remain in your account after the transfer.
+                </div>
+
+                <h:form id="transferOverlayForm">
+                    <div class="mem-field">
+                        <h:outputLabel for="toAccNum" value="Recipient Account Number"/>
+                        <h:inputText id="toAccNum"
+                                     value="#{internalTransferBean.toAccountNumber}"
+                                     placeholder="e.g. SAV-2026-0002"
+                                     required="true"
+                                     requiredMessage="Recipient account number is required"
+                                     styleClass="mem-input"
+                                     style="text-transform:uppercase;"/>
+                        <h:message for="toAccNum" styleClass="mem-error"/>
+                    </div>
+                    <div class="mem-field">
+                        <h:outputLabel for="txAmt" value="Amount (UGX)"/>
+                        <h:inputText id="txAmt"
+                                     value="#{internalTransferBean.amount}"
+                                     placeholder="0"
+                                     required="true"
+                                     requiredMessage="Transfer amount is required"
+                                     styleClass="mem-input">
+                            <f:convertNumber type="number" maxFractionDigits="2"/>
+                        </h:inputText>
+                        <h:message for="txAmt" styleClass="mem-error"/>
+                    </div>
+                    <div class="mem-field">
+                        <h:outputLabel for="txDesc" value="Description (optional)"/>
+                        <h:inputText id="txDesc"
+                                     value="#{internalTransferBean.description}"
+                                     placeholder="e.g. School fees"
+                                     styleClass="mem-input"
+                                     maxlength="120"/>
+                    </div>
+                    <div class="mem-dialog-actions">
+                        <button type="button" class="mem-btn-cancel" onclick="PF('dlgTransfer').hide();">Cancel</button>
+                        <p:commandButton value="Send Transfer"
+                                         icon="fa fa-arrow-right-arrow-left"
+                                         styleClass="mem-btn mem-btn-primary"
+                                         action="#{internalTransferBean.transfer}"
+                                         update="transferDialogContent growl"
+                                         process="transferOverlayForm"/>
+                    </div>
+                </h:form>
+            </p:outputPanel>
+        </p:dialog>
+
+        <!-- ═══════════════════════════════════════════════════
+             OVERLAY 4: Deposit Savings Dialog
+        ═══════════════════════════════════════════════════ -->
+        <p:dialog header="Deposit Savings"
+                  widgetVar="dlgDeposit"
+                  modal="true"
+                  resizable="false"
+                  closable="true"
+                  style="width:400px; max-width:96vw;">
+            <p:outputPanel id="depositDialogContent">
+                <div class="mem-info-box" style="background:#f0fdf4; border-color:#bbf7d0; color:#166534;">
+                    Add funds to your savings account.
+                </div>
+
+                <h:form id="depositOverlayForm">
+                    <div class="mem-field">
+                        <h:outputLabel for="depAmt" value="Deposit Amount (UGX)"/>
+                        <h:inputText id="depAmt"
+                                     value="#{depositBean.amount}"
+                                     placeholder="0"
+                                     required="true"
+                                     requiredMessage="Deposit amount is required"
+                                     styleClass="mem-input">
+                            <f:convertNumber type="number" maxFractionDigits="2"/>
+                        </h:inputText>
+                        <h:message for="depAmt" styleClass="mem-error"/>
+                    </div>
+                    <div class="mem-dialog-actions">
+                        <button type="button" class="mem-btn-cancel" onclick="PF('dlgDeposit').hide();">Cancel</button>
+                        <p:commandButton value="Deposit"
+                                         icon="fa fa-piggy-bank"
+                                         styleClass="mem-btn mem-btn-primary"
+                                         style="background:#16a34a; border-color:#16a34a;"
+                                         action="#{depositBean.deposit}"
+                                         update="depositDialogContent growl @(.mem-kpi-grid) @(.mem-card-body)"
+                                         process="depositOverlayForm"/>
+                    </div>
+                </h:form>
+            </p:outputPanel>
+        </p:dialog>
+
+        <style>
+            .mem-welcome-banner {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+                color: #fff;
+                padding: 1.5rem 2rem;
+                border-radius: 1rem;
+                margin-bottom: 1.5rem;
+                box-shadow: 0 4px 20px rgba(15,23,42,0.2);
+            }
+            .mem-welcome-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem; }
+            .mem-welcome-sub   { font-size: 0.82rem; color: #94a3b8; }
+        </style>
+
+    </ui:define>
+</ui:composition>

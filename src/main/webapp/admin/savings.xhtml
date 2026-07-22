@@ -1,0 +1,113 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/admin-template.xhtml">
+
+    <ui:define name="title">Savings Management | Admin</ui:define>
+    
+    <ui:define name="pageHeader">Member Savings Accounts</ui:define>
+
+    <ui:define name="content">
+        <div class="section-card">
+            <div class="section-header" style="display: flex; gap: 1rem; align-items: center;">
+                <div style="flex: 1;">
+                    <!-- We could add a filter/search here in the future -->
+                    <span style="font-weight: 600; color: #111827;">All Savings Accounts</span>
+                </div>
+            </div>
+            
+            <div class="section-body" style="padding: 0;">
+                <h:form id="savingsForm">
+                    <p:dataTable id="savingsTable" value="#{adminSavingsBean.accounts}" var="account" 
+                                 paginator="true" rows="10" paginatorPosition="bottom"
+                                 styleClass="activity-table" style="width: 100%; border-collapse: collapse; text-align: left;"
+                                 emptyMessage="No savings accounts found.">
+                        
+                        <p:column headerText="Account No." style="padding:15px; border-bottom:1px dashed #f3f4f6;">
+                            <div style="font-weight: 600; color: #1f2937;">#{account.accountNumber}</div>
+                        </p:column>
+                        
+                        <p:column headerText="Member" style="padding:15px; border-bottom:1px dashed #f3f4f6;">
+                            <div style="font-size: 0.9rem; color: #4b5563;">
+                                #{account.member.userAccount.firstName} #{account.member.userAccount.lastName}
+                                <br/>
+                                <span style="font-size: 0.75rem; color: #9ca3af;">No: #{account.member.membershipNumber}</span>
+                            </div>
+                        </p:column>
+                        
+                        <p:column headerText="Current Balance" style="padding:15px; border-bottom:1px dashed #f3f4f6;">
+                            <div style="font-weight: 700; color: #059669; font-size: 1.05rem;">
+                                <h:outputText value="#{account.balance}">
+                                    <f:convertNumber type="currency" currencySymbol="UGX " maxFractionDigits="0"/>
+                                </h:outputText>
+                            </div>
+                        </p:column>
+
+                        <p:column headerText="Actions" style="padding:15px; border-bottom:1px dashed #f3f4f6; text-align: right;">
+                            <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                                <p:commandLink action="#{adminSavingsBean.prepareTransaction(account, 'DEPOSIT')}"
+                                               oncomplete="PF('txDialog').show();" update=":txDialogWidget"
+                                               style="text-decoration:none; background:#dcfce7; color:#15803d; padding:6px 12px; border-radius:4px; font-weight:600; font-size:0.8rem; display:inline-flex; align-items:center; gap:4px;">
+                                    <i class="fa-solid fa-arrow-down"></i> Deposit
+                                </p:commandLink>
+
+                                <p:commandLink action="#{adminSavingsBean.prepareTransaction(account, 'WITHDRAW')}"
+                                               oncomplete="PF('txDialog').show();" update=":txDialogWidget"
+                                               style="text-decoration:none; background:#fee2e2; color:#b91c1c; padding:6px 12px; border-radius:4px; font-weight:600; font-size:0.8rem; display:inline-flex; align-items:center; gap:4px;">
+                                    <i class="fa-solid fa-arrow-up"></i> Withdraw
+                                </p:commandLink>
+                            </div>
+                        </p:column>
+                    </p:dataTable>
+                </h:form>
+            </div>
+        </div>
+
+        <!-- Transaction Dialog -->
+        <p:dialog id="txDialogWidget" header="#{adminSavingsBean.transactionType == 'DEPOSIT' ? 'Record Cash Deposit' : 'Process Cash Withdrawal'}" 
+                  widgetVar="txDialog" modal="true" responsive="true" width="450" resizable="false">
+            <h:form id="txForm">
+                <div style="display: flex; flex-direction: column; gap: 1rem; padding: 0.5rem 0;">
+                    
+                    <div style="background:#f9fafb; padding:1rem; border-radius:0.5rem; border:1px solid #e5e7eb;">
+                        <div style="font-size:0.8rem; color:#6b7280; margin-bottom:0.25rem;">Transacting with:</div>
+                        <div style="font-weight:600; color:#111827;">#{adminSavingsBean.selectedAccount.member.userAccount.firstName} #{adminSavingsBean.selectedAccount.member.userAccount.lastName}</div>
+                        <div style="font-size:0.8rem; color:#6b7280;">Account: #{adminSavingsBean.selectedAccount.accountNumber}</div>
+                        <div style="margin-top:0.5rem; font-size:0.85rem;">
+                            Current Balance: 
+                            <strong style="color:#059669;">
+                                <h:outputText value="#{adminSavingsBean.selectedAccount.balance}">
+                                    <f:convertNumber type="currency" currencySymbol="UGX " maxFractionDigits="0"/>
+                                </h:outputText>
+                            </strong>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                        <h:outputLabel for="amount" value="Amount (UGX)" style="font-weight: 600; font-size: 0.85rem; color: #4b5563;"/>
+                        <p:inputNumber id="amount" value="#{adminSavingsBean.amount}" required="true" 
+                                       symbol="UGX " emptyValue="empty" decimalPlaces="0"
+                                       styleClass="mem-input" style="width:100%;" />
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                        <h:outputLabel for="desc" value="Reference / Description (Optional)" style="font-weight: 600; font-size: 0.85rem; color: #4b5563;"/>
+                        <p:inputText id="desc" value="#{adminSavingsBean.description}" placeholder="e.g. Cash handed to office" 
+                                     styleClass="mem-input" style="width:100%; padding: 0.5rem; border-radius: 0.375rem; border: 1px solid var(--border-color); box-sizing: border-box;" />
+                    </div>
+                    
+                    <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1rem;">
+                        <p:commandButton value="Cancel" onclick="PF('txDialog').hide();" type="button" styleClass="ui-button-flat ui-button-secondary"/>
+                        <p:commandButton value="Confirm #{adminSavingsBean.transactionType == 'DEPOSIT' ? 'Deposit' : 'Withdrawal'}" 
+                                         action="#{adminSavingsBean.processTransaction}" 
+                                         update=":savingsForm :growl" 
+                                         oncomplete="if (!args.validationFailed &amp;&amp; !args.error) PF('txDialog').hide();" 
+                                         styleClass="#{adminSavingsBean.transactionType == 'DEPOSIT' ? 'ui-button-success' : 'ui-button-danger'}"/>
+                    </div>
+                </div>
+            </h:form>
+        </p:dialog>
+    </ui:define>
+</ui:composition>

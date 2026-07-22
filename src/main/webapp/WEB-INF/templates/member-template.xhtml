@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title><ui:insert name="title">My Account | Kimwanyi SACCO</ui:insert></title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+    <h:outputStylesheet library="css" name="member.css"/>
+
+    <ui:insert name="head"/>
+</h:head>
+
+<h:body>
+    <p:growl id="growl" showDetail="true" showSummary="true" life="5000" sticky="false"/>
+
+    <!-- Sidebar -->
+    <aside class="mem-sidebar">
+        <div class="mem-sidebar-brand">
+            <svg width="32" height="32" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="26" cy="14" r="7" fill="#dc2626"/>
+                <path d="M12 44c0-7.732 6.268-14 14-14s14 6.268 14 14" stroke="#dc2626" stroke-width="3.5" stroke-linecap="round"/>
+                <circle cx="10" cy="18" r="5" fill="#dc2626" opacity="0.65"/>
+                <path d="M2 41c0-4.5 3.5-8 8-9" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round" opacity="0.65"/>
+                <circle cx="42" cy="18" r="5" fill="#dc2626" opacity="0.65"/>
+                <path d="M50 41c0-4.5-3.5-8-8-9" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round" opacity="0.65"/>
+            </svg>
+            <div>
+                <div class="mem-brand-name">KIMWANYI</div>
+                <div class="mem-brand-sub">Member Portal</div>
+            </div>
+        </div>
+
+        <!-- Member Avatar -->
+        <div class="mem-profile-block">
+            <div class="mem-avatar">#{not empty userSessionBean.loggedInUser ? userSessionBean.loggedInUser.username.substring(0,1).toUpperCase() : 'M'}</div>
+            <div>
+                <div class="mem-profile-name">#{userSessionBean.loggedInUser.username}</div>
+                <div class="mem-profile-role">SACCO Member</div>
+            </div>
+        </div>
+
+        <nav class="mem-nav">
+            <div class="mem-nav-label">MAIN MENU</div>
+
+            <h:link outcome="/members/dashboard" styleClass="mem-nav-item #{view.viewId == '/members/dashboard.xhtml' ? 'active' : ''}">
+                <i class="fa-solid fa-gauge-high"></i>
+                <span>My Dashboard</span>
+            </h:link>
+
+            <h:link outcome="/savings/account" styleClass="mem-nav-item #{view.viewId == '/savings/account.xhtml' ? 'active' : ''}">
+                <i class="fa-solid fa-piggy-bank"></i>
+                <span>Savings Account</span>
+            </h:link>
+
+            <div class="mem-nav-label" style="margin-top:0.75rem;">LOANS</div>
+
+            <h:link outcome="/loans/applications" styleClass="mem-nav-item #{view.viewId == '/loans/applications.xhtml' ? 'active' : ''}">
+                <i class="fa-solid fa-list-check"></i>
+                <span>My Loans</span>
+            </h:link>
+
+            <div class="mem-nav-label" style="margin-top:0.75rem;">ACCOUNT</div>
+
+            <h:link outcome="/members/profile" styleClass="mem-nav-item #{view.viewId == '/members/profile.xhtml' ? 'active' : ''}">
+                <i class="fa-solid fa-circle-user"></i>
+                <span>My Profile</span>
+            </h:link>
+        </nav>
+
+        <div class="mem-sidebar-footer">
+            <h:form style="margin:0; padding:0;">
+                <h:commandLink action="#{loginBean.logout}" styleClass="mem-logout-btn">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span>Sign Out</span>
+                </h:commandLink>
+            </h:form>
+        </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="mem-main">
+
+        <!-- Topbar -->
+        <header class="mem-topbar">
+            <div class="mem-page-title">
+                <ui:insert name="pageTitle">Dashboard</ui:insert>
+            </div>
+
+            <div class="mem-topbar-right">
+                <div class="mem-topbar-notif">
+                    <i class="fa-regular fa-bell"></i>
+                    <span class="notif-dot"></span>
+                </div>
+                <div class="mem-topbar-user">
+                    <div class="mem-top-avatar">#{not empty userSessionBean.loggedInUser ? userSessionBean.loggedInUser.username.substring(0,1).toUpperCase() : 'M'}</div>
+                    <div>
+                        <div style="font-weight:600; font-size:0.88rem; color:#111827;">#{userSessionBean.loggedInUser.username}</div>
+                        <div style="font-size:0.72rem; color:#9ca3af;">SACCO Member</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="mem-content">
+            <ui:insert name="content">
+                <!-- Page content injected here -->
+            </ui:insert>
+        </div>
+
+    </main>
+
+</h:body>
+</html>

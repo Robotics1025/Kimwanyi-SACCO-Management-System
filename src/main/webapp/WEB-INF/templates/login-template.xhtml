@@ -1,56 +1,91 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="jakarta.faces.html"
-      xmlns:ui="jakarta.faces.facelets">
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:p="http://primefaces.org/ui">
 
 <h:head>
     <title>
         <ui:insert name="title">Kimwanyi SACCO</ui:insert>
     </title>
 
-    <h:outputStylesheet library="css" name="app.generated.css"/>
+    <!-- Global stylesheet -->
+    <h:outputStylesheet library="css" name="global.css"/>
 </h:head>
 
-<h:body styleClass="min-h-screen bg-white">
+<h:body>
 
-    <main class="flex min-h-screen items-center justify-center p-6">
+    <!-- PrimeFaces Growl — global toast for all messages on this template -->
+    <p:growl id="growl" globalOnly="true" showDetail="true" life="6000" sticky="false"/>
 
-        <section class="grid w-full max-w-6xl overflow-hidden
-                        rounded-3xl bg-white shadow-2xl
-                        lg:grid-cols-2">
+    <div class="login-card">
 
-            <!-- Left side -->
-            <div class="p-10 lg:p-14">
+        <!-- ===== LEFT PANEL ===== -->
+        <div class="left-panel">
 
-                <div class="mb-14">
-                    <h1 class="text-3xl font-bold">
-                        KIMWANYI
-                        <span class="text-red-600">SACCO</span>
-                    </h1>
-
-                    <p class="text-gray-500">
-                        Secure. Reliable. Together.
-                    </p>
+            <!-- Logo -->
+            <div class="logo-area">
+                <svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="26" cy="14" r="7" fill="#dc2626"/>
+                    <path d="M12 44c0-7.732 6.268-14 14-14s14 6.268 14 14" stroke="#dc2626" stroke-width="3.5" stroke-linecap="round"/>
+                    <circle cx="10" cy="18" r="5" fill="#dc2626" opacity="0.65"/>
+                    <path d="M2 41c0-4.5 3.5-8 8-9" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round" opacity="0.65"/>
+                    <circle cx="42" cy="18" r="5" fill="#dc2626" opacity="0.65"/>
+                    <path d="M50 41c0-4.5-3.5-8-8-9" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round" opacity="0.65"/>
+                </svg>
+                <div>
+                    <div class="logo-name">KIMWANYI <span>SACCO</span></div>
+                    <p class="logo-tagline">Secure. Reliable. Together.</p>
                 </div>
-
-                <ui:insert name="formContent"/>
-
             </div>
 
-            <!-- Right side -->
-            <div class="relative hidden min-h-[750px]
-                        bg-red-600 p-12 text-white lg:flex
-                        lg:items-center lg:justify-center">
+            <ui:insert name="formContent"/>
 
-                <div class="relative z-10 text-center">
-                    <ui:insert name="sideContent"/>
-                </div>
+        </div>
 
+        <!-- ===== RIGHT PANEL ===== -->
+        <div class="right-panel">
+
+            <!-- Watermark -->
+            <div class="right-watermark">
+                <svg width="380" height="380" viewBox="0 0 100 100" fill="white" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M50 4 L92 26 L92 72 Q50 96 8 72 L8 26 Z"/>
+                    <rect x="37" y="54" width="26" height="42" fill="white"/>
+                    <rect x="27" y="34" width="46" height="6" rx="2" fill="white"/>
+                </svg>
             </div>
 
-        </section>
+            <!-- Dots -->
+            <div class="dot-grid top-left">
+                <span class="dot"/><span class="dot"/><span class="dot"/><span class="dot"/><span class="dot"/>
+                <span class="dot"/><span class="dot"/><span class="dot"/><span class="dot"/><span class="dot"/>
+                <span class="dot"/><span class="dot"/><span class="dot"/><span class="dot"/><span class="dot"/>
+            </div>
+            <div class="dot-grid bot-right">
+                <span class="dot"/><span class="dot"/><span class="dot"/><span class="dot"/><span class="dot"/>
+                <span class="dot"/><span class="dot"/><span class="dot"/><span class="dot"/><span class="dot"/>
+                <span class="dot"/><span class="dot"/><span class="dot"/><span class="dot"/><span class="dot"/>
+            </div>
 
-    </main>
+            <div class="right-content">
+                <!-- Circle icon -->
+                <div class="icon-circle">
+                    <svg width="44" height="44" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="26" cy="14" r="7" fill="#dc2626"/>
+                        <path d="M12 44c0-7.732 6.268-14 14-14s14 6.268 14 14" stroke="#dc2626" stroke-width="3.5" stroke-linecap="round"/>
+                        <circle cx="10" cy="18" r="5" fill="#dc2626" opacity="0.65"/>
+                        <path d="M2 41c0-4.5 3.5-8 8-9" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round" opacity="0.65"/>
+                        <circle cx="42" cy="18" r="5" fill="#dc2626" opacity="0.65"/>
+                        <path d="M50 41c0-4.5-3.5-8-8-9" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round" opacity="0.65"/>
+                    </svg>
+                </div>
+
+                <ui:insert name="sideContent"/>
+            </div>
+
+        </div>
+
+    </div>
 
 </h:body>
 </html>

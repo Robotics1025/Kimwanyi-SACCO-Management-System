@@ -1,11 +1,30 @@
 package org.joel.kimwanyisacco.common.util;
 
-public final class MembershipNumberGenerator {
+import java.time.LocalDate;
+import org.joel.kimwanyisacco.repository.MemberRepository;
+import org.springframework.stereotype.Component;
 
-    private MembershipNumberGenerator() {
+@Component
+public class MembershipNumberGenerator {
+
+    private final MemberRepository memberRepository;
+
+    public MembershipNumberGenerator(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
     }
 
-    public static String generate() {
-        throw new UnsupportedOperationException("not implemented");
+    public String generate() {
+        int year = LocalDate.now().getYear();
+        String prefix = "KIM-" + year + "-";
+
+        long sequence = memberRepository.countByMembershipNumberStartingWith(prefix) + 1;
+        String candidate = prefix + String.format("%04d", sequence);
+
+        while (memberRepository.existsByMembershipNumber(candidate)) {
+            sequence++;
+            candidate = prefix + String.format("%04d", sequence);
+        }
+
+        return candidate;
     }
 }

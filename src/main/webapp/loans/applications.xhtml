@@ -1,5 +1,92 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="jakarta.faces.facelets"
-                template="/WEB-INF/templates/main-template.xhtml">
-    <ui:define name="content"></ui:define>
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                template="/WEB-INF/templates/member-template.xhtml">
+
+    <ui:define name="title">My Loans | Kimwanyi SACCO</ui:define>
+    <ui:define name="pageTitle">My Loans</ui:define>
+
+    <ui:define name="content">
+
+        <div class="mem-card">
+            <div class="mem-card-header">
+                <span class="mem-card-title"><i class="fa-solid fa-list-check" style="color:#dc2626; margin-right:6px;"></i> Loan Applications</span>
+                <h:link outcome="/members/dashboard" styleClass="mem-btn mem-btn-primary">
+                    <i class="fa-solid fa-plus"></i> Apply for Loan
+                </h:link>
+            </div>
+            <div class="mem-card-body">
+
+                <h:panelGroup rendered="#{empty memberLoansBean.loans}">
+                    <div class="mem-empty">
+                        <i class="fa-solid fa-hand-holding-dollar"></i>
+                        <strong style="color:#374151;">No Loan Applications Yet</strong>
+                        <p>You haven't applied for a loan yet.</p>
+                        <h:link outcome="/members/dashboard" styleClass="mem-btn mem-btn-primary" style="margin-top:0.5rem;">
+                            <i class="fa-solid fa-plus"></i> Apply for Loan
+                        </h:link>
+                    </div>
+                </h:panelGroup>
+
+                <h:panelGroup rendered="#{not empty memberLoansBean.loans}">
+                    <table class="mem-table">
+                        <thead>
+                            <tr>
+                                <th>Applied</th>
+                                <th>Principal</th>
+                                <th>Interest</th>
+                                <th>Total Repayable</th>
+                                <th>Outstanding</th>
+                                <th>Status</th>
+                                <th>Due Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <ui:repeat value="#{memberLoansBean.loans}" var="loan">
+                                <tr>
+                                    <td>
+                                        <h:outputText value="#{loan.applicationDate}">
+                                            <f:convertDateTime type="localDate" pattern="dd MMM yyyy"/>
+                                        </h:outputText>
+                                    </td>
+                                    <td>
+                                        <h:outputText value="#{loan.principal}">
+                                            <f:convertNumber type="currency" currencySymbol="UGX " maxFractionDigits="0"/>
+                                        </h:outputText>
+                                    </td>
+                                    <td>
+                                        <h:outputText value="#{loan.interestAmount}">
+                                            <f:convertNumber type="currency" currencySymbol="UGX " maxFractionDigits="0"/>
+                                        </h:outputText>
+                                    </td>
+                                    <td>
+                                        <h:outputText value="#{loan.totalRepayable}">
+                                            <f:convertNumber type="currency" currencySymbol="UGX " maxFractionDigits="0"/>
+                                        </h:outputText>
+                                    </td>
+                                    <td>
+                                        <h:outputText value="#{loan.outstandingBalance}">
+                                            <f:convertNumber type="currency" currencySymbol="UGX " maxFractionDigits="0"/>
+                                        </h:outputText>
+                                    </td>
+                                    <td>
+                                        <span class="badge #{memberLoansBean.badgeClass(loan)}">#{loan.status}</span>
+                                    </td>
+                                    <td>
+                                        <h:outputText value="#{loan.dueDate}" rendered="#{loan.dueDate != null}">
+                                            <f:convertDateTime type="localDate" pattern="dd MMM yyyy"/>
+                                        </h:outputText>
+                                        <h:outputText value="—" rendered="#{loan.dueDate == null}"/>
+                                    </td>
+                                </tr>
+                            </ui:repeat>
+                        </tbody>
+                    </table>
+                </h:panelGroup>
+
+            </div>
+        </div>
+
+    </ui:define>
 </ui:composition>
