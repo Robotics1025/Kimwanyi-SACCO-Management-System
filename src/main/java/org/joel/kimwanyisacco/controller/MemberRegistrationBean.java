@@ -7,6 +7,7 @@ import org.springframework.web.context.annotation.RequestScope;
 
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import org.springframework.dao.DataIntegrityViolationException;
 
 @Component
 @RequestScope
@@ -31,8 +32,8 @@ public class MemberRegistrationBean {
             fc.getExternalContext().getFlash().setKeepMessages(true);
             fc.addMessage(null, new FacesMessage(
                     FacesMessage.SEVERITY_INFO,
-                    "Account Created!",
-                    "Your account was created successfully. Please sign in."
+                    "Application submitted",
+                    "Your account is awaiting administrator approval. You will be able to sign in after approval."
             ));
 
             form = new MemberRegistrationForm();
@@ -50,6 +51,21 @@ public class MemberRegistrationBean {
                             )
                     );
 
+            return null;
+        } catch (DataIntegrityViolationException exception) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
+                    FacesMessage.SEVERITY_WARN,
+                    "Account already registered",
+                    "That username, email address, or National ID is already registered. "
+                            + "If you recently applied, your account may already be waiting for administrator approval."
+            ));
+            return null;
+        } catch (RuntimeException exception) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
+                    FacesMessage.SEVERITY_ERROR,
+                    "Registration could not be completed",
+                    "Please try again once. If the problem continues, contact the SACCO administrator."
+            ));
             return null;
         }
     }

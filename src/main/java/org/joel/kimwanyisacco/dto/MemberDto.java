@@ -12,6 +12,8 @@ public class MemberDto {
     private String phoneNumber;
     private LocalDate dateOfBirth;
     private String status;
+    private String nationalId;
+    private LocalDate joinedAt;
 
     public Long getId() {
         return id;
@@ -76,4 +78,10 @@ public class MemberDto {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    public String getNationalId() { return nationalId; }
+    public void setNationalId(String nationalId) { this.nationalId = nationalId; }
+    public LocalDate getJoinedAt() { return joinedAt; }
+    public void setJoinedAt(LocalDate joinedAt) { this.joinedAt = joinedAt; }
+    public String getFullName() { return (firstName + " " + lastName).trim(); }
 }

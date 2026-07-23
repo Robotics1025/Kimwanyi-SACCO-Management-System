@@ -14,101 +14,87 @@
             
             <h:form id="auditForm">
                 <!-- Toolbar: Filter -->
-                <div class="section-header" style="display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap;">
+                <div class="section-header workflow-filter-bar">
                     
-                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                        <h:outputLabel value="Start Date" style="font-size: 0.8rem; font-weight: 600; color: #6b7280;"/>
+                    <div class="workflow-filter-field">
+                        <h:outputLabel value="Start date"/>
                         <p:datePicker value="#{auditLogBean.filter.dateFrom}" pattern="dd MMM yyyy"
                                       styleClass="audit-filter-input" placeholder="Any" />
                     </div>
 
-                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                        <h:outputLabel value="End Date" style="font-size: 0.8rem; font-weight: 600; color: #6b7280;"/>
+                    <div class="workflow-filter-field">
+                        <h:outputLabel value="End date"/>
                         <p:datePicker value="#{auditLogBean.filter.dateTo}" pattern="dd MMM yyyy"
                                       styleClass="audit-filter-input" placeholder="Any" />
                     </div>
 
-                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                        <h:outputLabel value="Action" style="font-size: 0.8rem; font-weight: 600; color: #6b7280;"/>
-                        <h:selectOneMenu value="#{auditLogBean.filter.action}" style="padding: 0.5rem; border-radius: 0.4rem; border: 1px solid var(--border-color); background: white;">
+                    <div class="workflow-filter-field">
+                        <h:outputLabel value="Action"/>
+                        <h:selectOneMenu value="#{auditLogBean.filter.action}" styleClass="workflow-select">
                             <f:selectItem itemLabel="All Actions" itemValue="#{null}" />
                             <f:selectItems value="#{auditLogBean.actionOptions}" var="act" itemLabel="#{act}" itemValue="#{act}" />
                         </h:selectOneMenu>
                     </div>
 
-                    <div>
-                        <h:commandButton action="#{auditLogBean.search}" value="Filter Logs" 
-                                         style="padding: 0.5rem 1.25rem; background: var(--primary); color: white; border: none; border-radius: 0.4rem; cursor: pointer; font-weight: 600;">
+                    <div class="workflow-filter-action">
+                        <h:commandButton action="#{auditLogBean.search}" value="Filter logs" styleClass="workflow-primary-button">
                             <f:ajax execute="@form" render="logTable"/>
                         </h:commandButton>
                     </div>
                 </div>
 
+                <div class="results-summary">
+                    <span><strong>#{auditLogBean.results.size()}</strong> audit event#{auditLogBean.results.size() == 1 ? '' : 's'} currently loaded</span>
+                    <span>Newest events appear first</span>
+                </div>
+
                 <!-- Data Table -->
-                <div class="section-body" style="padding: 0;">
-                    <h:dataTable id="logTable" value="#{auditLogBean.results}" var="log" 
-                                 styleClass="activity-table" style="width: 100%; border-collapse: collapse; text-align: left;">
+                <div class="section-body table-shell">
+                    <p:dataTable id="logTable" value="#{auditLogBean.results}" var="log"
+                                 paginator="true" rows="15" paginatorPosition="bottom"
+                                 rowsPerPageTemplate="15,30,50"
+                                 emptyMessage="No audit logs match your filters."
+                                 reflow="true"
+                                 styleClass="operations-table audit-table">
                         
-                        <h:column>
-                            <f:facet name="header"><div style="padding:15px; border-bottom:1px solid #e5e7eb; color:#9ca3af; font-size:0.8rem; font-weight: 500;">Timestamp</div></f:facet>
-                            <div style="padding:15px; border-bottom:1px dashed #f3f4f6; font-size: 0.9rem; color: #4b5563;">
+                        <p:column headerText="Timestamp" sortBy="#{log.createdAt}">
+                            <div class="audit-time">
                                 <h:outputText value="#{log.createdAt}">
-                                    <f:convertDateTime type="localDateTime" pattern="dd MMM yyyy, HH:mm:ss"/>
+                                    <f:convertDateTime type="localDateTime" pattern="dd MMM yyyy"/>
+                                </h:outputText>
+                                <h:outputText value="#{log.createdAt}">
+                                    <f:convertDateTime type="localDateTime" pattern="HH:mm:ss"/>
                                 </h:outputText>
                             </div>
-                        </h:column>
+                        </p:column>
                         
-                        <h:column>
-                            <f:facet name="header"><div style="padding:15px; border-bottom:1px solid #e5e7eb; color:#9ca3af; font-size:0.8rem; font-weight: 500;">Actor</div></f:facet>
-                            <div style="padding:15px; border-bottom:1px dashed #f3f4f6; font-size: 0.9rem; font-weight: 600; color: #1f2937;">
+                        <p:column headerText="Actor">
+                            <div class="identity-name">
                                 #{log.actorUsername != null ? log.actorUsername : 'System'}
                             </div>
-                        </h:column>
+                        </p:column>
 
-                        <h:column>
-                            <f:facet name="header"><div style="padding:15px; border-bottom:1px solid #e5e7eb; color:#9ca3af; font-size:0.8rem; font-weight: 500;">Action Performed</div></f:facet>
-                            <div style="padding:15px; border-bottom:1px dashed #f3f4f6;">
-                                <span style="background:#f3f4f6; padding:4px 8px; border-radius:4px; font-size:0.8rem; font-weight:600; color:#374151;">
-                                    #{log.action}
-                                </span>
-                            </div>
-                        </h:column>
+                        <p:column headerText="Event">
+                            <span class="status-chip neutral">#{log.action}</span>
+                        </p:column>
 
-                        <h:column>
-                            <f:facet name="header"><div style="padding:15px; border-bottom:1px solid #e5e7eb; color:#9ca3af; font-size:0.8rem; font-weight: 500;">Target Entity</div></f:facet>
-                            <div style="padding:15px; border-bottom:1px dashed #f3f4f6; font-size: 0.9rem; color: #4b5563;">
+                        <p:column headerText="Entity">
+                            <div class="cell-secondary">
                                 #{log.entityType} 
-                                <h:outputText value="##{log.entityId}" rendered="#{not empty log.entityId}" style="color: #9ca3af; font-size: 0.8rem;" />
+                                <h:outputText value="##{log.entityId}" rendered="#{not empty log.entityId}" styleClass="entity-id"/>
                             </div>
-                        </h:column>
+                        </p:column>
                         
-                        <h:column>
-                            <f:facet name="header"><div style="padding:15px; border-bottom:1px solid #e5e7eb; color:#9ca3af; font-size:0.8rem; font-weight: 500;">Description</div></f:facet>
-                            <div style="padding:15px; border-bottom:1px dashed #f3f4f6; font-size: 0.85rem; color: #6b7280; max-width: 300px;">
+                        <p:column headerText="Details">
+                            <div class="audit-description">
                                 #{not empty log.description ? log.description : '-'}
                             </div>
-                        </h:column>
+                        </p:column>
                         
-                    </h:dataTable>
-                    
-                    <h:panelGroup rendered="#{empty auditLogBean.results}">
-                        <div style="padding: 3rem; text-align: center; color: #9ca3af; font-size: 1rem;">
-                            <i class="fa-solid fa-filter-circle-xmark fa-3x" style="margin-bottom: 1rem; color: #d1d5db;"></i><br/>
-                            No audit logs match your filters.
-                        </div>
-                    </h:panelGroup>
+                    </p:dataTable>
                 </div>
             </h:form>
         </div>
         
-        <style>
-            /* Quick override for PrimeFaces DatePicker to match styling */
-            .audit-filter-input .ui-inputfield {
-                padding: 0.5rem;
-                border-radius: 0.4rem;
-                border: 1px solid var(--border-color);
-                box-shadow: none;
-            }
-        </style>
     </ui:define>
 </ui:composition>

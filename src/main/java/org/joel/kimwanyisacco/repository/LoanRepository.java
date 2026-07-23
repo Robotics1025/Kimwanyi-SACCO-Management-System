@@ -7,6 +7,7 @@ import org.joel.kimwanyisacco.model.enums.LoanStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import java.time.LocalDate;
 
 public interface LoanRepository extends JpaRepository<Loan, Long> {
 
@@ -19,4 +20,6 @@ public interface LoanRepository extends JpaRepository<Loan, Long> {
 
     @Query("select coalesce(sum(l.outstandingBalance), 0) from Loan l where l.status in ('ACTIVE','OVERDUE')")
     BigDecimal sumOutstandingBalance();
+
+    java.util.List<Loan> findByStatusAndDueDateBefore(LoanStatus status, LocalDate date);
 }

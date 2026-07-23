@@ -67,7 +67,17 @@
                 <span>My Loans</span>
             </h:link>
 
+            <h:link outcome="/loans/repayments" styleClass="mem-nav-item #{view.viewId == '/loans/repayments.xhtml' ? 'active' : ''}">
+                <i class="fa-solid fa-money-bill-transfer"></i>
+                <span>Loan Repayment</span>
+            </h:link>
+
             <div class="mem-nav-label" style="margin-top:0.75rem;">ACCOUNT</div>
+
+            <h:link outcome="/statements/account-statement" styleClass="mem-nav-item #{view.viewId == '/statements/account-statement.xhtml' ? 'active' : ''}">
+                <i class="fa-solid fa-file-invoice"></i>
+                <span>Statements</span>
+            </h:link>
 
             <h:link outcome="/members/profile" styleClass="mem-nav-item #{view.viewId == '/members/profile.xhtml' ? 'active' : ''}">
                 <i class="fa-solid fa-circle-user"></i>

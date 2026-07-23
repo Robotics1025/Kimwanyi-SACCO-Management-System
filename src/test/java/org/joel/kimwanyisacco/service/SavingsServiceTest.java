@@ -3,12 +3,14 @@ package org.joel.kimwanyisacco.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
 import org.joel.kimwanyisacco.common.exception.ResourceNotFoundException;
@@ -23,6 +25,7 @@ import org.joel.kimwanyisacco.model.SavingsTransaction;
 import org.joel.kimwanyisacco.model.enums.NotificationType;
 import org.joel.kimwanyisacco.model.enums.TransactionType;
 import org.joel.kimwanyisacco.policy.WithdrawalPolicy;
+import org.joel.kimwanyisacco.policy.SavingsInterestCalculator;
 import org.joel.kimwanyisacco.repository.SavingsAccountRepository;
 import org.joel.kimwanyisacco.repository.SavingsTransactionRepository;
 import org.junit.jupiter.api.Test;
@@ -36,6 +39,7 @@ class SavingsServiceTest {
     @Mock private SavingsAccountRepository savingsAccountRepository;
     @Mock private SavingsTransactionRepository savingsTransactionRepository;
     @Mock private NotificationService notificationService;
+    @Mock private AuditLogService auditLogService;
 
     private final SavingsAccountConverter savingsAccountConverter = new SavingsAccountConverter();
     private final SavingsTransactionConverter savingsTransactionConverter = new SavingsTransactionConverter();
@@ -45,7 +49,22 @@ class SavingsServiceTest {
         return new SavingsServiceImpl(
                 savingsAccountRepository, savingsTransactionRepository,
                 savingsAccountConverter, savingsTransactionConverter,
-                withdrawalPolicy, notificationService);
+                withdrawalPolicy, notificationService, new SavingsInterestCalculator(), auditLogService);
+    }
+
+    @Test
+    void monthlyInterestIsPostedWithAnAuditableReference() {
+        SavingsAccount account = new SavingsAccount();
+        account.setAccountNumber("SAV-2026-0001");
+        account.setBalance(new BigDecimal("1200000.00"));
+        when(savingsAccountRepository.findAllWithMember()).thenReturn(List.of(account));
+        when(savingsTransactionRepository.existsByReference("INT-2026-06-SAV-2026-0001")).thenReturn(false);
+
+        int posted = service().applyMonthlyInterest(YearMonth.of(2026, 6));
+
+        assertEquals(1, posted);
+        assertEquals(new BigDecimal("1205000.00"), account.getBalance());
+        verify(savingsTransactionRepository).save(any(SavingsTransaction.class));
     }
 
     @Test

@@ -1,5 +1,121 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="jakarta.faces.facelets"
-                template="/WEB-INF/templates/main-template.xhtml">
-    <ui:define name="content"></ui:define>
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                template="/WEB-INF/templates/admin-template.xhtml">
+
+    <ui:define name="title">Member Directory | Admin</ui:define>
+
+    <ui:define name="head">
+        <style>
+            .directory-heading { display:flex; align-items:flex-end; justify-content:space-between; gap:1rem; margin-bottom:1.25rem; }
+            .directory-heading h1 { font-size:1.35rem; margin:0 0 .3rem; }
+            .directory-heading p { color:var(--text-muted); font-size:.84rem; }
+            .directory-search { display:flex; align-items:center; gap:.65rem; width:100%; }
+            .search-wrap { position:relative; flex:1; max-width:520px; }
+            .search-wrap i { position:absolute; left:.9rem; top:50%; transform:translateY(-50%); color:#9ca3af; }
+            .directory-input { width:100%; padding:.68rem .85rem .68rem 2.4rem; border:1px solid var(--border-color); border-radius:.5rem; font:inherit; font-size:.86rem; }
+            .directory-input:focus { outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(79,70,229,.1); }
+            .directory-button { display:inline-flex; align-items:center; gap:.45rem; border:0; border-radius:.5rem; padding:.7rem 1.1rem; background:var(--primary); color:#fff; font-weight:700; cursor:pointer; }
+            .directory-button:hover { background:#4338ca; }
+            .directory-table-wrap { overflow-x:auto; }
+            .directory-table { width:100%; border-collapse:collapse; text-align:left; }
+            .directory-table th { padding:.8rem 1rem; background:#f8fafc; border-bottom:1px solid var(--border-color); color:#64748b; font-size:.7rem; font-weight:800; letter-spacing:.055em; text-transform:uppercase; white-space:nowrap; }
+            .directory-table td { padding:.95rem 1rem; border-bottom:1px solid #eef0f3; color:#374151; font-size:.82rem; vertical-align:middle; }
+            .directory-table tbody tr:hover { background:#fafaff; }
+            .member-number { display:inline-flex; align-items:center; gap:.4rem; padding:.35rem .55rem; background:#eef2ff; color:#3730a3; border:1px solid #c7d2fe; border-radius:.4rem; font-size:.74rem; font-weight:800; white-space:nowrap; }
+            .member-name { color:#111827; font-weight:700; white-space:nowrap; }
+            .contact-line { display:block; }
+            .contact-secondary { display:block; color:#9ca3af; font-size:.72rem; margin-top:.2rem; }
+            .status-badge { display:inline-flex; align-items:center; gap:.35rem; padding:.3rem .55rem; border-radius:999px; font-size:.67rem; font-weight:800; text-transform:uppercase; }
+            .status-active { background:#dcfce7; color:#166534; }
+            .status-inactive { background:#f1f5f9; color:#475569; }
+            .empty-directory { padding:3.5rem 1.5rem; text-align:center; color:var(--text-muted); }
+            .empty-directory i { display:block; color:#c7d2fe; font-size:2.5rem; margin-bottom:.9rem; }
+            .empty-directory strong { display:block; color:#374151; font-size:.95rem; margin-bottom:.35rem; }
+            .empty-directory p { font-size:.8rem; line-height:1.5; }
+            @media (max-width:700px) {
+                .directory-heading { align-items:flex-start; flex-direction:column; }
+                .directory-search { align-items:stretch; flex-direction:column; }
+                .search-wrap { max-width:none; }
+                .directory-button { justify-content:center; width:100%; }
+            }
+        </style>
+    </ui:define>
+
+    <ui:define name="content">
+        <section aria-labelledby="directoryHeading">
+            <div class="directory-heading">
+                <div>
+                    <h1 id="directoryHeading">Member Directory</h1>
+                    <p>Find SACCO members by name, membership number, National ID, or contact details.</p>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <h:form id="memberSearchForm">
+                    <div class="section-header">
+                        <div class="directory-search">
+                            <div class="search-wrap">
+                                <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                                <h:inputText id="keyword"
+                                             value="#{memberListBean.keyword}"
+                                             styleClass="directory-input"
+                                             aria-label="Search members"
+                                             placeholder="Search members..."/>
+                            </div>
+                            <h:commandButton value="Search"
+                                             action="#{memberListBean.search}"
+                                             styleClass="directory-button">
+                                <f:ajax execute="@form" render="results"/>
+                            </h:commandButton>
+                        </div>
+                    </div>
+
+                    <h:panelGroup id="results" layout="block">
+                        <h:panelGroup rendered="#{not empty memberListBean.members}" layout="block" styleClass="directory-table-wrap">
+                            <h:dataTable value="#{memberListBean.members}" var="member" styleClass="directory-table">
+                                <h:column>
+                                    <f:facet name="header">Member number</f:facet>
+                                    <span class="member-number"><i class="fa-solid fa-id-card"></i> #{member.membershipNumber}</span>
+                                </h:column>
+                                <h:column>
+                                    <f:facet name="header">Member</f:facet>
+                                    <span class="member-name">#{member.firstName} #{member.lastName}</span>
+                                </h:column>
+                                <h:column>
+                                    <f:facet name="header">National ID</f:facet>
+                                    #{member.nationalId}
+                                </h:column>
+                                <h:column>
+                                    <f:facet name="header">Contact</f:facet>
+                                    <span class="contact-line">#{empty member.phoneNumber ? 'No phone' : member.phoneNumber}</span>
+                                    <span class="contact-secondary">#{empty member.email ? 'No email' : member.email}</span>
+                                </h:column>
+                                <h:column>
+                                    <f:facet name="header">Joined</f:facet>
+                                    <h:outputText value="#{member.joinedAt}">
+                                        <f:convertDateTime type="localDate" pattern="dd MMM yyyy"/>
+                                    </h:outputText>
+                                </h:column>
+                                <h:column>
+                                    <f:facet name="header">Status</f:facet>
+                                    <span class="status-badge #{member.status == 'ACTIVE' ? 'status-active' : 'status-inactive'}">
+                                        <i class="fa-solid fa-circle" style="font-size:.4rem;"></i>
+                                        #{member.status}
+                                    </span>
+                                </h:column>
+                            </h:dataTable>
+                        </h:panelGroup>
+
+                        <h:panelGroup rendered="#{empty memberListBean.members}" layout="block" styleClass="empty-directory">
+                            <i class="fa-solid fa-users-slash" aria-hidden="true"></i>
+                            <strong>No members found</strong>
+                            <p>Try another name, membership number, National ID, email address, or telephone number.</p>
+                        </h:panelGroup>
+                    </h:panelGroup>
+                </h:form>
+            </div>
+        </section>
+    </ui:define>
 </ui:composition>

@@ -6,6 +6,7 @@ import org.joel.kimwanyisacco.dto.InternalTransferForm;
 import org.joel.kimwanyisacco.dto.SavingsAccountDto;
 import org.joel.kimwanyisacco.dto.SavingsTransactionDto;
 import org.joel.kimwanyisacco.dto.WithdrawalForm;
+import java.time.YearMonth;
 
 public interface SavingsService {
 
@@ -18,4 +19,6 @@ public interface SavingsService {
     List<SavingsTransactionDto> getTransactionHistory(Long savingsAccountId);
 
     void transfer(InternalTransferForm form);
+    int applyMonthlyInterest(YearMonth month);
+    void postPreviousMonthInterest();
 }

@@ -5,6 +5,10 @@ import org.joel.kimwanyisacco.common.util.MembershipNumberGenerator;
 import org.joel.kimwanyisacco.common.util.SavingsAccountNumberGenerator;
 import org.joel.kimwanyisacco.common.util.converter.MemberConverter;
 import org.joel.kimwanyisacco.dto.MemberRegistrationForm;
+import org.joel.kimwanyisacco.dto.MemberDto;
+import org.joel.kimwanyisacco.dto.MemberUpdateForm;
+import org.joel.kimwanyisacco.common.exception.ResourceNotFoundException;
+import java.util.List;
 import org.joel.kimwanyisacco.model.Member;
 import org.joel.kimwanyisacco.model.SavingsAccount;
 import org.joel.kimwanyisacco.model.UserAccount;
@@ -27,6 +31,8 @@ public class MemberServiceImpl implements MemberService {
     private final MembershipNumberGenerator membershipNumberGenerator;
     private final SavingsAccountNumberGenerator savingsAccountNumberGenerator;
     private final AuditLogService auditLogService;
+    private final NotificationService notificationService;
+    private final EmailService emailService;
 
     public MemberServiceImpl(
             UserAccountRepository userAccountRepository,
@@ -36,7 +42,9 @@ public class MemberServiceImpl implements MemberService {
             PasswordEncoder passwordEncoder,
             MembershipNumberGenerator membershipNumberGenerator,
             SavingsAccountNumberGenerator savingsAccountNumberGenerator,
-            AuditLogService auditLogService
+            AuditLogService auditLogService,
+            NotificationService notificationService,
+            EmailService emailService
     ) {
         this.userAccountRepository = userAccountRepository;
         this.memberRepository = memberRepository;
@@ -46,6 +54,8 @@ public class MemberServiceImpl implements MemberService {
         this.membershipNumberGenerator = membershipNumberGenerator;
         this.savingsAccountNumberGenerator = savingsAccountNumberGenerator;
         this.auditLogService = auditLogService;
+        this.notificationService = notificationService;
+        this.emailService = emailService;
     }
 
     @Override
@@ -58,13 +68,13 @@ public class MemberServiceImpl implements MemberService {
         String email = form.getEmail().trim().toLowerCase();
         String nationalId = form.getNationalId().trim();
 
-        if (userAccountRepository.existsByUsername(username)) {
+        if (userAccountRepository.existsByUsernameIgnoreCase(username)) {
             throw new IllegalArgumentException(
                     "Username already exists"
             );
         }
 
-        if (userAccountRepository.existsByEmail(email)) {
+        if (userAccountRepository.existsByEmailIgnoreCase(email)) {
             throw new IllegalArgumentException(
                     "Email already exists"
             );
@@ -107,8 +117,67 @@ public class MemberServiceImpl implements MemberService {
         savingsAccountRepository.save(savingsAccount);
 
         auditLogService.record(savedAccount, AuditAction.MEMBER_REGISTERED, "Member", savedMember.getId(), "Membership " + membershipNumber);
+        notificationService.notifyAdmins(org.joel.kimwanyisacco.model.enums.NotificationType.SYSTEM,
+                "Member approval required",
+                savedAccount.getFirstName() + " " + savedAccount.getLastName()
+                        + " registered as " + membershipNumber + ". Review and approve the account.");
+        try {
+            emailService.sendToMembers(List.of(savedMember.getId()),
+                    "Kimwanyi SACCO registration received",
+                    "Hello " + savedAccount.getFirstName() + ",\n\n"
+                            + "We have received your application to become a member of Kimwanyi SACCO. "
+                            + "Your membership number is " + membershipNumber + ".\n\n"
+                            + "Your account is currently waiting for verification and approval by an administrator. "
+                            + "You will not be able to log in until the approval is complete. "
+                            + "We will email you again when your account has been approved.\n\n"
+                            + "Kimwanyi SACCO",
+                    savedAccount);
+        } catch (RuntimeException emailFailure) {
+            // Registration remains successful even when email configuration or delivery is unavailable.
+            auditLogService.record(savedAccount, AuditAction.EMAIL_FAILED, "Member", savedMember.getId(),
+                    "Registration acknowledgement could not be sent: " + emailFailure.getMessage());
+        }
         
         return savedMember;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public MemberDto getByUserAccountId(Long userAccountId) {
+        Member member = memberRepository.findByUserAccountId(userAccountId)
+                .orElseThrow(() -> new ResourceNotFoundException("Member profile not found"));
+        return memberConverter.toDto(member);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<MemberDto> search(String keyword) {
+        List<Member> members = keyword == null || keyword.isBlank()
+                ? memberRepository.findAllWithUserAccount()
+                : memberRepository.search(keyword.trim());
+        return members.stream().map(memberConverter::toDto).toList();
+    }
+
+    @Override
+    @Transactional
+    public MemberDto updateProfile(Long userAccountId, MemberUpdateForm form) {
+        if (form == null || form.getEmail() == null || form.getEmail().isBlank()) {
+            throw new IllegalArgumentException("Email is required");
+        }
+        Member member = memberRepository.findByUserAccountId(userAccountId)
+                .orElseThrow(() -> new ResourceNotFoundException("Member profile not found"));
+        UserAccount account = member.getUserAccount();
+        String email = form.getEmail().trim().toLowerCase();
+        if (!email.equalsIgnoreCase(account.getEmail()) && userAccountRepository.existsByEmail(email)) {
+            throw new IllegalArgumentException("Email already exists");
+        }
+        account.setEmail(email);
+        member.setPhoneNumber(form.getPhoneNumber() == null || form.getPhoneNumber().isBlank()
+                ? null : form.getPhoneNumber().trim());
+        userAccountRepository.save(account);
+        memberRepository.save(member);
+        auditLogService.record(account, AuditAction.MEMBER_UPDATED, "Member", member.getId(), "Contact profile updated");
+        return memberConverter.toDto(member);
     }
 
     private void validateForm(MemberRegistrationForm form) {

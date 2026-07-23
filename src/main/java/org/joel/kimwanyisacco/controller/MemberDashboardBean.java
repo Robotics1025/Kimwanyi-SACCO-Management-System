@@ -35,6 +35,7 @@ public class MemberDashboardBean {
     // Loan summary
     private BigDecimal outstandingLoanBalance = BigDecimal.ZERO;
     private Loan activeLoan;
+    private Loan latestLoan;
     private String loanJourneyStep = "3"; // "3" = no loan yet, "4" = pending, "5" = active/repaying
 
     public MemberDashboardBean(
@@ -80,6 +81,8 @@ public class MemberDashboardBean {
 
             // --- Loan activities ---
             List<Loan> loans = loanService.getLoansByMember(member.getId());
+            latestLoan = loans.stream().max(Comparator.comparing(Loan::getCreatedAt,
+                    Comparator.nullsLast(Comparator.naturalOrder()))).orElse(null);
             for (Loan loan : loans) {
                 // Loan application event
                 if (loan.getApplicationDate() != null) {
@@ -158,4 +161,34 @@ public class MemberDashboardBean {
     }
     public String getLoanJourneyStep() { return loanJourneyStep; }
     public boolean isHasActiveLoan() { return activeLoan != null; }
+    public boolean isHasLoanJourney() { return latestLoan != null; }
+    public String getLoanJourneyStatus() { return latestLoan == null ? "NONE" : latestLoan.getStatus().name(); }
+    public String getLoanJourneyTitle() {
+        if (latestLoan == null) return "No loan application yet";
+        return switch (latestLoan.getStatus()) {
+            case PENDING -> "Application under review";
+            case APPROVED -> "Loan approved";
+            case ACTIVE -> "Repayment in progress";
+            case OVERDUE -> "Repayment overdue";
+            case FULLY_REPAID -> "Loan fully repaid";
+            case REJECTED -> "Application not approved";
+        };
+    }
+    public String getLoanJourneyNextAction() {
+        if (latestLoan == null) return "Apply when you are ready and eligible.";
+        return switch (latestLoan.getStatus()) {
+            case PENDING -> "The SACCO administrator will review your application.";
+            case APPROVED -> "Wait for disbursement confirmation.";
+            case ACTIVE -> "Continue making repayments before the due date.";
+            case OVERDUE -> "Make a repayment or contact the SACCO immediately.";
+            case FULLY_REPAID -> "You may apply for a new loan when needed.";
+            case REJECTED -> "Review the decision remarks before applying again.";
+        };
+    }
+    public int getLoanRepaymentPercent() {
+        if (latestLoan == null || latestLoan.getTotalRepayable() == null
+                || latestLoan.getTotalRepayable().signum() <= 0 || latestLoan.getAmountRepaid() == null) return 0;
+        return latestLoan.getAmountRepaid().multiply(BigDecimal.valueOf(100))
+                .divide(latestLoan.getTotalRepayable(), 0, java.math.RoundingMode.HALF_UP).min(BigDecimal.valueOf(100)).intValue();
+    }
 }

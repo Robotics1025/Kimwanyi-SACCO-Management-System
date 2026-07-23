@@ -17,11 +17,15 @@ import org.joel.kimwanyisacco.model.SavingsAccount;
 import org.joel.kimwanyisacco.model.SavingsTransaction;
 import org.joel.kimwanyisacco.model.enums.NotificationType;
 import org.joel.kimwanyisacco.model.enums.TransactionType;
+import org.joel.kimwanyisacco.model.enums.MemberStatus;
 import org.joel.kimwanyisacco.policy.WithdrawalPolicy;
+import org.joel.kimwanyisacco.policy.SavingsInterestCalculator;
 import org.joel.kimwanyisacco.repository.SavingsAccountRepository;
 import org.joel.kimwanyisacco.repository.SavingsTransactionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.scheduling.annotation.Scheduled;
+import java.time.YearMonth;
 
 @Service
 public class SavingsServiceImpl implements SavingsService {
@@ -34,6 +38,8 @@ public class SavingsServiceImpl implements SavingsService {
     private final SavingsTransactionConverter savingsTransactionConverter;
     private final WithdrawalPolicy withdrawalPolicy;
     private final NotificationService notificationService;
+    private final SavingsInterestCalculator savingsInterestCalculator;
+    private final AuditLogService auditLogService;
 
     public SavingsServiceImpl(
             SavingsAccountRepository savingsAccountRepository,
@@ -41,7 +47,9 @@ public class SavingsServiceImpl implements SavingsService {
             SavingsAccountConverter savingsAccountConverter,
             SavingsTransactionConverter savingsTransactionConverter,
             WithdrawalPolicy withdrawalPolicy,
-            NotificationService notificationService
+            NotificationService notificationService,
+            SavingsInterestCalculator savingsInterestCalculator,
+            AuditLogService auditLogService
     ) {
         this.savingsAccountRepository = savingsAccountRepository;
         this.savingsTransactionRepository = savingsTransactionRepository;
@@ -49,6 +57,8 @@ public class SavingsServiceImpl implements SavingsService {
         this.savingsTransactionConverter = savingsTransactionConverter;
         this.withdrawalPolicy = withdrawalPolicy;
         this.notificationService = notificationService;
+        this.savingsInterestCalculator = savingsInterestCalculator;
+        this.auditLogService = auditLogService;
     }
 
     @Override
@@ -77,6 +87,9 @@ public class SavingsServiceImpl implements SavingsService {
         tx.setDescription("Member deposit");
         tx.setCreatedAt(LocalDateTime.now());
         savingsTransactionRepository.save(tx);
+        auditLogService.record(account.getMember() == null ? null : account.getMember().getUserAccount(),
+                org.joel.kimwanyisacco.model.enums.AuditAction.DEPOSIT_PROCESSED,
+                "SavingsTransaction", tx.getId(), tx.getReference() + " UGX " + form.getAmount());
 
         notificationService.notify(account.getMember().getUserAccount(), NotificationType.DEPOSIT,
                 "Deposit Received", "UGX " + form.getAmount() + " deposited. New balance: UGX " + balanceAfter + ".");
@@ -113,6 +126,9 @@ public class SavingsServiceImpl implements SavingsService {
                 ? form.getDescription().trim() : "Member withdrawal");
         tx.setCreatedAt(LocalDateTime.now());
         savingsTransactionRepository.save(tx);
+        auditLogService.record(account.getMember() == null ? null : account.getMember().getUserAccount(),
+                org.joel.kimwanyisacco.model.enums.AuditAction.WITHDRAWAL_PROCESSED,
+                "SavingsTransaction", tx.getId(), tx.getReference() + " UGX " + form.getAmount());
 
         notificationService.notify(account.getMember().getUserAccount(), NotificationType.WITHDRAWAL,
                 "Withdrawal Processed", "UGX " + form.getAmount() + " withdrawn. New balance: UGX " + balanceAfter + ".");
@@ -150,6 +166,12 @@ public class SavingsServiceImpl implements SavingsService {
 
         if (fromAccount.getId().equals(toAccount.getId())) {
             throw new IllegalArgumentException("You cannot transfer to your own account");
+        }
+        if (fromAccount.getMember() == null || fromAccount.getMember().getStatus() != MemberStatus.ACTIVE) {
+            throw new IllegalArgumentException("Only an active member can make an internal transfer");
+        }
+        if (toAccount.getMember() == null || toAccount.getMember().getStatus() != MemberStatus.ACTIVE) {
+            throw new IllegalArgumentException("The recipient must be an active Kimwanyi SACCO member");
         }
 
         BigDecimal transferAmount = form.getAmount();
@@ -196,5 +218,42 @@ public class SavingsServiceImpl implements SavingsService {
         inTx.setBalanceAfter(toBalanceAfter);
         inTx.setDescription(description + " ← " + fromAccount.getAccountNumber());
         savingsTransactionRepository.save(inTx);
+        auditLogService.record(fromAccount.getMember() == null ? null : fromAccount.getMember().getUserAccount(),
+                org.joel.kimwanyisacco.model.enums.AuditAction.INTERNAL_TRANSFER_COMPLETED,
+                "SavingsTransaction", outTx.getId(), refPair + " UGX " + transferAmount);
+    }
+
+    @Override
+    @Transactional
+    public int applyMonthlyInterest(YearMonth month) {
+        if (month == null) throw new IllegalArgumentException("Interest month is required");
+        int posted = 0;
+        for (SavingsAccount account : savingsAccountRepository.findAllWithMember()) {
+            String reference = "INT-" + month + "-" + account.getAccountNumber();
+            if (savingsTransactionRepository.existsByReference(reference)) continue;
+            BigDecimal interest = savingsInterestCalculator.calculateInterest(account.getBalance());
+            if (interest.compareTo(BigDecimal.ZERO) <= 0) continue;
+            BigDecimal before = account.getBalance();
+            BigDecimal after = before.add(interest);
+            account.setBalance(after);
+            savingsAccountRepository.save(account);
+            SavingsTransaction transaction = new SavingsTransaction();
+            transaction.setSavingsAccount(account);
+            transaction.setReference(reference);
+            transaction.setType(TransactionType.INTEREST);
+            transaction.setAmount(interest);
+            transaction.setBalanceBefore(before);
+            transaction.setBalanceAfter(after);
+            transaction.setDescription("Savings interest for " + month);
+            savingsTransactionRepository.save(transaction);
+            posted++;
+        }
+        return posted;
+    }
+
+    @Scheduled(cron = "0 5 0 1 * *")
+    @Transactional
+    public void postPreviousMonthInterest() {
+        applyMonthlyInterest(YearMonth.now().minusMonths(1));
     }
 }

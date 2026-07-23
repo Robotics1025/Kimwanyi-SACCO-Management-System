@@ -146,7 +146,7 @@
                     </button>
                     <h:commandButton value="Create Account"
                                      action="#{memberRegistrationBean.register}"
-                                     onclick="return validateStep3()"
+                                     onclick="return submitRegistration(this)"
                                      styleClass="btn-submit"/>
                 </div>
             </div>
@@ -159,6 +159,13 @@
         </div>
 
         <script>
+            function submitRegistration(button) {
+                if (!validateStep3()) return false;
+                button.value = 'Submitting...';
+                window.setTimeout(function () { button.disabled = true; }, 0);
+                return true;
+            }
+
             // ── Step navigation ──────────────────────────────
             function goStep(from, to) {
                 var fields = getStepFields(from);

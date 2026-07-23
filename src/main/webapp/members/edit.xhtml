@@ -1,5 +1,104 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="jakarta.faces.facelets"
-                template="/WEB-INF/templates/main-template.xhtml">
-    <ui:define name="content"></ui:define>
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                template="/WEB-INF/templates/member-template.xhtml">
+
+    <ui:define name="title">Edit Profile | Kimwanyi SACCO</ui:define>
+    <ui:define name="pageTitle">Edit Profile</ui:define>
+
+    <ui:define name="head">
+        <style>
+            .edit-shell { max-width:700px; margin:0 auto; }
+            .edit-back { display:inline-flex; align-items:center; gap:.45rem; color:var(--mem-muted); text-decoration:none; font-size:.82rem; font-weight:600; margin-bottom:1rem; }
+            .edit-back:hover { color:var(--mem-primary); }
+            .edit-heading { margin-bottom:1.25rem; }
+            .edit-heading h1 { font-size:1.35rem; margin:0 0 .35rem; }
+            .edit-heading p { color:var(--mem-muted); font-size:.86rem; line-height:1.55; }
+            .edit-identity { display:flex; align-items:center; gap:.85rem; padding:1rem 1.5rem; background:#fef2f2; border-bottom:1px solid #fecaca; }
+            .edit-identity-icon { width:40px; height:40px; display:flex; align-items:center; justify-content:center; border-radius:.55rem; background:#dc2626; color:#fff; }
+            .edit-identity strong { display:block; font-size:.88rem; color:#7f1d1d; }
+            .edit-identity span { display:block; font-size:.73rem; color:#991b1b; margin-top:.15rem; }
+            .edit-form { padding:1.5rem; }
+            .form-group { margin-bottom:1.35rem; }
+            .form-label { display:block; color:#374151; font-size:.82rem; font-weight:700; margin-bottom:.45rem; }
+            .form-label i { color:#dc2626; width:18px; }
+            .form-help { display:block; color:var(--mem-muted); font-size:.72rem; margin-top:.4rem; line-height:1.45; }
+            .profile-input { width:100%; padding:.72rem .85rem; border:1px solid #d1d5db; border-radius:.5rem; font:inherit; font-size:.9rem; color:#111827; background:#fff; transition:border-color .15s, box-shadow .15s; }
+            .profile-input:focus { outline:none; border-color:#dc2626; box-shadow:0 0 0 3px rgba(220,38,38,.1); }
+            .field-message { display:block; color:#b91c1c; font-size:.73rem; font-weight:600; margin-top:.4rem; }
+            .edit-actions { display:flex; justify-content:flex-end; gap:.75rem; padding:1rem 1.5rem; border-top:1px solid var(--mem-border); background:#fafafa; }
+            @media (max-width:560px) {
+                .edit-form { padding:1.25rem; }
+                .edit-actions { flex-direction:column-reverse; }
+                .edit-actions .mem-btn { width:100%; justify-content:center; }
+            }
+        </style>
+    </ui:define>
+
+    <ui:define name="content">
+        <section class="edit-shell" aria-labelledby="editHeading">
+            <h:link outcome="/members/profile" styleClass="edit-back">
+                <i class="fa-solid fa-arrow-left"></i> Back to my profile
+            </h:link>
+            <div class="edit-heading">
+                <h1 id="editHeading">Update contact details</h1>
+                <p>Keep your email and telephone number current so the SACCO can reach you about your account.</p>
+            </div>
+
+            <div class="mem-card">
+                <div class="edit-identity">
+                    <div class="edit-identity-icon"><i class="fa-solid fa-id-card"></i></div>
+                    <div>
+                        <strong>#{memberProfileBean.member.firstName} #{memberProfileBean.member.lastName}</strong>
+                        <span>Member #{memberProfileBean.member.membershipNumber}</span>
+                    </div>
+                </div>
+
+                <h:form id="profileEditForm">
+                    <div class="edit-form">
+                        <div class="form-group">
+                            <h:outputLabel for="email" styleClass="form-label">
+                                <i class="fa-solid fa-envelope"></i> Email address
+                            </h:outputLabel>
+                            <h:inputText id="email"
+                                         value="#{memberProfileBean.form.email}"
+                                         maxlength="120"
+                                         required="true"
+                                         requiredMessage="Please enter your email address."
+                                         validatorMessage="Enter a valid email address."
+                                         styleClass="profile-input">
+                                <f:validateRegex pattern="^[^@\s]+@[^@\s]+\.[^@\s]+$"/>
+                            </h:inputText>
+                            <h:message for="email" styleClass="field-message"/>
+                            <span class="form-help">Used for account updates and important SACCO notices.</span>
+                        </div>
+
+                        <div class="form-group">
+                            <h:outputLabel for="phoneNumber" styleClass="form-label">
+                                <i class="fa-solid fa-phone"></i> Phone number
+                            </h:outputLabel>
+                            <h:inputText id="phoneNumber"
+                                         value="#{memberProfileBean.form.phoneNumber}"
+                                         maxlength="20"
+                                         required="true"
+                                         requiredMessage="Please enter your phone number."
+                                         styleClass="profile-input"/>
+                            <h:message for="phoneNumber" styleClass="field-message"/>
+                            <span class="form-help">Include the country code where possible, for example +256 700 000000.</span>
+                        </div>
+                    </div>
+
+                    <div class="edit-actions">
+                        <h:link outcome="/members/profile" styleClass="mem-btn mem-btn-ghost">
+                            Cancel
+                        </h:link>
+                        <h:commandButton value="Save Changes"
+                                         action="#{memberProfileBean.update}"
+                                         styleClass="mem-btn mem-btn-primary"/>
+                    </div>
+                </h:form>
+            </div>
+        </section>
+    </ui:define>
 </ui:composition>

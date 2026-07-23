@@ -21,6 +21,7 @@ import org.joel.kimwanyisacco.model.SavingsAccount;
 import org.joel.kimwanyisacco.model.UserAccount;
 import org.joel.kimwanyisacco.model.enums.LoanStatus;
 import org.joel.kimwanyisacco.model.enums.NotificationType;
+import org.joel.kimwanyisacco.model.enums.Role;
 import org.joel.kimwanyisacco.policy.LoanEligibilityPolicy;
 import org.joel.kimwanyisacco.policy.LoanInterestCalculator;
 import org.joel.kimwanyisacco.repository.LoanRepaymentRepository;
@@ -95,6 +96,8 @@ class LoanServiceTest {
 
         UserAccount admin = new UserAccount();
         admin.setUsername("admin");
+        admin.setRole(Role.ADMIN);
+        admin.setEnabled(true);
         when(userAccountRepository.findById(2L)).thenReturn(Optional.of(admin));
         when(loanRepository.save(any(Loan.class))).thenAnswer(inv -> inv.getArgument(0));
 
@@ -119,6 +122,8 @@ class LoanServiceTest {
 
         UserAccount admin = new UserAccount();
         admin.setUsername("admin");
+        admin.setRole(Role.ADMIN);
+        admin.setEnabled(true);
         when(userAccountRepository.findById(2L)).thenReturn(Optional.of(admin));
         when(loanRepository.save(any(Loan.class))).thenAnswer(inv -> inv.getArgument(0));
 
@@ -150,5 +155,17 @@ class LoanServiceTest {
         service().repayLoan(form);
 
         verify(notificationService).notify(eq(member.getUserAccount()), eq(NotificationType.LOAN_REPAYMENT), anyString(), anyString());
+    }
+
+    @Test
+    void marksPastDueActiveLoansAsOverdue() {
+        Loan loan = new Loan();
+        loan.setStatus(LoanStatus.ACTIVE);
+        when(loanRepository.findByStatusAndDueDateBefore(eq(LoanStatus.ACTIVE), any()))
+                .thenReturn(List.of(loan));
+
+        assertEquals(1, service().markOverdueLoans());
+        assertEquals(LoanStatus.OVERDUE, loan.getStatus());
+        verify(loanRepository).saveAll(List.of(loan));
     }
 }

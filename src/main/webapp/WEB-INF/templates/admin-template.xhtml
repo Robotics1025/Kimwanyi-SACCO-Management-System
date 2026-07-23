@@ -72,26 +72,37 @@
             <i class="fa-solid fa-piggy-bank" style="font-size: 8rem; color: white; transform: rotate(-15deg); margin-bottom: 2rem;"></i>
         </div>
     </aside>
+    <button type="button" class="admin-sidebar-scrim" aria-label="Close navigation"
+            onclick="document.body.classList.remove('admin-nav-open')"></button>
 
     <!-- Main Content wrapper -->
     <main class="admin-main">
         
         <!-- Topbar -->
         <header class="admin-topbar">
+            <button type="button" class="admin-nav-toggle" aria-label="Open navigation"
+                    onclick="document.body.classList.toggle('admin-nav-open')">
+                <i class="fa-solid fa-bars"></i>
+            </button>
             <!-- Left Side: Search Bar -->
             <div class="topbar-search">
-                <div style="position: relative; width: 300px;">
-                    <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 0.9rem;"></i>
-                    <input type="text" placeholder="Search..." style="width: 100%; padding: 0.6rem 1rem 0.6rem 2.5rem; border-radius: 2rem; border: none; background: #f3f4f6; font-size: 0.9rem; outline: none;" />
+                <div class="topbar-search-field">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Search..." aria-label="Search the administration portal"/>
                 </div>
             </div>
             
             <!-- Right Side: Profile & Actions -->
-            <div class="topbar-actions" style="display: flex; align-items: center; gap: 1.5rem;">
+            <div class="topbar-actions">
                 
-                <div class="topbar-icons" style="display: flex; gap: 1.25rem; color: #6b7280; font-size: 1.1rem;">
-                    <i class="fa-regular fa-message" style="cursor: pointer;"></i>
-                    <h:panelGroup id="notifBell" style="cursor: pointer; position: relative; display: inline-block;">
+                <div class="topbar-icons">
+                    <p:commandButton type="button"
+                                     icon="fa-regular fa-envelope"
+                                     aria-label="Compose member email"
+                                     title="Compose member email"
+                                     onclick="PF('emailComposerDialog').show()"
+                                     styleClass="topbar-icon-button ui-button-flat"/>
+                    <h:panelGroup id="notifBell" styleClass="notification-trigger">
                         <i class="fa-regular fa-bell"></i>
                         <h:panelGroup rendered="#{notificationBean.unreadCount > 0}">
                             <span class="notif-badge">#{notificationBean.unreadCount}</span>
@@ -99,30 +110,30 @@
                     </h:panelGroup>
                 </div>
 
-                <p:overlayPanel for="notifBell" id="notifPanel" widgetVar="notifPanelWidget" dismissable="true" style="width:340px; max-height:420px; overflow-y:auto; padding:0;">
+                <p:overlayPanel for="notifBell" id="notifPanel" widgetVar="notifPanelWidget" dismissable="true" styleClass="notification-panel">
                     <h:form id="notifForm">
-                        <div style="display:flex; justify-content:space-between; align-items:center; padding:0.85rem 1rem; border-bottom:1px solid #e5e7eb;">
-                            <strong style="font-size:0.9rem;">Notifications</strong>
+                        <div class="notification-panel-header">
+                            <strong>Notifications</strong>
                             <p:commandLink action="#{notificationBean.markAllAsRead}" rendered="#{notificationBean.unreadCount > 0}"
                                            update=":notifBell :notifPanel" oncomplete="PF('notifPanelWidget').show();"
-                                           style="font-size:0.78rem; color:#4f46e5; text-decoration:none; font-weight:600;">
+                                           styleClass="notification-mark-all">
                                 Mark all read
                             </p:commandLink>
                         </div>
 
                         <h:panelGroup rendered="#{empty notificationBean.recent}">
-                            <div style="padding:2rem 1rem; text-align:center; color:#9ca3af; font-size:0.85rem;">No notifications yet</div>
+                            <div class="notification-empty">No notifications yet</div>
                         </h:panelGroup>
 
                         <ui:repeat value="#{notificationBean.recent}" var="n">
                             <p:commandLink action="#{notificationBean.markAsRead(n.id)}" update=":notifBell :notifPanel" oncomplete="PF('notifPanelWidget').show();"
-                                           style="display:block; text-decoration:none; color:inherit;">
-                                <div style="display:flex; gap:0.65rem; padding:0.75rem 1rem; border-bottom:1px solid #f3f4f6; background:#{n.readStatus ? 'transparent' : '#eef2ff'};">
-                                    <i class="fa-solid #{notificationBean.iconClass(n)}" style="color:#4f46e5; margin-top:2px;"></i>
+                                           styleClass="notification-link">
+                                <div class="notification-entry #{n.readStatus ? '' : 'unread'}">
+                                    <i class="fa-solid #{notificationBean.iconClass(n)} notification-entry-icon"></i>
                                     <div>
-                                        <div style="font-weight:#{n.readStatus ? '500' : '700'}; font-size:0.83rem; color:#111827;">#{n.title}</div>
-                                        <div style="font-size:0.78rem; color:#6b7280; margin-top:2px;">#{n.message}</div>
-                                        <div style="font-size:0.7rem; color:#9ca3af; margin-top:4px;">
+                                        <div class="notification-title #{n.readStatus ? '' : 'unread'}">#{n.title}</div>
+                                        <div class="notification-message">#{n.message}</div>
+                                        <div class="notification-time">
                                             <h:outputText value="#{n.createdAt}">
                                                 <f:convertDateTime type="localDateTime" pattern="dd MMM yyyy HH:mm"/>
                                             </h:outputText>
@@ -134,20 +145,20 @@
                     </h:form>
                 </p:overlayPanel>
                 
-                <div style="width: 1px; height: 30px; background: var(--border-color);"></div>
+                <div class="topbar-divider"></div>
                 
-                <div class="user-info" style="display: flex; align-items: center; gap: 0.75rem;">
-                    <div class="user-details" style="text-align: right;">
-                        <span class="user-name" style="color: var(--text-main); font-weight: 600; font-size: 0.9rem;">#{userSessionBean.loggedInUser.username}</span>
-                        <span class="user-role" style="color: var(--text-muted); font-size: 0.75rem;">Administrator</span>
+                <div class="user-info topbar-user-info">
+                    <div class="user-details topbar-user-details">
+                        <span class="user-name topbar-user-name">#{userSessionBean.loggedInUser.username}</span>
+                        <span class="user-role topbar-user-role">Administrator</span>
                     </div>
-                    <div class="user-avatar" style="width: 36px; height: 36px; border-radius: 50%; background: #e5e7eb; color: var(--text-muted); display: flex; align-items: center; justify-content: center; font-weight: 700;">
+                    <div class="user-avatar topbar-user-avatar">
                         #{not empty userSessionBean.loggedInUser ? userSessionBean.loggedInUser.username.substring(0,1).toUpperCase() : 'A'}
                     </div>
                 </div>
 
-                <h:form style="margin: 0; padding: 0;">
-                    <h:commandLink action="#{loginBean.logout}" style="color: #9ca3af; text-decoration: none; padding-left: 0.5rem;" title="Sign Out">
+                <h:form styleClass="logout-form">
+                    <h:commandLink action="#{loginBean.logout}" styleClass="logout-link" title="Sign Out">
                         <i class="fa-solid fa-right-from-bracket"></i>
                     </h:commandLink>
                 </h:form>
@@ -160,6 +171,123 @@
                 <!-- Page specific content goes here -->
             </ui:insert>
         </div>
+
+        <p:dialog header="Compose member email"
+                  widgetVar="emailComposerDialog"
+                  modal="true"
+                  responsive="true"
+                  width="620"
+                  resizable="false"
+                  appendTo="@(body)"
+                  styleClass="email-composer-dialog">
+            <h:form id="emailComposerForm">
+                <div class="composer-heading">
+                    <div class="composer-heading-icon"><i class="fa-solid fa-paper-plane"></i></div>
+                    <div>
+                        <strong>Send an official SACCO message</strong>
+                        <p>Choose one member or an eligible group. Delivery is recorded in the audit log.</p>
+                    </div>
+                </div>
+
+                <div class="composer-grid">
+                    <div class="composer-field">
+                        <h:outputLabel for="recipientMode" value="Send to"/>
+                        <p:selectOneButton id="recipientMode" value="#{emailComposerBean.recipientMode}" required="true">
+                            <f:selectItem itemLabel="One member" itemValue="MEMBER"/>
+                            <f:selectItem itemLabel="Member group" itemValue="GROUP"/>
+                            <p:ajax process="@this" update="recipientTarget"/>
+                        </p:selectOneButton>
+                    </div>
+
+                    <h:panelGroup id="recipientTarget" layout="block" styleClass="composer-field">
+                        <h:panelGroup rendered="#{emailComposerBean.recipientMode == 'MEMBER'}" layout="block">
+                            <h:outputLabel for="memberRecipient" value="Member"/>
+                            <p:selectOneMenu id="memberRecipient"
+                                             value="#{emailComposerBean.memberId}"
+                                             filter="true"
+                                             filterMatchMode="contains"
+                                             required="#{emailComposerBean.recipientMode == 'MEMBER'}"
+                                             requiredMessage="Select a member">
+                                <f:selectItem itemLabel="Select a member" itemValue="#{null}" noSelectionOption="true"/>
+                                <f:selectItems value="#{emailComposerBean.members}" var="member"
+                                               itemValue="#{member.id}"
+                                               itemLabel="#{member.fullName} — #{member.email}"/>
+                            </p:selectOneMenu>
+                            <p:message for="memberRecipient"/>
+                        </h:panelGroup>
+                        <h:panelGroup rendered="#{emailComposerBean.recipientMode == 'GROUP'}" layout="block">
+                            <h:outputLabel for="groupRecipient" value="Group"/>
+                            <p:selectOneMenu id="groupRecipient"
+                                             value="#{emailComposerBean.group}"
+                                             required="#{emailComposerBean.recipientMode == 'GROUP'}"
+                                             requiredMessage="Select a member group">
+                                <f:selectItem itemLabel="Select a group" itemValue="#{null}" noSelectionOption="true"/>
+                                <f:selectItems value="#{emailComposerBean.groupOptions}"/>
+                            </p:selectOneMenu>
+                            <p:message for="groupRecipient"/>
+                        </h:panelGroup>
+                    </h:panelGroup>
+
+                    <h:panelGroup layout="block" styleClass="delivery-scope"
+                                  rendered="#{emailComposerBean.recipientMode == 'GROUP' and not empty emailComposerBean.group}">
+                        <i class="fa-solid fa-users"></i>
+                        <div>
+                            <strong>#{emailComposerBean.recipientCount} eligible member#{emailComposerBean.recipientCount == 1 ? '' : 's'} will receive this email</strong>
+                            <span>#{emailComposerBean.skippedRecipientCount} member#{emailComposerBean.skippedRecipientCount == 1 ? '' : 's'} without a valid email address will be skipped.</span>
+                        </div>
+                    </h:panelGroup>
+
+                    <div class="composer-field">
+                        <h:outputLabel for="emailSubject" value="Subject"/>
+                        <p:inputText id="emailSubject"
+                                     value="#{emailComposerBean.subject}"
+                                     maxlength="160"
+                                     required="true"
+                                     requiredMessage="Enter an email subject"
+                                     placeholder="e.g. Your Kimwanyi SACCO account update"/>
+                        <p:message for="emailSubject"/>
+                    </div>
+
+                    <div class="composer-field">
+                        <h:outputLabel for="emailMessage" value="Message"/>
+                        <p:inputTextarea id="emailMessage"
+                                         value="#{emailComposerBean.message}"
+                                         rows="8"
+                                         maxlength="5000"
+                                         autoResize="false"
+                                         required="true"
+                                         requiredMessage="Enter the message to send"
+                                         placeholder="Write a clear message for the selected recipient(s)."/>
+                        <div class="composer-help">The member receives this at the email address on their profile.</div>
+                        <p:message for="emailMessage"/>
+                    </div>
+                </div>
+
+                <div class="dialog-actions">
+                    <p:commandButton value="Cancel"
+                                     type="button"
+                                     onclick="PF('emailComposerDialog').hide()"
+                                     styleClass="ui-button-flat ui-button-secondary"/>
+                    <p:commandButton value="#{emailComposerBean.recipientMode == 'GROUP' ? 'Send group email' : 'Send email'}"
+                                     icon="fa-solid fa-paper-plane"
+                                     action="#{emailComposerBean.send}"
+                                     process="@form"
+                                     update="@form :growl"
+                                     disableOnAjax="true"
+                                     oncomplete="if (!args.validationFailed) PF('emailComposerDialog').hide()">
+                        <p:confirm header="Send this email?"
+                                   message="Confirm the recipients, subject and message. Email delivery and any failures will be recorded."
+                                   icon="fa-solid fa-triangle-exclamation"/>
+                    </p:commandButton>
+                </div>
+            </h:form>
+        </p:dialog>
+        <p:confirmDialog global="true" responsive="true" width="440">
+            <p:commandButton value="Cancel" type="button"
+                             styleClass="ui-confirmdialog-no ui-button-flat ui-button-secondary"/>
+            <p:commandButton value="Confirm" type="button" icon="fa-solid fa-check"
+                             styleClass="ui-confirmdialog-yes"/>
+        </p:confirmDialog>
         
     </main>
 

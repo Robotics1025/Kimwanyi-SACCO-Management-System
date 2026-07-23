@@ -1,5 +1,107 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="jakarta.faces.facelets"
-                template="/WEB-INF/templates/main-template.xhtml">
-    <ui:define name="content"></ui:define>
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                template="/WEB-INF/templates/member-template.xhtml">
+
+    <ui:define name="title">My Profile | Kimwanyi SACCO</ui:define>
+    <ui:define name="pageTitle">My Profile</ui:define>
+
+    <ui:define name="head">
+        <style>
+            .profile-shell { max-width: 920px; margin: 0 auto; }
+            .profile-intro { margin-bottom: 1.25rem; }
+            .profile-intro h1 { font-size: 1.35rem; margin: 0 0 0.35rem; }
+            .profile-intro p { color: var(--mem-muted); font-size: 0.86rem; line-height: 1.55; }
+            .identity-band { display:flex; align-items:center; justify-content:space-between; gap:1.5rem; padding:1.5rem; background:linear-gradient(105deg,#7f1d1d,#dc2626); color:#fff; }
+            .identity-person { display:flex; align-items:center; gap:1rem; min-width:0; }
+            .identity-avatar { width:58px; height:58px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,.16); border:2px solid rgba(255,255,255,.35); font-size:1.35rem; font-weight:800; flex-shrink:0; }
+            .identity-name { font-size:1.15rem; font-weight:800; margin-bottom:.3rem; }
+            .identity-status { display:inline-flex; align-items:center; gap:.4rem; font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; }
+            .identity-status i { font-size:.5rem; color:#86efac; }
+            .membership-chip { min-width:210px; padding:.85rem 1rem; background:#fff; color:#7f1d1d; border-radius:.65rem; box-shadow:0 8px 20px rgba(0,0,0,.14); }
+            .membership-chip-label { display:block; color:#9f1239; font-size:.66rem; font-weight:800; letter-spacing:.09em; text-transform:uppercase; margin-bottom:.3rem; }
+            .membership-chip-value { display:block; font-size:1.12rem; font-weight:800; letter-spacing:.04em; }
+            .profile-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); }
+            .profile-field { padding:1.25rem 1.5rem; border-bottom:1px solid var(--mem-border); }
+            .profile-field:nth-child(odd) { border-right:1px solid var(--mem-border); }
+            .profile-field-label { display:flex; align-items:center; gap:.45rem; color:var(--mem-muted); font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; margin-bottom:.5rem; }
+            .profile-field-label i { width:15px; color:#dc2626; }
+            .profile-field-value { color:var(--mem-text); font-size:.92rem; font-weight:650; overflow-wrap:anywhere; }
+            .profile-actions { display:flex; justify-content:flex-end; padding:1.15rem 1.5rem; background:#fafafa; }
+            @media (max-width: 680px) {
+                .identity-band { align-items:flex-start; flex-direction:column; }
+                .membership-chip { width:100%; min-width:0; }
+                .profile-grid { grid-template-columns:1fr; }
+                .profile-field:nth-child(odd) { border-right:0; }
+                .profile-actions .mem-btn { width:100%; justify-content:center; }
+            }
+        </style>
+    </ui:define>
+
+    <ui:define name="content">
+        <section class="profile-shell" aria-labelledby="profileHeading">
+            <div class="profile-intro">
+                <h1 id="profileHeading">Personal and membership details</h1>
+                <p>Review the identity and contact information held on your SACCO account.</p>
+            </div>
+
+            <div class="mem-card">
+                <header class="identity-band">
+                    <div class="identity-person">
+                        <div class="identity-avatar" aria-hidden="true">#{memberProfileBean.member.firstName.substring(0,1).toUpperCase()}</div>
+                        <div>
+                            <div class="identity-name">#{memberProfileBean.member.firstName} #{memberProfileBean.member.lastName}</div>
+                            <div class="identity-status">
+                                <i class="fa-solid fa-circle"></i>
+                                #{memberProfileBean.member.status}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="membership-chip" aria-label="Membership number">
+                        <span class="membership-chip-label"><i class="fa-solid fa-id-card"></i> Membership number</span>
+                        <span class="membership-chip-value">#{memberProfileBean.member.membershipNumber}</span>
+                    </div>
+                </header>
+
+                <div class="profile-grid">
+                    <div class="profile-field">
+                        <div class="profile-field-label"><i class="fa-solid fa-user"></i> Full name</div>
+                        <div class="profile-field-value">#{memberProfileBean.member.firstName} #{memberProfileBean.member.lastName}</div>
+                    </div>
+                    <div class="profile-field">
+                        <div class="profile-field-label"><i class="fa-solid fa-fingerprint"></i> National ID</div>
+                        <div class="profile-field-value">#{memberProfileBean.member.nationalId}</div>
+                    </div>
+                    <div class="profile-field">
+                        <div class="profile-field-label"><i class="fa-solid fa-calendar-check"></i> Member since</div>
+                        <div class="profile-field-value">
+                            <h:outputText value="#{memberProfileBean.member.joinedAt}">
+                                <f:convertDateTime type="localDate" pattern="dd MMMM yyyy"/>
+                            </h:outputText>
+                        </div>
+                    </div>
+                    <div class="profile-field">
+                        <div class="profile-field-label"><i class="fa-solid fa-envelope"></i> Email address</div>
+                        <div class="profile-field-value">#{empty memberProfileBean.member.email ? 'Not provided' : memberProfileBean.member.email}</div>
+                    </div>
+                    <div class="profile-field">
+                        <div class="profile-field-label"><i class="fa-solid fa-phone"></i> Phone number</div>
+                        <div class="profile-field-value">#{empty memberProfileBean.member.phoneNumber ? 'Not provided' : memberProfileBean.member.phoneNumber}</div>
+                    </div>
+                    <div class="profile-field">
+                        <div class="profile-field-label"><i class="fa-solid fa-shield-halved"></i> Account status</div>
+                        <div class="profile-field-value">#{memberProfileBean.member.status}</div>
+                    </div>
+                </div>
+
+                <div class="profile-actions">
+                    <h:link outcome="/members/edit" styleClass="mem-btn mem-btn-primary">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                        Edit Profile
+                    </h:link>
+                </div>
+            </div>
+        </section>
+    </ui:define>
 </ui:composition>
