@@ -49,8 +49,13 @@ public class Member {
     )
     private String nationalId;
 
+    @Column(name = "phone_number", length = 30)
+    private String phoneNumber;
+
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    // Store enum names as VARCHAR. A native MySQL ENUM does not automatically
+    // gain new workflow states (for example PENDING) during Hibernate updates.
+    @Column(nullable = false, length = 30)
     private MemberStatus status = MemberStatus.ACTIVE;
 
     @Column(name = "joined_at", nullable = false)
@@ -116,6 +121,14 @@ public class Member {
 
     public void setNationalId(String nationalId) {
         this.nationalId = nationalId;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
     public MemberStatus getStatus() {

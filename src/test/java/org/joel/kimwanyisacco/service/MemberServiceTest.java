@@ -36,6 +36,8 @@ class MemberServiceTest {
     @Mock private MembershipNumberGenerator membershipNumberGenerator;
     @Mock private SavingsAccountNumberGenerator savingsAccountNumberGenerator;
     @Mock private AuditLogService auditLogService;
+    @Mock private NotificationService notificationService;
+    @Mock private EmailService emailService;
 
     private MemberServiceImpl memberService;
     private MemberRegistrationForm form;
@@ -45,7 +47,7 @@ class MemberServiceTest {
         memberService = new MemberServiceImpl(
                 userAccountRepository, memberRepository, savingsAccountRepository,
                 memberConverter, passwordEncoder, membershipNumberGenerator,
-                savingsAccountNumberGenerator, auditLogService);
+                savingsAccountNumberGenerator, auditLogService, notificationService, emailService);
 
         form = new MemberRegistrationForm();
         form.setUsername("jkamau");
@@ -65,8 +67,8 @@ class MemberServiceTest {
         Member savedMember = new Member();
         savedMember.setId(7L);
 
-        when(userAccountRepository.existsByUsername("jkamau")).thenReturn(false);
-        when(userAccountRepository.existsByEmail("john@example.com")).thenReturn(false);
+        when(userAccountRepository.existsByUsernameIgnoreCase("jkamau")).thenReturn(false);
+        when(userAccountRepository.existsByEmailIgnoreCase("john@example.com")).thenReturn(false);
         when(memberRepository.existsByNationalId("CM12345")).thenReturn(false);
         when(passwordEncoder.encode("secret123")).thenReturn("hashed");
         when(memberConverter.toUserAccount(form, "hashed")).thenReturn(userAccount);
@@ -92,7 +94,7 @@ class MemberServiceTest {
 
     @Test
     void registerMemberThrowsWhenUsernameAlreadyExists() {
-        when(userAccountRepository.existsByUsername("jkamau")).thenReturn(true);
+        when(userAccountRepository.existsByUsernameIgnoreCase("jkamau")).thenReturn(true);
 
         assertThrows(IllegalArgumentException.class, () -> memberService.registerMember(form));
     }

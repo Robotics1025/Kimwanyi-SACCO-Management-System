@@ -12,6 +12,7 @@ public class UserAccountDto {
     private String role;
     private boolean enabled;
     private LocalDateTime createdAt;
+    private String memberStatus;
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -36,4 +37,7 @@ public class UserAccountDto {
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public String getMemberStatus() { return memberStatus; }
+    public void setMemberStatus(String memberStatus) { this.memberStatus = memberStatus; }
+    public boolean isPendingApproval() { return "PENDING".equals(memberStatus); }
 }

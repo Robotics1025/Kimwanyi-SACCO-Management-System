@@ -12,91 +12,92 @@
     <ui:define name="content">
         <div class="section-card">
             <div class="section-header">
-                <span class="section-title">Applications Awaiting Decision</span>
+                <div>
+                    <span class="section-title">Applications awaiting decision</span>
+                    <div class="section-support">#{loanApprovalBean.pendingLoans.size()} application#{loanApprovalBean.pendingLoans.size() == 1 ? '' : 's'} require review</div>
+                </div>
             </div>
             
             <div class="section-body" style="padding: 0;">
                 <h:form id="loansForm">
-                    <h:dataTable id="loansTable" value="#{loanApprovalBean.pendingLoans}" var="loan" 
-                                 styleClass="activity-table" style="width: 100%; border-collapse: collapse; text-align: left;">
+                    <p:dataTable id="loansTable" value="#{loanApprovalBean.pendingLoans}" var="loan"
+                                 paginator="true" rows="10" paginatorPosition="bottom"
+                                 rowsPerPageTemplate="10,20,50"
+                                 emptyMessage="No pending loan applications."
+                                 reflow="true"
+                                 styleClass="operations-table">
                         
-                        <h:column>
-                            <f:facet name="header"><div style="padding:15px; border-bottom:1px solid #e5e7eb; color:#9ca3af; font-size:0.8rem; font-weight: 500;">Member</div></f:facet>
-                            <div style="padding:15px; border-bottom:1px dashed #f3f4f6; font-size: 0.9rem;">
+                        <p:column headerText="Member">
+                            <div>
                                 <div style="font-weight: 600; color: #1f2937;">#{loan.member.userAccount.firstName} #{loan.member.userAccount.lastName}</div>
                                 <div style="font-size: 0.8rem; color: #6b7280;">No: #{loan.member.membershipNumber}</div>
                             </div>
-                        </h:column>
+                        </p:column>
                         
-                        <h:column>
-                            <f:facet name="header"><div style="padding:15px; border-bottom:1px solid #e5e7eb; color:#9ca3af; font-size:0.8rem; font-weight: 500;">Principal</div></f:facet>
-                            <div style="padding:15px; border-bottom:1px dashed #f3f4f6; font-size: 0.9rem; font-weight: 600; color: #111827;">
+                        <p:column headerText="Principal">
+                            <div class="money-cell">
                                 <h:outputText value="#{loan.principal}">
                                     <f:convertNumber type="currency" currencySymbol="UGX " maxFractionDigits="0"/>
                                 </h:outputText>
                             </div>
-                        </h:column>
+                        </p:column>
 
-                        <h:column>
-                            <f:facet name="header"><div style="padding:15px; border-bottom:1px solid #e5e7eb; color:#9ca3af; font-size:0.8rem; font-weight: 500;">Interest (10% Flat)</div></f:facet>
-                            <div style="padding:15px; border-bottom:1px dashed #f3f4f6; font-size: 0.9rem; color: #dc2626;">
+                        <p:column headerText="Interest (10% flat)">
+                            <div class="money-cell interest">
                                 <h:outputText value="#{loan.interestAmount}">
                                     <f:convertNumber type="currency" currencySymbol="UGX " maxFractionDigits="0"/>
                                 </h:outputText>
                             </div>
-                        </h:column>
+                        </p:column>
 
-                        <h:column>
-                            <f:facet name="header"><div style="padding:15px; border-bottom:1px solid #e5e7eb; color:#9ca3af; font-size:0.8rem; font-weight: 500;">Total Repayable</div></f:facet>
-                            <div style="padding:15px; border-bottom:1px dashed #f3f4f6; font-size: 0.9rem; font-weight: 600; color: #059669;">
+                        <p:column headerText="Total repayable">
+                            <div class="money-cell success">
                                 <h:outputText value="#{loan.totalRepayable}">
                                     <f:convertNumber type="currency" currencySymbol="UGX " maxFractionDigits="0"/>
                                 </h:outputText>
                             </div>
-                        </h:column>
+                        </p:column>
 
-                        <h:column>
-                            <f:facet name="header"><div style="padding:15px; border-bottom:1px solid #e5e7eb; color:#9ca3af; font-size:0.8rem; font-weight: 500;">Purpose</div></f:facet>
-                            <div style="padding:15px; border-bottom:1px dashed #f3f4f6; font-size: 0.85rem; color: #4b5563; max-width: 200px;">
+                        <p:column headerText="Purpose">
+                            <div class="loan-purpose">
                                 #{loan.purpose}
                             </div>
-                        </h:column>
+                        </p:column>
                         
-                        <h:column>
-                            <f:facet name="header"><div style="padding:15px; border-bottom:1px solid #e5e7eb; color:#9ca3af; font-size:0.8rem; font-weight: 500;">Applied On</div></f:facet>
-                            <div style="padding:15px; border-bottom:1px dashed #f3f4f6; font-size: 0.85rem; color: #6b7280;">
+                        <p:column headerText="Applied on" sortBy="#{loan.applicationDate}">
+                            <div class="cell-secondary">
                                 <h:outputText value="#{loan.applicationDate}">
                                     <f:convertDateTime type="localDate" pattern="dd MMM yyyy"/>
                                 </h:outputText>
                             </div>
-                        </h:column>
+                        </p:column>
 
-                        <h:column>
-                            <f:facet name="header"><div style="padding:15px; border-bottom:1px solid #e5e7eb; color:#9ca3af; font-size:0.8rem; font-weight: 500; text-align: right;">Actions</div></f:facet>
-                            <div style="padding:15px; border-bottom:1px dashed #f3f4f6; text-align: right; display: flex; gap: 0.5rem; justify-content: flex-end;">
-                                <h:commandLink action="#{loanApprovalBean.approve(loan.id)}" styleClass="action-btn-approve" style="text-decoration:none; background:#dcfce7; color:#15803d; padding:6px 12px; border-radius:4px; font-weight:600; font-size:0.8rem; display:inline-flex; align-items:center; gap:4px;">
-                                    <i class="fa-solid fa-check"></i> Approve
-                                    <f:ajax render="@form :growl"/>
-                                </h:commandLink>
-                                
-                                <p:commandLink action="#{loanApprovalBean.setSelectedLoanId(loan.id)}" 
-                                               oncomplete="PF('rejectDialog').show();" 
-                                               update=":rejectForm"
-                                               styleClass="action-btn-reject" 
-                                               style="text-decoration:none; background:#fee2e2; color:#b91c1c; padding:6px 12px; border-radius:4px; font-weight:600; font-size:0.8rem; display:inline-flex; align-items:center; gap:4px;">
-                                    <i class="fa-solid fa-xmark"></i> Reject
-                                </p:commandLink>
+                        <p:column headerText="Actions" styleClass="actions-column">
+                            <div class="loan-actions">
+                                <p:menuButton value="Review"
+                                              icon="fa-solid fa-gavel"
+                                              buttonStyleClass="row-action-trigger"
+                                              aria-label="Review loan application for #{loan.member.userAccount.firstName} #{loan.member.userAccount.lastName}">
+                                    <p:menuitem value="Approve application"
+                                                icon="fa-solid fa-circle-check"
+                                                action="#{loanApprovalBean.approve(loan.id)}"
+                                                process="@this"
+                                                update=":loansForm :growl">
+                                        <p:confirm header="Approve this loan?"
+                                                   message="Confirm that eligibility and the repayment terms have been reviewed. This decision will be recorded."
+                                                   icon="fa-solid fa-triangle-exclamation"/>
+                                    </p:menuitem>
+                                    <p:menuitem value="Reject with reason"
+                                                icon="fa-solid fa-circle-xmark"
+                                                action="#{loanApprovalBean.setSelectedLoanId(loan.id)}"
+                                                process="@this"
+                                                update=":rejectForm"
+                                                oncomplete="PF('rejectDialog').show()"/>
+                                </p:menuButton>
                             </div>
-                        </h:column>
+                        </p:column>
                         
-                    </h:dataTable>
-
-                    <h:panelGroup rendered="#{empty loanApprovalBean.pendingLoans}">
-                        <div style="padding: 4rem; text-align: center; color: #9ca3af;">
-                            <i class="fa-solid fa-hand-holding-dollar fa-3x" style="margin-bottom: 1rem; color: #d1d5db;"></i><br/>
-                            No pending loan applications found.
-                        </div>
-                    </h:panelGroup>
+                    </p:dataTable>
                 </h:form>
             </div>
         </div>
@@ -104,13 +105,13 @@
         <!-- Reject Reason Dialog -->
         <p:dialog header="Reject Loan Application" widgetVar="rejectDialog" modal="true" responsive="true" width="400" resizable="false">
             <h:form id="rejectForm">
-                <div style="display: flex; flex-direction: column; gap: 1rem; padding: 0.5rem 0;">
-                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                        <h:outputLabel for="rejectReason" value="Rejection Reason" style="font-weight: 600; font-size: 0.85rem; color: #4b5563;"/>
-                        <p:inputTextarea id="rejectReason" value="#{loanApprovalBean.rejectionReason}" rows="4" autoResize="false" style="padding: 0.5rem; border-radius: 0.375rem; border: 1px solid var(--border-color); width: 100%; box-sizing: border-box;" placeholder="Enter details on why this application is rejected..."/>
+                <div class="workflow-dialog-content">
+                    <div class="dialog-field">
+                        <h:outputLabel for="rejectReason" value="Rejection reason"/>
+                        <p:inputTextarea id="rejectReason" value="#{loanApprovalBean.rejectionReason}" rows="4" autoResize="false" placeholder="Explain why this application cannot be approved."/>
                     </div>
                     
-                    <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 0.5rem;">
+                    <div class="dialog-actions">
                         <p:commandButton value="Cancel" onclick="PF('rejectDialog').hide();" type="button" styleClass="ui-button-flat ui-button-secondary"/>
                         <p:commandButton value="Submit Rejection" action="#{loanApprovalBean.reject}" update=":loansForm :growl" oncomplete="if (!args.validationFailed) PF('rejectDialog').hide();" styleClass="ui-button-danger"/>
                     </div>

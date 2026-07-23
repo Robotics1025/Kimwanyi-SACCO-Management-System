@@ -19,4 +19,5 @@ public interface LoanService {
     List<Loan> getLoansByMember(Long memberId);
     
     Loan getLoanById(Long loanId);
+    int markOverdueLoans();
 }

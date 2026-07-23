@@ -14,6 +14,7 @@ import org.joel.kimwanyisacco.model.UserAccount;
 import org.joel.kimwanyisacco.model.enums.AuditAction;
 import org.joel.kimwanyisacco.model.enums.LoanStatus;
 import org.joel.kimwanyisacco.model.enums.NotificationType;
+import org.joel.kimwanyisacco.model.enums.Role;
 import org.joel.kimwanyisacco.policy.LoanEligibilityPolicy;
 import org.joel.kimwanyisacco.policy.LoanInterestCalculator;
 import org.joel.kimwanyisacco.repository.LoanRepository;
@@ -23,6 +24,7 @@ import org.joel.kimwanyisacco.repository.SavingsAccountRepository;
 import org.joel.kimwanyisacco.repository.UserAccountRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.scheduling.annotation.Scheduled;
 
 @Service
 public class LoanServiceImpl implements LoanService {
@@ -105,6 +107,10 @@ public class LoanServiceImpl implements LoanService {
 
         UserAccount admin = userAccountRepository.findById(adminUserId)
                 .orElseThrow(() -> new IllegalArgumentException("Admin account not found"));
+
+        if (admin.getRole() != Role.ADMIN || !admin.isEnabled()) {
+            throw new SecurityException("Only an enabled administrator can approve or reject loans");
+        }
 
         if (loan.getStatus() != LoanStatus.PENDING) {
             throw new IllegalStateException("Loan is not in PENDING status");
@@ -202,5 +208,15 @@ public class LoanServiceImpl implements LoanService {
     public Loan getLoanById(Long loanId) {
         return loanRepository.findById(loanId)
                 .orElseThrow(() -> new IllegalArgumentException("Loan not found"));
+    }
+
+    @Override
+    @Transactional
+    @Scheduled(cron = "0 15 0 * * *")
+    public int markOverdueLoans() {
+        List<Loan> overdue = loanRepository.findByStatusAndDueDateBefore(LoanStatus.ACTIVE, LocalDate.now());
+        overdue.forEach(loan -> loan.setStatus(LoanStatus.OVERDUE));
+        loanRepository.saveAll(overdue);
+        return overdue.size();
     }
 }

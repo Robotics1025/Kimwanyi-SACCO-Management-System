@@ -122,7 +122,7 @@ public class PersistenceConfig {
     }
 
     @Bean
-    public PersistenceExceptionTranslationPostProcessor
+    public static PersistenceExceptionTranslationPostProcessor
     exceptionTranslation() {
         return new PersistenceExceptionTranslationPostProcessor();
     }

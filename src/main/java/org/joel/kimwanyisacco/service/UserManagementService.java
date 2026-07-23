@@ -12,4 +12,6 @@ public interface UserManagementService {
     void setEnabled(Long userId, boolean enabled, UserAccount adminAccount);
 
     void resetPassword(Long userId, String newPassword, UserAccount adminAccount);
+
+    void approveMember(Long userId, UserAccount adminAccount);
 }

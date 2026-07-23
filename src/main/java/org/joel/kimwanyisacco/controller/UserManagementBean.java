@@ -67,6 +67,20 @@ public class UserManagementBean {
         }
     }
 
+    public void approve(Long userId) {
+        try {
+            userManagementService.approveMember(userId, getActingAdmin());
+            search();
+            FacesMessageUtil.addInfoMessage("Member approved and can now sign in");
+        } catch (Exception e) {
+            FacesMessageUtil.addErrorMessage(e.getMessage());
+        }
+    }
+
+    public long getPendingApprovalCount() {
+        return results == null ? 0 : results.stream().filter(UserAccountDto::isPendingApproval).count();
+    }
+
     private UserAccount getActingAdmin() {
         if (!userSessionBean.isLoggedIn()) return null;
         return userAccountRepository.findById(userSessionBean.getLoggedInUser().getId()).orElse(null);

@@ -6,6 +6,7 @@ public enum AuditAction {
     LOGOUT,
 
     MEMBER_REGISTERED,
+    MEMBER_APPROVED,
     MEMBER_UPDATED,
     MEMBER_DEACTIVATED,
 
@@ -24,4 +25,6 @@ public enum AuditAction {
 
     USER_ACCOUNT_ENABLED,
     USER_ACCOUNT_DISABLED
+    ,EMAIL_SENT
+    ,EMAIL_FAILED
 }

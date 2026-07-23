@@ -1,5 +1,147 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="jakarta.faces.facelets"
-                template="/WEB-INF/templates/main-template.xhtml">
-    <ui:define name="content"></ui:define>
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                template="/WEB-INF/templates/member-template.xhtml">
+
+    <ui:define name="title">Loan Repayment | Kimwanyi SACCO</ui:define>
+    <ui:define name="pageTitle">Loan Repayment</ui:define>
+
+    <ui:define name="head">
+        <style>
+            .repayment-shell { max-width:980px; margin:0 auto; }
+            .repayment-heading { margin-bottom:1.25rem; }
+            .repayment-heading h1 { font-size:1.35rem; margin:0 0 .3rem; }
+            .repayment-heading p { color:var(--mem-muted); font-size:.84rem; line-height:1.55; }
+            .loan-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1rem; margin-bottom:1.25rem; }
+            .loan-summary { background:#fff; border:1px solid var(--mem-border); border-radius:.8rem; box-shadow:var(--shadow); overflow:hidden; }
+            .loan-summary-top { display:flex; justify-content:space-between; align-items:center; gap:1rem; padding:1rem 1.2rem; border-bottom:1px solid #f1f5f9; }
+            .loan-reference { color:#111827; font-size:.82rem; font-weight:800; }
+            .loan-status { display:inline-flex; align-items:center; gap:.3rem; padding:.28rem .5rem; border-radius:999px; font-size:.65rem; font-weight:800; text-transform:uppercase; }
+            .loan-status-active { background:#dcfce7; color:#166534; }
+            .loan-status-overdue { background:#fee2e2; color:#991b1b; }
+            .loan-summary-body { padding:1.15rem 1.2rem; }
+            .outstanding-label { color:var(--mem-muted); font-size:.68rem; font-weight:750; text-transform:uppercase; letter-spacing:.06em; }
+            .outstanding-value { color:#b91c1c; font-size:1.45rem; font-weight:850; margin:.35rem 0 .8rem; }
+            .loan-meta { display:flex; justify-content:space-between; gap:1rem; color:var(--mem-muted); font-size:.72rem; }
+            .loan-meta strong { color:#374151; }
+            .repay-layout { display:grid; grid-template-columns:1.15fr .85fr; }
+            .repay-form { padding:1.4rem 1.5rem; border-right:1px solid var(--mem-border); }
+            .repay-help { padding:1.4rem 1.5rem; background:#fffafa; }
+            .repay-help-icon { width:42px; height:42px; display:flex; align-items:center; justify-content:center; border-radius:.55rem; background:#fee2e2; color:#dc2626; margin-bottom:.85rem; }
+            .repay-help h3 { color:#7f1d1d; font-size:.88rem; margin:0 0 .45rem; }
+            .repay-help p { color:#7f1d1d; font-size:.75rem; line-height:1.6; }
+            .repayment-select { width:100%; padding:.68rem .85rem; border:1px solid var(--mem-border); border-radius:.5rem; background:#fff; color:#111827; font:inherit; font-size:.85rem; }
+            .repayment-select:focus { outline:none; border-color:#dc2626; box-shadow:0 0 0 3px rgba(220,38,38,.1); }
+            .repayment-actions { display:flex; justify-content:flex-end; padding-top:.25rem; }
+            @media (max-width:720px) {
+                .loan-list { grid-template-columns:1fr; }
+                .repay-layout { grid-template-columns:1fr; }
+                .repay-form { border-right:0; border-bottom:1px solid var(--mem-border); }
+                .repayment-actions .mem-btn { width:100%; justify-content:center; }
+            }
+        </style>
+    </ui:define>
+
+    <ui:define name="content">
+        <section class="repayment-shell" aria-labelledby="repaymentHeading">
+            <div class="repayment-heading">
+                <h1 id="repaymentHeading">Repay an active loan</h1>
+                <p>Select one of your repayable loans and record the amount you wish to pay.</p>
+            </div>
+
+            <h:form id="repaymentForm">
+                <h:panelGroup id="repaymentContent" layout="block">
+                    <h:panelGroup rendered="#{not empty loanRepaymentBean.loans}" layout="block">
+                        <div class="loan-list">
+                            <ui:repeat value="#{loanRepaymentBean.loans}" var="loan">
+                                <article class="loan-summary">
+                                    <div class="loan-summary-top">
+                                        <span class="loan-reference">Loan ##{loan.id}</span>
+                                        <span class="loan-status #{loan.status == 'OVERDUE' ? 'loan-status-overdue' : 'loan-status-active'}">
+                                            <i class="fa-solid fa-circle" style="font-size:.38rem;"></i> #{loan.status}
+                                        </span>
+                                    </div>
+                                    <div class="loan-summary-body">
+                                        <div class="outstanding-label">Outstanding balance</div>
+                                        <div class="outstanding-value">
+                                            <h:outputText value="#{loan.outstandingBalance}">
+                                                <f:convertNumber type="currency" currencySymbol="UGX " maxFractionDigits="0"/>
+                                            </h:outputText>
+                                        </div>
+                                        <div class="loan-meta">
+                                            <span>Purpose<br/><strong>#{loan.purpose}</strong></span>
+                                            <span>Due date<br/>
+                                                <strong><h:outputText value="#{loan.dueDate}"><f:convertDateTime type="localDate" pattern="dd MMM yyyy"/></h:outputText></strong>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </article>
+                            </ui:repeat>
+                        </div>
+
+                        <div class="mem-card">
+                            <div class="mem-card-header">
+                                <span class="mem-card-title"><i class="fa-solid fa-money-bill-transfer" style="color:#dc2626; margin-right:.4rem;"></i> Record repayment</span>
+                            </div>
+                            <div class="repay-layout">
+                                <div class="repay-form">
+                                    <div class="mem-field">
+                                        <h:outputLabel for="loanId" value="Loan to repay"/>
+                                        <h:selectOneMenu id="loanId"
+                                                         value="#{loanRepaymentBean.loanId}"
+                                                         required="true"
+                                                         requiredMessage="Select the loan you want to repay."
+                                                         styleClass="repayment-select">
+                                            <f:selectItem itemLabel="Select a loan" itemValue="#{null}" noSelectionOption="true"/>
+                                            <f:selectItems value="#{loanRepaymentBean.loans}" var="loan"
+                                                           itemValue="#{loan.id}"
+                                                           itemLabel="Loan ##{loan.id} — outstanding UGX #{loan.outstandingBalance}"/>
+                                        </h:selectOneMenu>
+                                        <h:message for="loanId" styleClass="mem-error"/>
+                                    </div>
+
+                                    <div class="mem-field">
+                                        <h:outputLabel for="amount" value="Repayment amount (UGX)"/>
+                                        <h:inputText id="amount"
+                                                     value="#{loanRepaymentBean.amount}"
+                                                     required="true"
+                                                     requiredMessage="Enter the amount you want to repay."
+                                                     converterMessage="Enter a valid repayment amount."
+                                                     validatorMessage="Repayment amount must be greater than zero."
+                                                     styleClass="mem-input">
+                                            <f:validateDoubleRange minimum="0.01"/>
+                                        </h:inputText>
+                                        <h:message for="amount" styleClass="mem-error"/>
+                                    </div>
+
+                                    <div class="repayment-actions">
+                                        <h:commandButton value="Confirm Repayment"
+                                                         action="#{loanRepaymentBean.repay}"
+                                                         styleClass="mem-btn mem-btn-primary">
+                                            <f:ajax execute="@form" render="@form :growl"/>
+                                        </h:commandButton>
+                                    </div>
+                                </div>
+                                <aside class="repay-help">
+                                    <div class="repay-help-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                                    <h3>Before you confirm</h3>
+                                    <p>Check the selected loan and amount carefully. Your outstanding balance will be updated after the repayment is recorded.</p>
+                                </aside>
+                            </div>
+                        </div>
+                    </h:panelGroup>
+
+                    <h:panelGroup rendered="#{empty loanRepaymentBean.loans}" layout="block" styleClass="mem-card">
+                        <div class="mem-empty">
+                            <i class="fa-solid fa-circle-check" style="color:#16a34a;"></i>
+                            <strong style="color:#374151;">No loans require repayment</strong>
+                            <p>You do not currently have an active or overdue loan.</p>
+                            <h:link outcome="/loans/applications" styleClass="mem-btn mem-btn-outline">View My Loans</h:link>
+                        </div>
+                    </h:panelGroup>
+                </h:panelGroup>
+            </h:form>
+        </section>
+    </ui:define>
 </ui:composition>

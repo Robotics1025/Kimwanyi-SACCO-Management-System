@@ -93,59 +93,101 @@
             <!-- Loan Journey Tracker -->
             <div class="mem-card" style="margin-bottom:0;">
                 <div class="mem-card-header">
-                    <span class="mem-card-title"><i class="fa-solid fa-route" style="color:#f97316; margin-right:6px;"></i> Loan Journey Tracker</span>
-                    <span style="font-size:0.75rem; background:#fff7ed; color:#f97316; font-weight:700; padding:2px 8px; border-radius:4px;">Step #{memberDashboardBean.loanJourneyStep} of 5</span>
+                    <span class="mem-card-title"><i class="fa-solid fa-route" style="color:#dc2626; margin-right:6px;"></i> Loan status</span>
+                    <h:panelGroup rendered="#{memberDashboardBean.hasLoanJourney}">
+                        <span class="loan-state-badge state-#{memberDashboardBean.loanJourneyStatus.toLowerCase()}">
+                            #{memberDashboardBean.loanJourneyStatus.replace('_', ' ')}
+                        </span>
+                    </h:panelGroup>
                 </div>
                 <div class="mem-card-body">
-                    <div class="mem-tracker">
+                    <h:panelGroup rendered="#{not memberDashboardBean.hasLoanJourney}" layout="block" styleClass="loan-journey-empty">
+                        <div class="loan-journey-empty-icon"><i class="fa-solid fa-file-circle-plus"></i></div>
+                        <div>
+                            <strong>Start your first loan application</strong>
+                            <p>When you apply, this area will show the decision and repayment stages in real time.</p>
+                        </div>
+                    </h:panelGroup>
+
+                    <h:panelGroup rendered="#{memberDashboardBean.hasLoanJourney}" layout="block">
+                        <div class="loan-journey-summary">
+                            <div>
+                                <div class="loan-journey-eyebrow">Current position</div>
+                                <div class="loan-journey-heading">#{memberDashboardBean.loanJourneyTitle}</div>
+                                <div class="loan-journey-next">#{memberDashboardBean.loanJourneyNextAction}</div>
+                            </div>
+                            <i class="fa-solid #{memberDashboardBean.loanJourneyStatus == 'REJECTED' ? 'fa-circle-xmark' : (memberDashboardBean.loanJourneyStatus == 'FULLY_REPAID' ? 'fa-circle-check' : 'fa-hourglass-half')}"></i>
+                        </div>
+
+                        <h:panelGroup layout="block"
+                                     styleClass="loan-repayment-progress"
+                                     rendered="#{memberDashboardBean.loanJourneyStatus == 'ACTIVE' or memberDashboardBean.loanJourneyStatus == 'OVERDUE'}">
+                            <div class="loan-progress-label">
+                                <span>Repayment progress</span>
+                                <strong>#{memberDashboardBean.loanRepaymentPercent}%</strong>
+                            </div>
+                            <div class="loan-progress-track" role="progressbar"
+                                 aria-label="Loan repayment progress"
+                                 aria-valuemin="0" aria-valuemax="100"
+                                 aria-valuenow="#{memberDashboardBean.loanRepaymentPercent}">
+                                <div class="loan-progress-fill" style="width:#{memberDashboardBean.loanRepaymentPercent}%"></div>
+                            </div>
+                        </h:panelGroup>
+
+                        <div class="mem-tracker loan-lifecycle">
                         <div class="mem-tracker-step">
                             <div class="mem-tracker-circle done"><i class="fa-solid fa-check" style="font-size:0.65rem;"></i></div>
                             <div class="mem-tracker-line done"></div>
                             <div class="mem-tracker-text">
-                                <div class="mem-tracker-title">Registered</div>
-                                <div class="mem-tracker-desc">Account created successfully</div>
+                                <div class="mem-tracker-title">Application submitted</div>
+                                <div class="mem-tracker-desc">Your request was received</div>
                             </div>
                         </div>
                         <div class="mem-tracker-step">
-                            <div class="mem-tracker-circle done"><i class="fa-solid fa-check" style="font-size:0.65rem;"></i></div>
-                            <div class="mem-tracker-line done"></div>
+                            <div class="mem-tracker-circle #{memberDashboardBean.loanJourneyStatus == 'PENDING' ? 'current' : 'done'}">
+                                <i class="fa-solid #{memberDashboardBean.loanJourneyStatus == 'PENDING' ? 'fa-magnifying-glass' : 'fa-check'}" style="font-size:0.65rem;"></i>
+                            </div>
+                            <div class="mem-tracker-line #{memberDashboardBean.loanJourneyStatus != 'PENDING' ? 'done' : ''}"></div>
                             <div class="mem-tracker-text">
-                                <div class="mem-tracker-title">Start Saving</div>
-                                <div class="mem-tracker-desc">Maintain min. UGX 20,000</div>
+                                <div class="mem-tracker-title">Under review</div>
+                                <div class="mem-tracker-desc">An administrator checks eligibility</div>
                             </div>
                         </div>
                         <div class="mem-tracker-step">
-                            <div class="mem-tracker-circle #{memberDashboardBean.loanJourneyStep == '3' ? 'current' : 'done'}">
-                                <h:outputText value="3" rendered="#{memberDashboardBean.loanJourneyStep == '3'}"/>
-                                <i class="fa-solid fa-check" style="font-size:0.65rem;" rendered="#{memberDashboardBean.loanJourneyStep != '3'}"></i>
+                            <div class="mem-tracker-circle #{memberDashboardBean.loanJourneyStatus == 'REJECTED' ? 'rejected' : (memberDashboardBean.loanJourneyStatus == 'APPROVED' ? 'current' : (memberDashboardBean.loanJourneyStatus == 'ACTIVE' or memberDashboardBean.loanJourneyStatus == 'OVERDUE' or memberDashboardBean.loanJourneyStatus == 'FULLY_REPAID' ? 'done' : ''))}">
+                                <i class="fa-solid #{memberDashboardBean.loanJourneyStatus == 'REJECTED' ? 'fa-xmark' : (memberDashboardBean.loanJourneyStatus == 'APPROVED' ? 'fa-stamp' : (memberDashboardBean.loanJourneyStatus == 'PENDING' ? 'fa-ellipsis' : 'fa-check'))}" style="font-size:0.65rem;"></i>
                             </div>
-                            <div class="mem-tracker-line #{memberDashboardBean.loanJourneyStep != '3' ? 'done' : ''}"></div>
+                            <div class="mem-tracker-line #{memberDashboardBean.loanJourneyStatus == 'ACTIVE' or memberDashboardBean.loanJourneyStatus == 'OVERDUE' or memberDashboardBean.loanJourneyStatus == 'FULLY_REPAID' ? 'done' : ''}"></div>
                             <div class="mem-tracker-text">
-                                <div class="mem-tracker-title">Apply for Loan</div>
-                                <div class="mem-tracker-desc">Max 3x your savings balance</div>
+                                <div class="mem-tracker-title">#{memberDashboardBean.loanJourneyStatus == 'REJECTED' ? 'Not approved' : 'Approved'}</div>
+                                <div class="mem-tracker-desc">#{memberDashboardBean.loanJourneyStatus == 'REJECTED' ? 'This application ends here' : 'Decision and disbursement confirmed'}</div>
                             </div>
                         </div>
-                        <div class="mem-tracker-step">
-                            <div class="mem-tracker-circle #{memberDashboardBean.loanJourneyStep == '4' ? 'current' : (memberDashboardBean.loanJourneyStep == '5' ? 'done' : '')}">
-                                <h:outputText value="4" rendered="#{memberDashboardBean.loanJourneyStep != '5'}"/>
-                                <i class="fa-solid fa-check" style="font-size:0.65rem;" rendered="#{memberDashboardBean.loanJourneyStep == '5'}"></i>
+                        <h:panelGroup rendered="#{memberDashboardBean.loanJourneyStatus != 'REJECTED'}" layout="block">
+                          <div class="mem-tracker-step">
+                            <div class="mem-tracker-circle #{memberDashboardBean.loanJourneyStatus == 'ACTIVE' or memberDashboardBean.loanJourneyStatus == 'OVERDUE' ? 'current' : (memberDashboardBean.loanJourneyStatus == 'FULLY_REPAID' ? 'done' : '')}">
+                                <i class="fa-solid #{memberDashboardBean.loanJourneyStatus == 'FULLY_REPAID' ? 'fa-check' : 'fa-coins'}" style="font-size:0.65rem;"></i>
                             </div>
-                            <div class="mem-tracker-line #{memberDashboardBean.loanJourneyStep == '5' ? 'done' : ''}"></div>
+                            <div class="mem-tracker-line #{memberDashboardBean.loanJourneyStatus == 'FULLY_REPAID' ? 'done' : ''}"></div>
                             <div class="mem-tracker-text">
-                                <div class="mem-tracker-title">Approval Decision</div>
-                                <div class="mem-tracker-desc">Admin reviews your application</div>
+                                <div class="mem-tracker-title">Repayment in progress</div>
+                                <div class="mem-tracker-desc">Scheduled repayments reduce the balance</div>
                             </div>
-                        </div>
-                        <div class="mem-tracker-step">
-                            <div class="mem-tracker-circle #{memberDashboardBean.loanJourneyStep == '5' ? 'current' : ''}">5</div>
+                          </div>
+                          <div class="mem-tracker-step">
+                            <div class="mem-tracker-circle #{memberDashboardBean.loanJourneyStatus == 'FULLY_REPAID' ? 'done' : ''}">
+                                <i class="fa-solid #{memberDashboardBean.loanJourneyStatus == 'FULLY_REPAID' ? 'fa-check' : 'fa-flag-checkered'}" style="font-size:0.65rem;"></i>
+                            </div>
                             <div class="mem-tracker-text">
-                                <div class="mem-tracker-title">Repay Loan</div>
-                                <div class="mem-tracker-desc">10% flat rate on principal</div>
+                                <div class="mem-tracker-title">Fully repaid</div>
+                                <div class="mem-tracker-desc">The loan is closed with no balance due</div>
                             </div>
-                        </div>
+                          </div>
+                        </h:panelGroup>
+                      </div>
+                    </h:panelGroup>
                     </div>
                 </div>
-            </div>
         </div>
 
         <!-- ═══════════════════════════════════════════════════
