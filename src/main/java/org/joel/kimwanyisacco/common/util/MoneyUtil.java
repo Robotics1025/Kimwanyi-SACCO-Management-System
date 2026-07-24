@@ -5,7 +5,7 @@ import java.text.DecimalFormat;
 
 public final class MoneyUtil {
 
-    private static final String CURRENCY_CODE = "KES";
+    private static final String CURRENCY_CODE = "UGX";
     private static final String DECIMAL_PATTERN = "#,##0.00";
 
     private MoneyUtil() {
